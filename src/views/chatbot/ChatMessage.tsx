@@ -16,7 +16,6 @@ import type {
   ChatModelContainer,
   RagSourceRecord,
 } from "@/api";
-import { useTheme } from "@/components/theme-provider";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import {
@@ -47,7 +46,6 @@ export default function ChatMessage({
   const { user } = useUserContext();
   const { t } = useTranslation();
   const { toast } = useToast();
-  const { theme } = useTheme();
 
   const [isCopied, setIsCopied] = useState(false);
 
@@ -140,7 +138,7 @@ export default function ChatMessage({
             <span>
               <ChatBubbleAvatar
                 className="bg-secondary flex justify-center items-center"
-                ImageClassName={`size-7 ${theme === "dark" ? "invert" : ""}`}
+                ImageClassName={"size-7 dark:invert"}
                 src={getLogoFromModelProvider(usedModel?.provider)}
                 fallback={"AI"}
               />

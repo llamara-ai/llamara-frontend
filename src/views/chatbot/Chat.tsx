@@ -8,7 +8,6 @@ import { useEffect, useRef } from "react";
 import { ChatMessageRecord } from "@/api";
 import { useTranslation } from "react-i18next";
 import { getLogoFromModelProvider } from "@/lib/getLogoFromModelProvider";
-import { useTheme } from "@/components/theme-provider";
 import ChatMessage from "./ChatMessage";
 import PromptInput from "./PromptInput";
 import { readSelectedModel } from "@/hooks/useLocalStorage";
@@ -32,7 +31,6 @@ export default function Chat({
   lockSendPrompt,
 }: Readonly<ChatProps>) {
   const { t } = useTranslation();
-  const { theme } = useTheme();
   const mobile = useIsMobile();
 
   const messagesRef = useRef<HTMLDivElement>(null);
@@ -111,7 +109,7 @@ export default function Chat({
             <ChatBubble variant="received" className="mb-4">
               <ChatBubbleAvatar
                 className="bg-secondary flex justify-center items-center"
-                ImageClassName={`size-7 ${theme === "dark" ? "invert" : ""}`}
+                ImageClassName={"size-7 dark:invert"}
                 src={getLogoFromModelProvider(readSelectedModel()?.provider)}
                 fallback={"AI"}
               />

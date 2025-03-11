@@ -75,11 +75,11 @@ export function SidebarModelSelector({
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               {selectedModel && (
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-black text-white">
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg dark:text-white">
                   <img
                     src={getLogoFromModelProvider(selectedModel.provider)}
                     alt={selectedModel.label}
-                    className="w-6 h-6 invert"
+                    className="w-6 h-6 dark:invert"
                   />
                 </div>
               )}
@@ -122,14 +122,14 @@ export function SidebarModelSelector({
                     }}
                     className={`gap-2 p-2 ${selectedModel && model.uid === selectedModel.uid ? "bg-secondary" : ""}`}
                   >
-                    <div className="flex size-6 items-center justify-center rounded-sm bg-black">
+                    <div className="flex size-6 items-center justify-center rounded-sm">
                       <img
                         src={
                           model.provider &&
                           getLogoFromModelProvider(model.provider)
                         }
                         alt={model.label}
-                        className="w-5 h-5 invert"
+                        className="w-5 h-5 dark:invert"
                       />
                     </div>
                     {model.label}
