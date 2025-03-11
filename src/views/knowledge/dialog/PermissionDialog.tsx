@@ -187,17 +187,16 @@ export default function PermissionsDialog({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="OWNER" disabled={true}>
-                      {t("knowledgePage.table.permission.owner")}
-                    </SelectItem>
+                    {permission === "OWNER" && (
+                      <SelectItem value="OWNER" disabled={true}>
+                        {t("knowledgePage.table.permission.owner")}
+                      </SelectItem>
+                    )}
                     <SelectItem value="READWRITE">
                       {t("knowledgePage.table.permission.readwrite")}
                     </SelectItem>
                     <SelectItem value="READONLY">
                       {t("knowledgePage.table.permission.readonly")}
-                    </SelectItem>
-                    <SelectItem value="NONE" disabled={true}>
-                      {t("knowledgePage.table.permission.none")}
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -207,7 +206,7 @@ export default function PermissionsDialog({
                   onClick={() => {
                     handleRemovePermission(username);
                   }}
-                  disabled={true}
+                  disabled={permission === "OWNER"}
                 >
                   <X className="h-4 w-4" />
                 </Button>
