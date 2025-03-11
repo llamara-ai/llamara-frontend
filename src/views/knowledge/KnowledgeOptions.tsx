@@ -103,14 +103,6 @@ export default function KnowledgeOptions({
 
             <DropdownMenuSeparator />
 
-            <DropdownMenuItem
-              onClick={() => {
-                void handleFileDelete();
-              }}
-            >
-              <DeleteIcon className="mr-2 h-4 w-4" />
-              {t("knowledgePage.options.delete")}
-            </DropdownMenuItem>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
                 <DropdownMenuItem
@@ -130,6 +122,14 @@ export default function KnowledgeOptions({
                 resetSelectedFiles={!isDialogOpen}
               />
             </Dialog>
+            <DropdownMenuItem
+              onClick={() => {
+                void handleFileDelete();
+              }}
+            >
+              <DeleteIcon className="mr-2 h-4 w-4" />
+              {t("knowledgePage.options.delete")}
+            </DropdownMenuItem>
           </>
         ) : (
           <DropdownMenuItem disabled>
