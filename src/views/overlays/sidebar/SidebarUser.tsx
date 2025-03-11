@@ -40,7 +40,7 @@ import { LanguageLabels } from "@/locales/Languages.ts";
 export function SidebarUser() {
   const { t, i18n } = useTranslation();
   const { isMobile } = useSidebar();
-  const { setTheme } = useTheme();
+  const { rawTheme, setTheme } = useTheme();
   const { deleteAllUserData, error } = useDeleteAllUserData();
   const [isDeleteUserDialogOpen, setIsDeleteUserDialogOpen] =
     useState<boolean>(false);
@@ -128,6 +128,7 @@ export function SidebarUser() {
                 onClick={() => {
                   setTheme("light");
                 }}
+                className={rawTheme === "light" ? "bg-secondary" : ""}
               >
                 <Sun className="mr-2 h-4 w-4" />
                 {t("sidebar.theme.light")}
@@ -136,6 +137,7 @@ export function SidebarUser() {
                 onClick={() => {
                   setTheme("dark");
                 }}
+                className={rawTheme === "dark" ? "bg-secondary" : ""}
               >
                 <Moon className="mr-2 h-4 w-4" />
                 {t("sidebar.theme.dark")}
@@ -144,6 +146,7 @@ export function SidebarUser() {
                 onClick={() => {
                   setTheme("system");
                 }}
+                className={rawTheme === "system" ? "bg-secondary" : ""}
               >
                 <LaptopMinimal className="mr-2 h-4 w-4" />
                 {t("sidebar.theme.system")}

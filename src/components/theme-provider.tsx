@@ -11,6 +11,7 @@ interface ThemeProviderProps {
 
 interface ThemeProviderState {
   theme: ComputedTheme;
+  rawTheme: Theme;
   setTheme: (theme: Theme) => void;
 }
 
@@ -27,6 +28,7 @@ const computeSystemTheme = (theme: Theme) => {
 
 const initialState: ThemeProviderState = {
   theme: computeSystemTheme("system"),
+  rawTheme: "system",
   setTheme: () => null,
 };
 
@@ -38,9 +40,9 @@ export function ThemeProvider({
   storageKey = "vite-ui-theme",
   ...props
 }: Readonly<ThemeProviderProps>) {
-  const [theme, setTheme] = useState<ComputedTheme>(
+  const [theme, setTheme] = useState<Theme>(
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    () => (localStorage.getItem(storageKey) as ComputedTheme) || defaultTheme,
+    () => (localStorage.getItem(storageKey) as Theme) || defaultTheme,
   );
 
   useEffect(() => {
@@ -54,9 +56,10 @@ export function ThemeProvider({
   const value = useMemo(
     () => ({
       theme: computeSystemTheme(theme),
+      rawTheme: theme,
       setTheme: (theme: Theme) => {
         localStorage.setItem(storageKey, theme);
-        setTheme(computeSystemTheme(theme));
+        setTheme(theme);
       },
     }),
     [theme, storageKey],
