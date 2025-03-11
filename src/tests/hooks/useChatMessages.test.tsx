@@ -41,9 +41,9 @@ i18n.use(initReactI18next).init({
       },
     },
   },
-  lng: "en", // Setze die Sprache
+  lng: "en",
   interpolation: {
-    escapeValue: false, // Nicht notwendig, wenn keine XSS-Prävention erforderlich ist
+    escapeValue: false,
   },
 });
 
