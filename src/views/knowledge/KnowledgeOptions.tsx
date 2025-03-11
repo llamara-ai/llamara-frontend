@@ -25,6 +25,7 @@ import { useGetKnowledgeList } from "@/services/GetKnowledgeListService";
 import useFileStatus from "@/hooks/useFileStatus";
 import useRetryIngestionApi from "@/hooks/api/useRetryIngestionApi";
 import { useUserContext } from "@/services/UserContextService";
+import { USER_ANY } from "./dialog/PermissionDialog";
 
 interface KnowledgeOptionsProps {
   onClickTagEdit: (knowledgeId: string | null) => void;
@@ -60,9 +61,13 @@ export default function KnowledgeOptions({
   }
 
   const hasUserPermission = () => {
-    if (!user || !knowledge.permissions || !user.username) return false;
-
-    return knowledge.permissions[user.username] !== "READONLY";
+    if (!knowledge.permissions) return false;
+    if (knowledge.permissions[USER_ANY] === "READWRITE") return true;
+    if (!user?.username) return false;
+    return (
+      knowledge.permissions[user.username] === "READONLY" ||
+      knowledge.permissions[user.username] === "OWNER"
+    );
   };
 
   return (
