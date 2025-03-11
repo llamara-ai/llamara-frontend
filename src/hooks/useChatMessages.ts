@@ -72,6 +72,7 @@ export default function useChatMessages(): UseChatMessagesResponse {
     }
 
     setSessionId(sessionId);
+    setCurrentActiveSessionId(sessionId);
 
     promptInput.current = ""; // Reset prompt input, need to avoid resend prompt
     setLoadingResponse(false);
@@ -93,12 +94,12 @@ export default function useChatMessages(): UseChatMessagesResponse {
     if (sessionIDRef.current === null) {
       const newSession = await handleCreateSession();
 
-      setCurrentActiveSessionId(newSession?.id ?? null);
       // Add session to local session list
       appendSessionLocal(newSession);
 
       if (newSession?.id) {
         setSessionId(newSession.id);
+        setCurrentActiveSessionId(newSession.id);
       }
     }
     chatModelUIDRef.current = readSelectedModel()?.uid ?? null;
