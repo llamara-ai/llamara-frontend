@@ -107,7 +107,7 @@
     },
     "options": {
       "delete": "Delete",
-      "update": "Update File",
+      "update": "Update file",
       "actions": "Actions",
       "retry": "Retry ingestion",
       "editTags": "Edit tags",
