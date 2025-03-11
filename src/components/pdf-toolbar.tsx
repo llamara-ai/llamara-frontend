@@ -65,8 +65,8 @@ const PdfToolbar: React.FC<PdfToolbarProps> = ({
   };
 
   return (
-    <div className="flex items-center justify-between px-4 py-2 border-b gap-4 bg-primary-foreground">
-      <div className="flex items-center gap-1">
+    <div className="flex items-center justify-between p-2 border-b gap-2 bg-primary-foreground">
+      <div className="flex items-center">
         <Button
           onClick={onPreviousPage}
           disabled={currentPage === 1}
@@ -90,7 +90,7 @@ const PdfToolbar: React.FC<PdfToolbarProps> = ({
         </Button>
       </div>
 
-      <div className="flex-1 max-w-xs flex items-center gap-1">
+      <div className="flex-1 max-w-xs flex items-center">
         <form onSubmit={handleSearch} className="relative flex-1 ">
           <Input
             type="text"
@@ -135,7 +135,7 @@ const PdfToolbar: React.FC<PdfToolbarProps> = ({
         )}
       </div>
 
-      <div className="flex items-center gap-1">
+      <div className="flex items-center">
         <Button
           onClick={onDownload}
           variant="ghost"
