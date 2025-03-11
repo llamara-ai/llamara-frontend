@@ -7,11 +7,8 @@ import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { t } from "i18next";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useGetSessions } from "@/services/GetSessionsService";
 
 export default function Chatbot() {
-  const { appendSessionLocal } = useGetSessions();
-
   const [showPdfWithUuid, setShowPdfWithUuid] = useState<string | null>(null);
   const [pdfLoading, setPdfLoading] = useState<string | null>(null);
 
@@ -24,9 +21,7 @@ export default function Chatbot() {
     loadingResponse,
     handlePromptAndMessages,
     updateSessionId,
-  } = useChatMessages({
-    appendSessionLocal,
-  });
+  } = useChatMessages();
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);

@@ -3,9 +3,13 @@ import { getSessions, Session } from "@/api";
 import { useCache } from "@/services/CacheService";
 import { useToast } from "@/hooks/use-toast";
 import { default as useRefState } from "react-usestateref";
+import useCurrentPage from "@/hooks/useCurrentPage";
+import { useNavigate } from "react-router-dom";
 
 export interface UseGetSessionsApiResponse {
   sessions: Session[];
+  currentActiveSessionId: string | null;
+  setCurrentActiveSessionId: (sessionId: string | null) => void;
   appendSessionLocal: (session: Session | null) => void;
   updateSessionLabelLocal: (sessionId: string, newLabel: string) => void;
   deleteSessionLocal: (sessionId: string) => void;
@@ -27,6 +31,12 @@ export default function GetSessionsProvider({
   const [animateInSession, setAnimateInSession] = useState<Session | null>(
     null,
   ); // This session was added and need fade in animation, null means no animation
+  const [currentActiveSessionId, setCurrentActiveSessionId] = useState<
+    string | null
+  >(null);
+
+  const navigate = useNavigate();
+  const activePage = useCurrentPage();
 
   useEffect(() => {
     const cachedSessions = getCache("sessions");
@@ -80,6 +90,10 @@ export default function GetSessionsProvider({
 
   // Delete a session locally, so we don't have to fetch the sessions again
   const deleteSessionLocal = (sessionId: string) => {
+    if (activePage === "chatbot" && currentActiveSessionId === sessionId) {
+      void navigate("/");
+    }
+
     setSessions(
       sessionsRef.current.filter((session) => session.id !== sessionId),
     );
@@ -88,6 +102,8 @@ export default function GetSessionsProvider({
   const value = useMemo(
     () => ({
       sessions,
+      currentActiveSessionId,
+      setCurrentActiveSessionId,
       appendSessionLocal,
       updateSessionLabelLocal,
       deleteSessionLocal,
@@ -97,6 +113,8 @@ export default function GetSessionsProvider({
     }),
     [
       sessions,
+      currentActiveSessionId,
+      setCurrentActiveSessionId,
       appendSessionLocal,
       updateSessionLabelLocal,
       deleteSessionLocal,
@@ -116,7 +134,7 @@ export default function GetSessionsProvider({
 export function useGetSessions() {
   const context = useContext(SessionsContext);
   if (!context) {
-    throw new Error("useGetSessions must be used within a SessionsProvider");
+    throw new Error("useGetSessions must be used within a GetSessionsProvider");
   }
   return context;
 }

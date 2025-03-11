@@ -7,6 +7,7 @@ import GetSessionsProvider, {
 import { getSessions } from "@/api";
 import { useCache } from "@/services/CacheService";
 import { useToast } from "@/hooks/use-toast";
+import { BrowserRouter } from "react-router-dom";
 
 // Mock the dependencies
 vi.mock("@/api", () => ({
@@ -113,9 +114,11 @@ describe("GetSessionsProvider", () => {
     mockGetCache.mockReturnValue(null);
 
     render(
-      <GetSessionsProvider>
-        <TestComponent />
-      </GetSessionsProvider>,
+      <BrowserRouter>
+        <GetSessionsProvider>
+          <TestComponent />
+        </GetSessionsProvider>
+      </BrowserRouter>,
     );
 
     // Initially no sessions should be displayed
@@ -134,9 +137,11 @@ describe("GetSessionsProvider", () => {
     mockGetCache.mockReturnValue(mockSessions);
 
     render(
-      <GetSessionsProvider>
-        <TestComponent />
-      </GetSessionsProvider>,
+      <BrowserRouter>
+        <GetSessionsProvider>
+          <TestComponent />
+        </GetSessionsProvider>
+      </BrowserRouter>,
     );
 
     // Sessions should be loaded from cache
@@ -149,9 +154,11 @@ describe("GetSessionsProvider", () => {
     mockGetCache.mockReturnValue(mockSessions);
 
     render(
-      <GetSessionsProvider>
-        <TestComponent />
-      </GetSessionsProvider>,
+      <BrowserRouter>
+        <GetSessionsProvider>
+          <TestComponent />
+        </GetSessionsProvider>
+      </BrowserRouter>,
     );
 
     // Initially 2 sessions
@@ -176,9 +183,11 @@ describe("GetSessionsProvider", () => {
     mockGetCache.mockReturnValue(mockSessions);
 
     render(
-      <GetSessionsProvider>
-        <TestComponent />
-      </GetSessionsProvider>,
+      <BrowserRouter>
+        <GetSessionsProvider>
+          <TestComponent />
+        </GetSessionsProvider>
+      </BrowserRouter>,
     );
 
     // Initially session-1 has label "Session 1"
@@ -203,9 +212,11 @@ describe("GetSessionsProvider", () => {
     mockGetCache.mockReturnValue(mockSessions);
 
     render(
-      <GetSessionsProvider>
-        <TestComponent />
-      </GetSessionsProvider>,
+      <BrowserRouter>
+        <GetSessionsProvider>
+          <TestComponent />
+        </GetSessionsProvider>
+      </BrowserRouter>,
     );
 
     // Initially 2 sessions
@@ -231,9 +242,11 @@ describe("GetSessionsProvider", () => {
     (getSessions as any).mockRejectedValue(new Error(errorMessage));
 
     render(
-      <GetSessionsProvider>
-        <TestComponent />
-      </GetSessionsProvider>,
+      <BrowserRouter>
+        <GetSessionsProvider>
+          <TestComponent />
+        </GetSessionsProvider>
+      </BrowserRouter>,
     );
 
     await waitFor(() => {

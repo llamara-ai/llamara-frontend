@@ -2,15 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import usePromptApi from "./api/useSendPromptApi";
 import { useTranslation } from "react-i18next";
 import useCreateSessionApi from "./api/useCreateSessionApi";
-import { ChatMessageRecord, Session } from "@/api";
+import { ChatMessageRecord } from "@/api";
 import useGetHistoryApi from "./api/useGetHistoryApi";
 import { useLoading } from "@/services/LoadingService";
 import { readSelectedModel } from "./useLocalStorage";
 import { useKeepAliveSession } from "./useKeepAliveSession";
-
-interface UseAddFileSourceApiProps {
-  appendSessionLocal: (session: Session | null) => void;
-}
+import { useGetSessions } from "@/services/GetSessionsService";
 
 interface UseChatMessagesResponse {
   chatMessages: ChatMessageRecord[];
@@ -21,11 +18,10 @@ interface UseChatMessagesResponse {
   error: string | null;
 }
 
-export default function useChatMessages({
-  appendSessionLocal,
-}: UseAddFileSourceApiProps): UseChatMessagesResponse {
+export default function useChatMessages(): UseChatMessagesResponse {
   const { setLoading: setLoadingSpinner } = useLoading();
   const { t } = useTranslation();
+  const { appendSessionLocal, setCurrentActiveSessionId } = useGetSessions();
 
   // Keep alive session id, need to be useState but should be keep in sync with sessionIDRef.current
   const [keepAliveSessionId, setKeepAliveSessionId] = useState<string | null>(
@@ -97,6 +93,7 @@ export default function useChatMessages({
     if (sessionIDRef.current === null) {
       const newSession = await handleCreateSession();
 
+      setCurrentActiveSessionId(newSession?.id ?? null);
       // Add session to local session list
       appendSessionLocal(newSession);
 

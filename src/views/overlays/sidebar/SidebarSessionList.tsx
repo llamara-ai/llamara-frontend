@@ -14,9 +14,8 @@ import {
   SidebarMenuSub,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
 import { SidebarSession } from "./SidebarSession";
+import { useGetSessions } from "@/services/GetSessionsService";
 
 export interface SessionSidebarItem {
   title: string;
@@ -68,22 +67,7 @@ interface SessionGroupProps {
 }
 
 const SessionGroup = ({ item, setOnClick }: SessionGroupProps) => {
-  const [selectedSessionId, setSelectedSessionId] = useState<string | null>(
-    null,
-  );
-
-  // Reset selected session id when url is session parameter is not provided
-  // otherwise set the selected session id
-  const location = useLocation();
-  useEffect(() => {
-    const queryParams = new URLSearchParams(location.search);
-    const sessionId = queryParams.get("session");
-    if (sessionId === null) {
-      setSelectedSessionId(null);
-    } else {
-      setSelectedSessionId(sessionId);
-    }
-  }, [location]);
+  const { currentActiveSessionId } = useGetSessions();
 
   return (
     <Collapsible
@@ -107,10 +91,9 @@ const SessionGroup = ({ item, setOnClick }: SessionGroupProps) => {
                 subItem={subItem}
                 setOnClick={(uid: string, label: string) => {
                   setOnClick(uid, label);
-                  setSelectedSessionId(uid);
                 }}
                 key={subItem.uid + subItem.title}
-                highlightSession={selectedSessionId === subItem.uid}
+                highlightSession={currentActiveSessionId === subItem.uid}
               />
             ))}
           </SidebarMenuSub>
