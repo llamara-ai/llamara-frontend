@@ -11,7 +11,7 @@ import { getLogoFromModelProvider } from "@/lib/getLogoFromModelProvider";
 import ChatMessage from "./ChatMessage";
 import PromptInput from "./PromptInput";
 import { readSelectedModel } from "@/hooks/useLocalStorage";
-import { useIsMobile } from "@/hooks/use-mobile.tsx";
+import { useIsMobile } from "@/hooks/useMobile";
 
 interface ChatProps {
   messages: ChatMessageRecord[];

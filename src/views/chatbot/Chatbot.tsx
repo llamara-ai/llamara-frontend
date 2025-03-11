@@ -6,7 +6,7 @@ import PdfViewer from "@/components/pdf-viewer";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { t } from "i18next";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { useIsMobile } from "@/hooks/useMobile";
 
 export default function Chatbot() {
   const [showPdfWithUuid, setShowPdfWithUuid] = useState<string | null>(null);
