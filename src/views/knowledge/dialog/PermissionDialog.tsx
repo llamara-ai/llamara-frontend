@@ -22,6 +22,7 @@ import { useGetKnowledgeList } from "@/services/GetKnowledgeListService";
 import useKnowledgePermissionApi from "@/hooks/api/useKnowledgePermissionApi";
 import { Knowledge } from "@/api";
 import { useUserContext } from "@/services/UserContextService";
+import { compareWithAnyPermission } from "../KnowledgePermissions";
 
 export type Permission = "OWNER" | "READWRITE" | "READONLY" | "NONE";
 
@@ -30,7 +31,7 @@ interface PermissionsDialogProps {
   onClose: () => void;
 }
 
-const USER_ANY = "*";
+export const USER_ANY = "*";
 
 export default function PermissionsDialog({
   knowledgeId,
@@ -42,6 +43,9 @@ export default function PermissionsDialog({
   const [newUsername, setNewUsername] = useState<string | null>(null);
   const [knowledge, setKnowledge] = useState<Knowledge | null>(null);
   const [newPermission, setNewPermission] = useState<Permission | "">("");
+  const [highestUserPermission, setHighestUserPermission] =
+    useState<Permission>("NONE");
+
   const { updateKnowledgePermissions } = useKnowledgePermissionApi({
     knowledge,
   });
@@ -55,6 +59,15 @@ export default function PermissionsDialog({
       setKnowledge(knowledge ?? null);
 
       setPermissions(knowledge?.permissions ?? {});
+
+      setHighestUserPermission(
+        knowledge?.permissions
+          ? compareWithAnyPermission(
+              knowledge.permissions,
+              user?.username ?? "",
+            )
+          : "NONE",
+      );
     }
   }, [allKnowledge, knowledgeId]);
 
@@ -194,7 +207,7 @@ export default function PermissionsDialog({
                   onClick={() => {
                     handleRemovePermission(username);
                   }}
-                  disabled={username === user?.username}
+                  disabled={true}
                 >
                   <X className="h-4 w-4" />
                 </Button>
@@ -214,6 +227,10 @@ export default function PermissionsDialog({
                 }
                 handlePermissionChange(USER_ANY, value);
               }}
+              disabled={
+                highestUserPermission === "READONLY" ||
+                highestUserPermission === "NONE"
+              }
             >
               <SelectTrigger>
                 <SelectValue />

@@ -55,7 +55,7 @@ export function KnowledgeSourceDetail({
                   {Object.entries(knowledge.permissions).map(([key, value]) => (
                     <li
                       key={key}
-                    >{`${key}: ${translatePermissions(value, t)}`}</li>
+                    >{`${key}: ${translatePermissions(value)}`}</li>
                   ))}
                 </ul>
               ) : (

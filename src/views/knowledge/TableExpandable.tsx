@@ -53,7 +53,7 @@ export default function TableAccordion({
                 <span className="font-semibold">{key}: </span>
                 <span>
                   {knowledge.permissions
-                    ? translatePermissions(knowledge.permissions[key], t)
+                    ? translatePermissions(knowledge.permissions[key])
                     : ""}{" "}
                   {listOfPermissionKeys().length - 1 > index && <>|</>}{" "}
                 </span>
