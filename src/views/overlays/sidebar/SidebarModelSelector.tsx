@@ -23,6 +23,7 @@ import { ChatModelContainer } from "@/api";
 import { t } from "i18next";
 import { useLogo } from "@/hooks/useLogo";
 import { getLogoFromModelProvider } from "@/lib/getLogoFromModelProvider";
+import { useEffect } from "react";
 
 export interface SidebarModelSelectorProps {
   models: ChatModelContainer[];
@@ -37,6 +38,13 @@ export function SidebarModelSelector({
 }: Readonly<SidebarModelSelectorProps>) {
   const { isMobile, open } = useSidebar();
   const logoSrc = useLogo();
+
+  // If there is only one model, select it by default
+  useEffect(() => {
+    if (models.length === 1) {
+      setActiveModel(models[0]);
+    }
+  }, [models]);
 
   const onClickSelectModel = (model: ChatModelContainer) => {
     setActiveModel(model);
@@ -112,7 +120,7 @@ export function SidebarModelSelector({
                     onClick={() => {
                       onClickSelectModel(model);
                     }}
-                    className="gap-2 p-2"
+                    className={`gap-2 p-2 ${selectedModel && model.uid === selectedModel.uid ? "bg-secondary" : ""}`}
                   >
                     <div className="flex size-6 items-center justify-center rounded-sm bg-black">
                       <img

@@ -40,7 +40,11 @@ const SidebarContentFunc = () => {
   // check once if previous selected model is available
   // otherwise show notification and reset local storage
   useEffect(() => {
-    if (selectedModel && !models.includes(selectedModel) && models.length > 0) {
+    if (
+      selectedModel &&
+      !models.some((model) => model.uid === selectedModel.uid) &&
+      models.length > 0
+    ) {
       toast({
         variant: "destructive",
         title: "The selected model is not available",
@@ -49,7 +53,7 @@ const SidebarContentFunc = () => {
       });
       setSelectedModel(null);
     }
-  }, []);
+  }, [models]);
 
   useEffect(() => {
     setSortedSessions(
