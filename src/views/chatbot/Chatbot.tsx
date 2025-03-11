@@ -7,13 +7,20 @@ import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { t } from "i18next";
 import { useIsMobile } from "@/hooks/useMobile";
+import { useSidebar } from "@/components/ui/sidebar.tsx";
+import { useWindow } from "@/hooks/useWindow.ts";
+import usePreviousValue from "@/hooks/usePreviousValue.ts";
 
 export default function Chatbot() {
   const [pdfKnowledgeId, setPdfKnowledgeId] = useState<string | null>(null);
   const [pdfFileName, setPdfFileName] = useState<string | null>(null);
+  const [autoCollapsedSidebar, setAutoCollapsedSidebar] = useState(false);
 
   const location = useLocation();
   const isMobile = useIsMobile();
+  const { innerWidth } = useWindow();
+  const previousInnerWidth = usePreviousValue<number>(innerWidth);
+  const { open, setOpen } = useSidebar();
 
   const {
     chatMessages,
@@ -31,6 +38,36 @@ export default function Chatbot() {
     void updateSessionId(null); // Reset session id
     void updateSessionId(sessionId);
   }, [location]);
+
+  // collapse sidebar if PDF is opened and screen is resized to a smaller size
+  const collapseSidebarBreakpoint = 1340;
+  useEffect(() => {
+    if (!pdfKnowledgeId) return;
+    if (
+      open &&
+      innerWidth < collapseSidebarBreakpoint &&
+      previousInnerWidth >= collapseSidebarBreakpoint
+    ) {
+      setOpen(false);
+      setAutoCollapsedSidebar(true);
+    } else if (
+      !open &&
+      autoCollapsedSidebar &&
+      innerWidth >= collapseSidebarBreakpoint &&
+      previousInnerWidth < collapseSidebarBreakpoint
+    ) {
+      setOpen(true);
+      setAutoCollapsedSidebar(false);
+    }
+  }, [innerWidth]);
+  // collapse sidebar if screen is small and PDF is opened
+  useEffect(() => {
+    if (!pdfKnowledgeId) return;
+    if (open && innerWidth < collapseSidebarBreakpoint) {
+      setOpen(false);
+      setAutoCollapsedSidebar(true);
+    }
+  }, [pdfKnowledgeId]);
 
   const onSubmit = async (prompt: string) => {
     await handlePromptAndMessages(prompt);
@@ -59,6 +96,10 @@ export default function Chatbot() {
             onClick={() => {
               setPdfKnowledgeId(null);
               setPdfFileName(null);
+              if (autoCollapsedSidebar) {
+                setOpen(true);
+                setAutoCollapsedSidebar(false);
+              }
             }}
             variant="ghost"
             className="fixed top-1.5 right-2 z-50 bg-secondary"
