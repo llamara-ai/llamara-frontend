@@ -67,7 +67,7 @@ export default function Chat({
   return (
     <div className="flex flex-col h-full items-center justify-center">
       <div
-        className="overflow-y-auto flex flex-grow items-center justify-center w-full md:w-5/6"
+        className="overflow-y-auto flex flex-grow items-center justify-center w-full"
         style={{ maxHeight: "calc(100vh - 190px)" }}
         ref={messagesRef}
       >

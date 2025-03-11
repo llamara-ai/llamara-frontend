@@ -9,8 +9,8 @@ import { t } from "i18next";
 import { useIsMobile } from "@/hooks/useMobile";
 
 export default function Chatbot() {
-  const [showPdfWithUuid, setShowPdfWithUuid] = useState<string | null>(null);
-  const [pdfLoading, setPdfLoading] = useState<string | null>(null);
+  const [pdfKnowledgeId, setPdfKnowledgeId] = useState<string | null>(null);
+  const [pdfFileName, setPdfFileName] = useState<string | null>(null);
 
   const location = useLocation();
   const isMobile = useIsMobile();
@@ -26,8 +26,8 @@ export default function Chatbot() {
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const sessionId = queryParams.get("session");
-    setShowPdfWithUuid(null);
-    setPdfLoading(null);
+    setPdfKnowledgeId(null);
+    setPdfFileName(null);
     void updateSessionId(null); // Reset session id
     void updateSessionId(sessionId);
   }, [location]);
@@ -37,9 +37,9 @@ export default function Chatbot() {
   };
 
   return (
-    <div className="flex h-full mt-0">
+    <div className="flex h-full mt-0 justify-center">
       <div
-        className={`flex-1 transition-all duration-300 ${showPdfWithUuid ? "w-1/2" : "w-full"} h-full overflow-auto`}
+        className={`flex-shrink transition-all duration-300 ${pdfKnowledgeId != null ? "mr-4" : "w-full md:w-5/6"} h-full overflow-auto`}
       >
         <Chat
           messages={chatMessages}
@@ -48,17 +48,17 @@ export default function Chatbot() {
           isGenerating={loadingResponse}
           lockSendPrompt={false}
           openPdf={(uuid: string, label: string) => {
-            setShowPdfWithUuid(uuid);
-            setPdfLoading(label);
+            setPdfKnowledgeId(uuid);
+            setPdfFileName(label);
           }}
         />
       </div>
-      {showPdfWithUuid && pdfLoading && (
+      {pdfKnowledgeId && pdfFileName && (
         <div className="relative w-1/2 shadow-lg transition-all duration-300 ease-in-out">
           <Button
             onClick={() => {
-              setShowPdfWithUuid(null);
-              setPdfLoading(null);
+              setPdfKnowledgeId(null);
+              setPdfFileName(null);
             }}
             variant="ghost"
             className="fixed top-1.5 right-2 z-50 bg-secondary"
@@ -70,11 +70,11 @@ export default function Chatbot() {
             className={
               isMobile
                 ? "fixed overflow-auto h-full right-0 top-12"
-                : "overflow-auto z-40"
+                : "overflow-auto z-40 min-w-[540px]"
             }
             style={{ height: "calc(100vh - 104px)" }}
           >
-            <PdfViewer fileUuid={showPdfWithUuid} label={pdfLoading} />
+            <PdfViewer fileUuid={pdfKnowledgeId} label={pdfFileName} />
           </div>
         </div>
       )}
