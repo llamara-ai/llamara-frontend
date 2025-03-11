@@ -17,7 +17,7 @@ export type ChatModelContainer = {
     provider?: ChatModelProvider;
 };
 
-export type ChatModelProvider = 'AZURE' | 'OLLAMA' | 'OPENAI';
+export type ChatModelProvider = 'AZURE' | 'GOOGLE_GEMINI' | 'MISTRAL' | 'OLLAMA' | 'OPENAI';
 
 export type ChatResponseRecord = {
     response?: string;

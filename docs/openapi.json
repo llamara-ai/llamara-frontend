@@ -48,7 +48,7 @@
       },
       "ChatModelProvider" : {
         "type" : "string",
-        "enum" : [ "AZURE", "OLLAMA", "OPENAI" ]
+        "enum" : [ "AZURE", "GOOGLE_GEMINI", "MISTRAL", "OLLAMA", "OPENAI" ]
       },
       "ChatResponseRecord" : {
         "type" : "object",
