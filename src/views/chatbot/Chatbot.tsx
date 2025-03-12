@@ -11,6 +11,8 @@ import { useSidebar } from "@/components/ui/sidebar.tsx";
 import { useWindow } from "@/hooks/useWindow.ts";
 import usePreviousValue from "@/hooks/usePreviousValue.ts";
 
+const COLLAPSE_SIDEBAR_BREAKPOINT = 1340;
+
 export default function Chatbot() {
   const [pdfKnowledgeId, setPdfKnowledgeId] = useState<string | null>(null);
   const [pdfFileName, setPdfFileName] = useState<string | null>(null);
@@ -40,21 +42,20 @@ export default function Chatbot() {
   }, [location]);
 
   // collapse sidebar if PDF is opened and screen is resized to a smaller size
-  const collapseSidebarBreakpoint = 1340;
   useEffect(() => {
     if (!pdfKnowledgeId) return;
     if (
       open &&
-      innerWidth < collapseSidebarBreakpoint &&
-      previousInnerWidth >= collapseSidebarBreakpoint
+      innerWidth < COLLAPSE_SIDEBAR_BREAKPOINT &&
+      previousInnerWidth >= COLLAPSE_SIDEBAR_BREAKPOINT
     ) {
       setOpen(false);
       setAutoCollapsedSidebar(true);
     } else if (
       !open &&
       autoCollapsedSidebar &&
-      innerWidth >= collapseSidebarBreakpoint &&
-      previousInnerWidth < collapseSidebarBreakpoint
+      innerWidth >= COLLAPSE_SIDEBAR_BREAKPOINT &&
+      previousInnerWidth < COLLAPSE_SIDEBAR_BREAKPOINT
     ) {
       setOpen(true);
       setAutoCollapsedSidebar(false);
@@ -63,7 +64,7 @@ export default function Chatbot() {
   // collapse sidebar if screen is small and PDF is opened
   useEffect(() => {
     if (!pdfKnowledgeId) return;
-    if (open && innerWidth < collapseSidebarBreakpoint) {
+    if (open && innerWidth < COLLAPSE_SIDEBAR_BREAKPOINT) {
       setOpen(false);
       setAutoCollapsedSidebar(true);
     }
@@ -111,11 +112,15 @@ export default function Chatbot() {
             className={
               isMobile
                 ? "fixed overflow-auto h-full right-0 top-12"
-                : "overflow-auto z-40 min-w-[540px]"
+                : "overflow-auto z-40"
             }
             style={{ height: "calc(100vh - 104px)" }}
           >
-            <PdfViewer fileUuid={pdfKnowledgeId} label={pdfFileName} />
+            <PdfViewer
+              fileUuid={pdfKnowledgeId}
+              label={pdfFileName}
+              collapseToolbarButtonsBreakpoint={1240}
+            />
           </div>
         </div>
       )}

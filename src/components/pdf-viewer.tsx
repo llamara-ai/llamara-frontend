@@ -20,6 +20,7 @@ import { t } from "i18next";
 interface PdfViewerProps {
   fileUuid: string;
   label: string;
+  collapseToolbarButtonsBreakpoint: number;
 }
 
 interface FileInfo {
@@ -35,7 +36,11 @@ interface SearchResult {
   text: string;
 }
 
-const PdfViewer = ({ fileUuid, label }: PdfViewerProps) => {
+const PdfViewer = ({
+  fileUuid,
+  label,
+  collapseToolbarButtonsBreakpoint,
+}: PdfViewerProps) => {
   const { fileData } = useGetKnowledgeFileApi({ uuid: fileUuid });
   const [url, setUrl] = React.useState<string | null>(null);
   const [numPages, setNumPages] = useState<number>(0);
@@ -331,6 +336,7 @@ const PdfViewer = ({ fileUuid, label }: PdfViewerProps) => {
         currentSearchIndex={currentSearchIndex}
         onNextSearchResult={handleNextSearchResult}
         onPreviousSearchResult={handlePreviousSearchResult}
+        collapseButtonsBreakpoint={collapseToolbarButtonsBreakpoint}
       />
       <div
         ref={containerRef}

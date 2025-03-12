@@ -1,22 +1,21 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Search,
   ChevronLeft,
   ChevronRight,
-  Download,
-  Printer,
-  RotateCcw,
-  RotateCw,
-  FileText,
   ZoomIn,
   ZoomOut,
   ChevronUp,
   ChevronDown,
+  Ellipsis,
 } from "lucide-react";
+import { useWindow } from "@/hooks/useWindow.ts";
+import PdfToolbarTools from "@/components/pdf-toolbar-tools.tsx";
+import { useHandleClickOutside } from "@/hooks/useHandleClickOutside.ts";
 
 interface PdfToolbarProps {
   currentPage: number;
@@ -36,6 +35,7 @@ interface PdfToolbarProps {
   currentSearchIndex: number;
   onNextSearchResult: () => void;
   onPreviousSearchResult: () => void;
+  collapseButtonsBreakpoint: number;
 }
 
 const PdfToolbar: React.FC<PdfToolbarProps> = ({
@@ -56,13 +56,28 @@ const PdfToolbar: React.FC<PdfToolbarProps> = ({
   currentSearchIndex,
   onNextSearchResult,
   onPreviousSearchResult,
+  collapseButtonsBreakpoint,
 }) => {
-  const [searchTerm, setSearchTerm] = React.useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showCollapsedTools, setShowCollapsedTools] = useState(false);
+  const { innerWidth } = useWindow();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     onSearch(searchTerm);
   };
+
+  const handleOutsideClick = (event: MouseEvent) => {
+    if (
+      toolsMenuRef.current &&
+      !toolsMenuRef.current.contains(event.target as Node)
+    ) {
+      setShowCollapsedTools(false);
+    }
+  };
+
+  const toolsMenuRef =
+    useHandleClickOutside<HTMLDivElement>(handleOutsideClick);
 
   return (
     <div className="flex items-center justify-between p-2 border-b gap-2 bg-primary-foreground">
@@ -112,9 +127,6 @@ const PdfToolbar: React.FC<PdfToolbarProps> = ({
         </form>
         {searchResults.length > 0 && (
           <>
-            <span className="text-sm text-primary">
-              {currentSearchIndex + 1} of {searchResults.length}
-            </span>
             <Button
               onClick={onPreviousSearchResult}
               variant="ghost"
@@ -123,6 +135,9 @@ const PdfToolbar: React.FC<PdfToolbarProps> = ({
             >
               <ChevronUp className="h-4 w-4" />
             </Button>
+            <span className="text-sm text-primary">
+              {currentSearchIndex + 1} of {searchResults.length}
+            </span>
             <Button
               onClick={onNextSearchResult}
               variant="ghost"
@@ -136,46 +151,37 @@ const PdfToolbar: React.FC<PdfToolbarProps> = ({
       </div>
 
       <div className="flex items-center">
-        <Button
-          onClick={onDownload}
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 hover:bg-secondary hover:text-primary"
-        >
-          <Download className="h-4 w-4" />
-        </Button>
-        <Button
-          onClick={onPrint}
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 hover:bg-secondary hover:text-primary"
-        >
-          <Printer className="h-4 w-4" />
-        </Button>
-        <Button
-          onClick={onRotateLeft}
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 hover:bg-secondary hover:text-primary"
-        >
-          <RotateCcw className="h-4 w-4" />
-        </Button>
-        <Button
-          onClick={onRotateRight}
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 hover:bg-secondary hover:text-primary"
-        >
-          <RotateCw className="h-4 w-4" />
-        </Button>
-        <Button
-          onClick={onShowFileInfo}
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 hover:bg-secondary hover:text-primary"
-        >
-          <FileText className="h-4 w-4" />
-        </Button>
+        {innerWidth > collapseButtonsBreakpoint ? (
+          <PdfToolbarTools
+            onDownload={onDownload}
+            onPrint={onPrint}
+            onRotateLeft={onRotateLeft}
+            onRotateRight={onRotateRight}
+            onShowFileInfo={onShowFileInfo}
+          />
+        ) : (
+          <div className="relative" ref={toolsMenuRef}>
+            <Button
+              onClick={() => { setShowCollapsedTools(!showCollapsedTools); }}
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 hover:bg-secondary hover:text-primary"
+            >
+              <Ellipsis className="h-4 w-4" />
+            </Button>
+            {showCollapsedTools && (
+              <div className="absolute top-full right-0 mt-1 p-2 bg-background border rounded-md shadow-md z-10">
+                <PdfToolbarTools
+                  onDownload={onDownload}
+                  onPrint={onPrint}
+                  onRotateLeft={onRotateLeft}
+                  onRotateRight={onRotateRight}
+                  onShowFileInfo={onShowFileInfo}
+                />
+              </div>
+            )}
+          </div>
+        )}
         <Button
           onClick={onZoomOut}
           variant="ghost"
