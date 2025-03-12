@@ -8,8 +8,8 @@ import { X } from "lucide-react";
 import { t } from "i18next";
 import { useIsMobile } from "@/hooks/useMobile";
 import { useSidebar } from "@/components/ui/sidebar.tsx";
-import { useWindow } from "@/hooks/useWindow.ts";
 import usePreviousValue from "@/hooks/usePreviousValue.ts";
+import { useWindowSize } from "usehooks-ts";
 
 const COLLAPSE_SIDEBAR_BREAKPOINT = 1340;
 
@@ -20,8 +20,11 @@ export default function Chatbot() {
 
   const location = useLocation();
   const isMobile = useIsMobile();
-  const { innerWidth } = useWindow();
-  const previousInnerWidth = usePreviousValue<number>(innerWidth);
+  const { width } = useWindowSize({
+    initializeWithValue: true,
+    debounceDelay: 50,
+  });
+  const previouswidth = usePreviousValue<number>(width);
   const { open, setOpen } = useSidebar();
 
   const {
@@ -46,25 +49,25 @@ export default function Chatbot() {
     if (!pdfKnowledgeId) return;
     if (
       open &&
-      innerWidth < COLLAPSE_SIDEBAR_BREAKPOINT &&
-      previousInnerWidth >= COLLAPSE_SIDEBAR_BREAKPOINT
+      width < COLLAPSE_SIDEBAR_BREAKPOINT &&
+      previouswidth >= COLLAPSE_SIDEBAR_BREAKPOINT
     ) {
       setOpen(false);
       setAutoCollapsedSidebar(true);
     } else if (
       !open &&
       autoCollapsedSidebar &&
-      innerWidth >= COLLAPSE_SIDEBAR_BREAKPOINT &&
-      previousInnerWidth < COLLAPSE_SIDEBAR_BREAKPOINT
+      width >= COLLAPSE_SIDEBAR_BREAKPOINT &&
+      previouswidth < COLLAPSE_SIDEBAR_BREAKPOINT
     ) {
       setOpen(true);
       setAutoCollapsedSidebar(false);
     }
-  }, [innerWidth]);
+  }, [width]);
   // collapse sidebar if screen is small and PDF is opened
   useEffect(() => {
     if (!pdfKnowledgeId) return;
-    if (open && innerWidth < COLLAPSE_SIDEBAR_BREAKPOINT) {
+    if (open && width < COLLAPSE_SIDEBAR_BREAKPOINT) {
       setOpen(false);
       setAutoCollapsedSidebar(true);
     }
@@ -77,7 +80,7 @@ export default function Chatbot() {
   return (
     <div className="flex h-full mt-0 justify-center">
       <div
-        className={`flex-shrink transition-all duration-300 ${pdfKnowledgeId != null ? "mr-4" : "w-full md:w-5/6"} h-full overflow-auto`}
+        className={`flex-shrink transition-all duration-300 ${pdfKnowledgeId != null ? "mr-4" : "w-full lg:w-5/6"} h-full overflow-auto`}
       >
         <Chat
           messages={chatMessages}

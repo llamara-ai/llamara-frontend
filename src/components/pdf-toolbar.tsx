@@ -13,9 +13,9 @@ import {
   ChevronDown,
   Ellipsis,
 } from "lucide-react";
-import { useWindow } from "@/hooks/useWindow.ts";
 import PdfToolbarTools from "@/components/pdf-toolbar-tools.tsx";
 import { useHandleClickOutside } from "@/hooks/useHandleClickOutside.ts";
+import { useWindowSize } from "usehooks-ts";
 
 interface PdfToolbarProps {
   currentPage: number;
@@ -35,7 +35,7 @@ interface PdfToolbarProps {
   currentSearchIndex: number;
   onNextSearchResult: () => void;
   onPreviousSearchResult: () => void;
-  collapseButtonsBreakpoint: number;
+  collapseButtonsBreakpoint?: number;
 }
 
 const PdfToolbar: React.FC<PdfToolbarProps> = ({
@@ -56,11 +56,14 @@ const PdfToolbar: React.FC<PdfToolbarProps> = ({
   currentSearchIndex,
   onNextSearchResult,
   onPreviousSearchResult,
-  collapseButtonsBreakpoint,
+  collapseButtonsBreakpoint = 0,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showCollapsedTools, setShowCollapsedTools] = useState(false);
-  const { innerWidth } = useWindow();
+  const { width } = useWindowSize({
+    initializeWithValue: true,
+    debounceDelay: 50,
+  });
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -150,7 +153,7 @@ const PdfToolbar: React.FC<PdfToolbarProps> = ({
         )}
       </div>
 
-      {innerWidth > collapseButtonsBreakpoint ? (
+      {collapseButtonsBreakpoint > 0 && width > collapseButtonsBreakpoint ? (
         <PdfToolbarTools
           onDownload={onDownload}
           onPrint={onPrint}

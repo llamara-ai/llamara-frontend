@@ -20,7 +20,7 @@ import { t } from "i18next";
 interface PdfViewerProps {
   fileUuid: string;
   label: string;
-  collapseToolbarButtonsBreakpoint: number;
+  collapseToolbarButtonsBreakpoint?: number;
 }
 
 interface FileInfo {

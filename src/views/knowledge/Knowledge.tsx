@@ -113,11 +113,7 @@ export default function Knowledge() {
               className="overflow-auto h-full pt-12"
               style={{ height: "100vh" }}
             >
-              <PdfViewer
-                fileUuid={showPdfWithUuid}
-                label={pdfLoading}
-                collapseToolbarButtonsBreakpoint={0}
-              />
+              <PdfViewer fileUuid={showPdfWithUuid} label={pdfLoading} />
             </div>
           </div>
         </>
