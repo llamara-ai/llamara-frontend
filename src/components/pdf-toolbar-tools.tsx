@@ -20,7 +20,7 @@ const PdfToolbarTools: React.FC<PdfToolbarToolsProps> = ({
   onShowFileInfo,
 }) => {
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-1 items-center">
       <Button
         onClick={onDownload}
         variant="ghost"

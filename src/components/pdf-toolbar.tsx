@@ -87,11 +87,11 @@ const PdfToolbar: React.FC<PdfToolbarProps> = ({
           disabled={currentPage === 1}
           variant="ghost"
           size="icon"
-          className="h-8 w-8 hover:bg-secondary hover:text-primary"
+          className="h-8 w-6 hover:bg-secondary hover:text-primary"
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
-        <span className="text-sm">
+        <span className="text-sm text-center px-1.5">
           {currentPage} / {totalPages}
         </span>
         <Button
@@ -99,7 +99,7 @@ const PdfToolbar: React.FC<PdfToolbarProps> = ({
           disabled={currentPage === totalPages}
           variant="ghost"
           size="icon"
-          className="h-8 w-8 hover:bg-secondary hover:text-primary"
+          className="h-8 w-6 hover:bg-secondary hover:text-primary"
         >
           <ChevronRight className="h-4 w-4" />
         </Button>
@@ -131,18 +131,18 @@ const PdfToolbar: React.FC<PdfToolbarProps> = ({
               onClick={onPreviousSearchResult}
               variant="ghost"
               size="icon"
-              className="h-8 w-8 hover:bg-secondary hover:text-primary"
+              className="h-8 w-6 hover:bg-secondary hover:text-primary ml-1"
             >
               <ChevronUp className="h-4 w-4" />
             </Button>
-            <span className="text-sm text-primary">
+            <span className="text-sm text-primary px-1.5">
               {currentSearchIndex + 1} of {searchResults.length}
             </span>
             <Button
               onClick={onNextSearchResult}
               variant="ghost"
               size="icon"
-              className="h-8 w-8 hover:bg-secondary hover:text-primary"
+              className="h-8 w-6 hover:bg-secondary hover:text-primary"
             >
               <ChevronDown className="h-4 w-4" />
             </Button>
@@ -150,7 +150,6 @@ const PdfToolbar: React.FC<PdfToolbarProps> = ({
         )}
       </div>
 
-      <div className="flex items-center">
         {innerWidth > collapseButtonsBreakpoint ? (
           <PdfToolbarTools
             onDownload={onDownload}
@@ -182,22 +181,24 @@ const PdfToolbar: React.FC<PdfToolbarProps> = ({
             )}
           </div>
         )}
+
+      <div className="flex items-center">
         <Button
           onClick={onZoomOut}
           variant="ghost"
           size="icon"
-          className="h-8 w-8 hover:bg-secondary hover:text-primary"
+          className="h-8 w-6 hover:bg-secondary hover:text-primary"
         >
           <ZoomOut className="h-4 w-4" />
         </Button>
-        <span className="text-sm min-w-[48px] text-center">
+        <span className="text-sm w-[48px] text-center">
           {Math.round(currentZoom * 100)}%
         </span>
         <Button
           onClick={onZoomIn}
           variant="ghost"
           size="icon"
-          className="h-8 w-8 hover:bg-secondary hover:text-primary"
+          className="h-8 w-6 hover:bg-secondary hover:text-primary"
         >
           <ZoomIn className="h-4 w-4" />
         </Button>
