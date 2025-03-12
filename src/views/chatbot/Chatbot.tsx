@@ -119,7 +119,7 @@ export default function Chatbot() {
             <PdfViewer
               fileUuid={pdfKnowledgeId}
               label={pdfFileName}
-              collapseToolbarButtonsBreakpoint={1240}
+              collapseToolbarButtonsBreakpoint={open ? 1490 : 1240}
             />
           </div>
         </div>

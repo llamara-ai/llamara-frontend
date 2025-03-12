@@ -150,37 +150,39 @@ const PdfToolbar: React.FC<PdfToolbarProps> = ({
         )}
       </div>
 
-        {innerWidth > collapseButtonsBreakpoint ? (
-          <PdfToolbarTools
-            onDownload={onDownload}
-            onPrint={onPrint}
-            onRotateLeft={onRotateLeft}
-            onRotateRight={onRotateRight}
-            onShowFileInfo={onShowFileInfo}
-          />
-        ) : (
-          <div className="relative" ref={toolsMenuRef}>
-            <Button
-              onClick={() => { setShowCollapsedTools(!showCollapsedTools); }}
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 hover:bg-secondary hover:text-primary"
-            >
-              <Ellipsis className="h-4 w-4" />
-            </Button>
-            {showCollapsedTools && (
-              <div className="absolute top-full right-0 mt-1 p-2 bg-background border rounded-md shadow-md z-10">
-                <PdfToolbarTools
-                  onDownload={onDownload}
-                  onPrint={onPrint}
-                  onRotateLeft={onRotateLeft}
-                  onRotateRight={onRotateRight}
-                  onShowFileInfo={onShowFileInfo}
-                />
-              </div>
-            )}
-          </div>
-        )}
+      {innerWidth > collapseButtonsBreakpoint ? (
+        <PdfToolbarTools
+          onDownload={onDownload}
+          onPrint={onPrint}
+          onRotateLeft={onRotateLeft}
+          onRotateRight={onRotateRight}
+          onShowFileInfo={onShowFileInfo}
+        />
+      ) : (
+        <div className="relative" ref={toolsMenuRef}>
+          <Button
+            onClick={() => {
+              setShowCollapsedTools(!showCollapsedTools);
+            }}
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 hover:bg-secondary hover:text-primary"
+          >
+            <Ellipsis className="h-4 w-4" />
+          </Button>
+          {showCollapsedTools && (
+            <div className="absolute top-full right-0 mt-1 p-2 bg-background border rounded-md shadow-md z-10">
+              <PdfToolbarTools
+                onDownload={onDownload}
+                onPrint={onPrint}
+                onRotateLeft={onRotateLeft}
+                onRotateRight={onRotateRight}
+                onShowFileInfo={onShowFileInfo}
+              />
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="flex items-center">
         <Button

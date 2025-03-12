@@ -13,7 +13,9 @@ export function useHandleClickOutside<T extends HTMLElement>(
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () => { document.removeEventListener("mousedown", handleClickOutside); };
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, [onOutsideClick]);
 
   return ref;
