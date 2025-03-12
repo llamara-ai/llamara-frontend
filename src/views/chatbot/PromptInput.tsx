@@ -36,7 +36,7 @@ const PromptInput = React.forwardRef<HTMLTextAreaElement, PromptInputProps>(
       setPromptInput(e.target.value);
     };
     return (
-      <div className="w-full md:w-5/6 px-4 sticky bottom-3 left-0 right-0 bg-transparent">
+      <div className="w-full px-4 py-1 sticky bottom-3 left-0 right-0 bg-transparent">
         <form
           // eslint-disable-next-line @typescript-eslint/no-misused-promises
           onSubmit={onSubmit}

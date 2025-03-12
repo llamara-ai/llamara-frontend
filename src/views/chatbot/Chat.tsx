@@ -65,12 +65,8 @@ export default function Chat({
   };
 
   return (
-    <div className="flex flex-col h-full items-center justify-center">
-      <div
-        className="overflow-y-auto flex flex-grow items-center justify-center w-full"
-        style={{ maxHeight: "calc(100vh - 190px)" }}
-        ref={messagesRef}
-      >
+    <div className="flex flex-col h-full items-center justify-between">
+      <div className="overflow-y-auto w-full" ref={messagesRef}>
         <ChatMessageList>
           {/* Initial Message */}
           {messages.length === 0 && (
@@ -100,7 +96,6 @@ export default function Chat({
                 messages.length - 1 === index
               }
               openPdf={openPdf}
-              className={messages.length - 1 === index ? "mb-4" : ""}
             />
           ))}
 
@@ -120,14 +115,15 @@ export default function Chat({
         <div ref={messagesRef}></div>
       </div>
 
-      {/* Form and Footer fixed at the bottom */}
-      <PromptInput
-        ref={inputRef}
-        handleSubmit={handleSubmit}
-        isGenerating={isGenerating}
-        isLoading={isLoading}
-        lockSendPrompt={lockSendPrompt}
-      />
+      <div className="w-full flex flex-col items-center justify-center">
+        <PromptInput
+          ref={inputRef}
+          handleSubmit={handleSubmit}
+          isGenerating={isGenerating}
+          isLoading={isLoading}
+          lockSendPrompt={lockSendPrompt}
+        />
+      </div>
     </div>
   );
 }
