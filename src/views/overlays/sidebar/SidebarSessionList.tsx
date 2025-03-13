@@ -67,7 +67,7 @@ interface SessionGroupProps {
 }
 
 const SessionGroup = ({ item, setOnClick }: SessionGroupProps) => {
-  const { currentActiveSessionId } = useGetSessions();
+  const { activeSessionId } = useGetSessions();
 
   return (
     <Collapsible
@@ -93,7 +93,7 @@ const SessionGroup = ({ item, setOnClick }: SessionGroupProps) => {
                   setOnClick(uid, label);
                 }}
                 key={subItem.uid + subItem.title}
-                highlightSession={currentActiveSessionId === subItem.uid}
+                highlightSession={activeSessionId === subItem.uid}
               />
             ))}
           </SidebarMenuSub>

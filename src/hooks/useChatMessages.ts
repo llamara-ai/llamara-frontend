@@ -1,19 +1,18 @@
 import { useEffect, useRef, useState } from "react";
-import usePromptApi from "./api/useSendPromptApi";
 import { useTranslation } from "react-i18next";
 import useCreateSessionApi from "./api/useCreateSessionApi";
-import { ChatMessageRecord } from "@/api";
+import { ChatMessageRecord, ChatResponseRecord, prompt } from "@/api";
 import useGetHistoryApi from "./api/useGetHistoryApi";
 import { useLoading } from "@/services/LoadingService";
 import { readSelectedModel } from "./useLocalStorage";
-import { useKeepAliveSession } from "./useKeepAliveSession";
 import { useGetSessions } from "@/services/GetSessionsService";
+import { toast } from "./use-toast";
+import useStateRef from "react-usestateref";
 
 interface UseChatMessagesResponse {
   chatMessages: ChatMessageRecord[];
   handlePromptAndMessages: (inputPrompt: string) => Promise<void>;
-  updateSessionId: (sessionId: string | null) => Promise<void>;
-  loading: boolean;
+  loadingHistory: boolean;
   loadingResponse: boolean;
   error: string | null;
 }
@@ -21,62 +20,52 @@ interface UseChatMessagesResponse {
 export default function useChatMessages(): UseChatMessagesResponse {
   const { setLoading: setLoadingSpinner } = useLoading();
   const { t } = useTranslation();
-  const { appendSessionLocal, setCurrentActiveSessionId } = useGetSessions();
+  const {
+    appendSessionLocal,
+    setActiveSessionId,
+    activeSessionIdRef,
+    activeSessionIsNew,
+  } = useGetSessions();
+  const previousSessionId = useRef<string | null>(null);
 
-  // Keep alive session id, need to be useState but should be keep in sync with sessionIDRef.current
-  const [keepAliveSessionId, setKeepAliveSessionId] = useState<string | null>(
-    null,
-  );
-  useKeepAliveSession(keepAliveSessionId);
-
-  const sessionIDRef = useRef<string | null>(null); // Need to use Ref because useState is async
-  const chatModelUIDRef = useRef<string | null>(
-    readSelectedModel()?.uid ?? null,
-  );
-  const [currentChatMessages, setCurrentChatMessages] = useState<
-    ChatMessageRecord[]
-  >([]);
-  const promptInput = useRef<string>("");
+  const [currentChatMessages, setCurrentChatMessages, currentChatMessagesRef] =
+    useStateRef<ChatMessageRecord[]>([]);
   const [loadingResponse, setLoadingResponse] = useState<boolean>(false);
   const [historyMessages, setHistoryMessages] = useState<ChatMessageRecord[]>(
     [],
   );
 
-  const {
-    response,
-    loading,
-    error: errorPrompt,
-  } = usePromptApi({
-    chatModelUID: chatModelUIDRef.current,
-    sessionID: sessionIDRef.current,
-    inputPrompt: promptInput.current,
-  });
+  const [error, setError] = useState<string | null>(null);
 
   const { handleCreateSession, error: errorSession } = useCreateSessionApi();
 
   const { fetchHistory, loading: loadingHistory } = useGetHistoryApi();
 
-  // Update session Id (keep keepAliveSessionId and sessionIDRef.current in sync)
-  const setSessionId = (sessionId: string | null) => {
-    sessionIDRef.current = sessionId;
-    setKeepAliveSessionId(sessionId);
-  };
+  useEffect(() => {
+    const resetChatMessages = async () => {
+      // Reset chat messages when sessionID changes
+      if (
+        activeSessionIdRef.current !== previousSessionId.current &&
+        !activeSessionIsNew
+      ) {
+        setLoadingResponse(false);
+        setError(null);
+        setCurrentChatMessages([]);
+        setHistoryMessages([]);
 
-  const updateSessionId = async (sessionId: string | null) => {
-    // Reset chat messages and prompt input when sessionID changes
-    setCurrentChatMessages([]);
+        if (activeSessionIdRef.current !== null) {
+          const response = await fetchHistory({
+            sessionId: activeSessionIdRef.current,
+          });
+          setHistoryMessages(response);
+        }
 
-    if (sessionIDRef.current === null) {
-      const historySessions = await fetchHistory({ sessionId });
-      setHistoryMessages(historySessions);
-    }
+        previousSessionId.current = activeSessionIdRef.current;
+      }
+    };
 
-    setSessionId(sessionId);
-    setCurrentActiveSessionId(sessionId);
-
-    promptInput.current = ""; // Reset prompt input, need to avoid resend prompt
-    setLoadingResponse(false);
-  };
+    void resetChatMessages();
+  }, [activeSessionIdRef.current]);
 
   useEffect(() => {
     setLoadingSpinner(loadingHistory);
@@ -85,61 +74,121 @@ export default function useChatMessages(): UseChatMessagesResponse {
   // Function to handle new user prompt
   const handlePromptAndMessages = async (inputPrompt: string) => {
     setLoadingResponse(true);
+
+    const chatModelUID = readSelectedModel()?.uid;
+    if (!chatModelUID) {
+      errorChatMessage(
+        "No chat model selected",
+        "Select a chat model at the sidebar to start chatting",
+      );
+      return;
+    }
+
     const messageRecord: ChatMessageRecord = {
       text: inputPrompt,
       type: "USER",
       timestamp: new Date().toISOString(),
     };
-    setCurrentChatMessages([...currentChatMessages, messageRecord]);
-    if (sessionIDRef.current === null) {
+
+    setCurrentChatMessages([...currentChatMessagesRef.current, messageRecord]);
+
+    if (activeSessionIdRef.current === null) {
       const newSession = await handleCreateSession();
 
       // Add session to local session list
       appendSessionLocal(newSession);
 
       if (newSession?.id) {
-        setSessionId(newSession.id);
-        setCurrentActiveSessionId(newSession.id);
+        setActiveSessionId(newSession.id, true);
       }
     }
-    chatModelUIDRef.current = readSelectedModel()?.uid ?? null;
-    promptInput.current = inputPrompt;
+
+    const sessionId = activeSessionIdRef.current;
+    if (!sessionId) {
+      errorChatMessage(
+        "Provided session id is invalid",
+        "Something went wrong. Please try again",
+      );
+      return;
+    }
+
+    const options = {
+      body: inputPrompt,
+      query: {
+        sessionId: sessionId,
+        uid: chatModelUID,
+      },
+      headers: {
+        "Content-Type": "text/plain",
+      },
+    };
+
+    let responseData: ChatResponseRecord | null = null;
+
+    try {
+      const response = await prompt(options);
+
+      if (!response.response.ok || response.data === undefined) {
+        throw new Error(
+          "Request failed with status: " + response.response.status.toString(),
+        );
+      }
+
+      responseData = response.data;
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        errorChatMessage("Failed to get response to prompt", error.message);
+        return;
+      }
+    }
+
+    if (responseData === null) {
+      errorChatMessage(
+        "Failed to get response to prompt",
+        "No response from server",
+      );
+      return;
+    }
+
+    if (activeSessionIdRef.current === sessionId) {
+      const messageResponse: ChatMessageRecord = {
+        text: responseData.response,
+        type: "AI",
+        modelUID: chatModelUID,
+        sources: responseData.sources,
+        timestamp: new Date().toISOString(),
+      };
+      setCurrentChatMessages([
+        ...currentChatMessagesRef.current,
+        messageResponse,
+      ]);
+    }
+    setLoadingResponse(false);
   };
 
-  // Update chat messages when response is received
-  useEffect(() => {
-    if (!loading && errorPrompt === null && response?.response !== undefined) {
-      const messageRecord: ChatMessageRecord = {
-        text: response.response,
-        type: "AI",
-        modelUID: chatModelUIDRef.current ?? undefined,
-        sources: response.sources,
-        timestamp: new Date().toISOString(),
-      };
-      setCurrentChatMessages([...currentChatMessages, messageRecord]);
-      setLoadingResponse(false);
-    } else if (!loading && errorPrompt !== null) {
-      const messageRecord: ChatMessageRecord = {
-        text: t("chatbot.errorGeneratePrompt"),
-        type: "SYSTEM",
-        timestamp: new Date().toISOString(),
-      };
-      setCurrentChatMessages([...currentChatMessages, messageRecord]);
-      setLoadingResponse(false);
-    }
-    // In case you type two times the same prompt. If not reset, it will the state doesn't change so no new prompt is sent
-    promptInput.current = "";
-  }, [errorPrompt, response]);
+  const errorChatMessage = (errorTitle: string, errorMessage: string) => {
+    toast({
+      variant: "destructive",
+      title: errorTitle,
+      description: errorMessage,
+    });
+    console.error(errorTitle + ": " + errorMessage);
+    setError(errorMessage);
+
+    const messageRecord: ChatMessageRecord = {
+      text: t("chatbot.errorGeneratePrompt"),
+      type: "SYSTEM",
+      timestamp: new Date().toISOString(),
+    };
+    setCurrentChatMessages([...currentChatMessagesRef.current, messageRecord]);
+    setLoadingResponse(false);
+  };
 
   return {
     chatMessages: historyMessages.concat(currentChatMessages),
+    loadingHistory,
     handlePromptAndMessages,
-    updateSessionId,
-    loading,
     loadingResponse,
-    error:
-      errorPrompt || errorSession
-        ? (errorPrompt ?? "") + (errorSession ?? "")
-        : null,
+    error: error || errorSession ? (error ?? "") + (errorSession ?? "") : null,
   };
 }

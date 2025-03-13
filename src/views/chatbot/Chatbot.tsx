@@ -10,6 +10,8 @@ import { useIsMobile } from "@/hooks/useMobile";
 import { useSidebar } from "@/components/ui/sidebar.tsx";
 import usePreviousValue from "@/hooks/usePreviousValue.ts";
 import { useWindowSize } from "usehooks-ts";
+import { useKeepAliveSession } from "@/hooks/useKeepAliveSession";
+import { useGetSessions } from "@/services/GetSessionsService";
 
 const COLLAPSE_SIDEBAR_BREAKPOINT = 1340;
 
@@ -17,6 +19,8 @@ export default function Chatbot() {
   const [pdfKnowledgeId, setPdfKnowledgeId] = useState<string | null>(null);
   const [pdfFileName, setPdfFileName] = useState<string | null>(null);
   const [autoCollapsedSidebar, setAutoCollapsedSidebar] = useState(false);
+  const { setActiveSessionId } = useGetSessions();
+  useKeepAliveSession();
 
   const location = useLocation();
   const isMobile = useIsMobile();
@@ -29,10 +33,9 @@ export default function Chatbot() {
 
   const {
     chatMessages,
-    loading,
+    loadingHistory,
     loadingResponse,
     handlePromptAndMessages,
-    updateSessionId,
   } = useChatMessages();
 
   useEffect(() => {
@@ -40,8 +43,7 @@ export default function Chatbot() {
     const sessionId = queryParams.get("session");
     setPdfKnowledgeId(null);
     setPdfFileName(null);
-    void updateSessionId(null); // Reset session id
-    void updateSessionId(sessionId);
+    setActiveSessionId(sessionId);
   }, [location]);
 
   // collapse sidebar if PDF is opened and screen is resized to a smaller size
@@ -85,7 +87,7 @@ export default function Chatbot() {
         <Chat
           messages={chatMessages}
           handleSubmit={onSubmit}
-          isLoading={loading}
+          isLoading={loadingHistory}
           isGenerating={loadingResponse}
           lockSendPrompt={false}
           openPdf={(uuid: string, label: string) => {

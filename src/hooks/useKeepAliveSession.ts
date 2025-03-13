@@ -1,17 +1,20 @@
 import { useEffect, useRef } from "react";
 import { keepAliveAnonymousSession as keepAliveAnonymousSessionApi } from "@/api";
 import { useAppContext } from "@/services/AppContextService";
+import { useGetSessions } from "@/services/GetSessionsService";
 
 // This hook will keep the session alive by sending a request to the server
 // but only when the tab is visible
-export function useKeepAliveSession(sessionId: string | null) {
+// Is only active if the anonymous user is enabled
+export function useKeepAliveSession() {
   const { securityConfig } = useAppContext();
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const { activeSessionIdRef } = useGetSessions();
 
   const keepAliveAnonymousSession = () => {
     const options = {
       path: {
-        sessionId: sessionId ?? "",
+        sessionId: activeSessionIdRef.current ?? "",
       },
     };
     void keepAliveAnonymousSessionApi(options);
@@ -23,7 +26,7 @@ export function useKeepAliveSession(sessionId: string | null) {
       if (
         securityConfig.anonymousUserEnabled &&
         sessionTimeout &&
-        sessionId &&
+        activeSessionIdRef.current &&
         !document.hidden
       ) {
         // Forming in milliseconds and reducing 20% of the session timeout
@@ -54,5 +57,5 @@ export function useKeepAliveSession(sessionId: string | null) {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       stopTimer();
     };
-  }, [sessionId]);
+  }, [activeSessionIdRef.current]);
 }

@@ -1,4 +1,11 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { getSessions, Session } from "@/api";
 import { useCache } from "@/services/CacheService";
 import { useToast } from "@/hooks/use-toast";
@@ -8,8 +15,10 @@ import { useNavigate } from "react-router-dom";
 
 export interface UseGetSessionsApiResponse {
   sessions: Session[];
-  currentActiveSessionId: string | null;
-  setCurrentActiveSessionId: (sessionId: string | null) => void;
+  activeSessionId: string | null;
+  activeSessionIdRef: React.MutableRefObject<string | null>;
+  activeSessionIsNew: boolean;
+  setActiveSessionId: (sessionId: string | null, isNew?: boolean) => void;
   appendSessionLocal: (session: Session | null) => void;
   updateSessionLabelLocal: (sessionId: string, newLabel: string) => void;
   deleteSessionLocal: (sessionId: string) => void;
@@ -31,9 +40,10 @@ export default function GetSessionsProvider({
   const [animateInSession, setAnimateInSession] = useState<Session | null>(
     null,
   ); // This session was added and need fade in animation, null means no animation
-  const [currentActiveSessionId, setCurrentActiveSessionId] = useState<
+  const [activeSessionId, setActiveSessionId, activeSessionIdRef] = useRefState<
     string | null
   >(null);
+  const activeSessionIsNewRef = useRef<boolean>(false);
 
   const navigate = useNavigate();
   const activePage = useCurrentPage();
@@ -90,7 +100,7 @@ export default function GetSessionsProvider({
 
   // Delete a session locally, so we don't have to fetch the sessions again
   const deleteSessionLocal = (sessionId: string) => {
-    if (activePage === "chatbot" && currentActiveSessionId === sessionId) {
+    if (activePage === "chatbot" && activeSessionId === sessionId) {
       void navigate("/");
     }
 
@@ -99,11 +109,18 @@ export default function GetSessionsProvider({
     );
   };
 
+  const setActiveSessionIdFunc = (sessionId: string | null, isNew = false) => {
+    activeSessionIsNewRef.current = isNew;
+    setActiveSessionId(sessionId);
+  };
+
   const value = useMemo(
     () => ({
       sessions,
-      currentActiveSessionId,
-      setCurrentActiveSessionId,
+      activeSessionId,
+      activeSessionIdRef,
+      activeSessionIsNew: activeSessionIsNewRef.current,
+      setActiveSessionId: setActiveSessionIdFunc,
       appendSessionLocal,
       updateSessionLabelLocal,
       deleteSessionLocal,
@@ -113,8 +130,9 @@ export default function GetSessionsProvider({
     }),
     [
       sessions,
-      currentActiveSessionId,
-      setCurrentActiveSessionId,
+      activeSessionId,
+      activeSessionIdRef,
+      setActiveSessionId,
       appendSessionLocal,
       updateSessionLabelLocal,
       deleteSessionLocal,

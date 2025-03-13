@@ -3,8 +3,9 @@ import { renderHook } from "@testing-library/react";
 import { useKeepAliveSession } from "@/hooks/useKeepAliveSession";
 import * as api from "@/api";
 import * as AppContextService from "@/services/AppContextService";
+import * as GetSessionsService from "@/services/GetSessionsService";
 
-// Mock the API and context
+// Mock the API and contexts
 vi.mock("@/api", () => ({
   keepAliveAnonymousSession: vi.fn(),
 }));
@@ -13,20 +14,30 @@ vi.mock("@/services/AppContextService", () => ({
   useAppContext: vi.fn(),
 }));
 
+vi.mock("@/services/GetSessionsService", () => ({
+  useGetSessions: vi.fn(),
+}));
+
 describe("useKeepAliveSession", () => {
   // Setup mocks
   const mockKeepAliveApi = vi.mocked(api.keepAliveAnonymousSession);
   const mockUseAppContext = vi.mocked(AppContextService.useAppContext);
+  const mockUseGetSessions = vi.mocked(GetSessionsService.useGetSessions);
+
+  // Create a mutable ref object that we can update in tests
+  let sessionIdRef: { current: string | null } = { current: "test-session-id" };
 
   // Mock timer
   const originalSetInterval = global.setInterval;
   const originalClearInterval = global.clearInterval;
+  let intervalId: number;
 
   beforeEach(() => {
     // Reset mocks before each test
     vi.resetAllMocks();
+    sessionIdRef = { current: "test-session-id" };
 
-    // Mock the context
+    // Mock the contexts
     mockUseAppContext.mockReturnValue({
       securityConfig: {
         anonymousUserEnabled: true,
@@ -34,8 +45,25 @@ describe("useKeepAliveSession", () => {
       },
     } as any);
 
+    mockUseGetSessions.mockReturnValue({
+      activeSessionIdRef: sessionIdRef,
+      // Add other properties that useGetSessions returns but aren't used in the hook
+      sessions: [],
+      activeSessionId: "test-session-id",
+      setActiveSessionId: vi.fn(),
+      appendSessionLocal: vi.fn(),
+      updateSessionLabelLocal: vi.fn(),
+      deleteSessionLocal: vi.fn(),
+      animateInSession: null,
+      error: null,
+      loading: false,
+    } as any);
+
     // Mock setInterval and clearInterval
-    global.setInterval = vi.fn(() => 123) as unknown as typeof setInterval;
+    intervalId = 123;
+    global.setInterval = vi.fn(
+      () => intervalId,
+    ) as unknown as typeof setInterval;
     global.clearInterval = vi.fn();
 
     // Mock document.hidden
@@ -55,9 +83,9 @@ describe("useKeepAliveSession", () => {
     global.clearInterval = originalClearInterval;
   });
 
-  it("should start the timer when session ID is provided and tab is visible", () => {
+  it("should start the timer when session ID is available and tab is visible", () => {
     // Arrange & Act
-    renderHook(() => useKeepAliveSession("test-session-id"));
+    renderHook(() => useKeepAliveSession());
 
     // Assert
     expect(global.setInterval).toHaveBeenCalledTimes(1);
@@ -81,15 +109,18 @@ describe("useKeepAliveSession", () => {
     } as any);
 
     // Act
-    renderHook(() => useKeepAliveSession("test-session-id"));
+    renderHook(() => useKeepAliveSession());
 
     // Assert
     expect(global.setInterval).not.toHaveBeenCalled();
   });
 
   it("should not start the timer when session ID is null", () => {
-    // Arrange & Act
-    renderHook(() => useKeepAliveSession(null));
+    // Arrange
+    sessionIdRef.current = null;
+
+    // Act
+    renderHook(() => useKeepAliveSession());
 
     // Assert
     expect(global.setInterval).not.toHaveBeenCalled();
@@ -97,15 +128,16 @@ describe("useKeepAliveSession", () => {
 
   it("should clean up on unmount", () => {
     // Arrange
-    const { unmount } = renderHook(() =>
-      useKeepAliveSession("test-session-id"),
-    );
+    const { unmount } = renderHook(() => useKeepAliveSession());
+
+    // Make sure setInterval was called
+    expect(global.setInterval).toHaveBeenCalled();
 
     // Act
     unmount();
 
     // Assert
-    expect(global.clearInterval).toHaveBeenCalledWith(123);
+    expect(global.clearInterval).toHaveBeenCalledWith(intervalId);
     expect(document.removeEventListener).toHaveBeenCalledWith(
       "visibilitychange",
       expect.any(Function),
@@ -114,7 +146,10 @@ describe("useKeepAliveSession", () => {
 
   it("should handle visibility change events", () => {
     // Arrange
-    renderHook(() => useKeepAliveSession("test-session-id"));
+    renderHook(() => useKeepAliveSession());
+
+    // Make sure setInterval was called
+    expect(global.setInterval).toHaveBeenCalled();
 
     // Get the visibility change handler
     const visibilityHandler = (document.addEventListener as any).mock
@@ -128,7 +163,10 @@ describe("useKeepAliveSession", () => {
     visibilityHandler();
 
     // Assert - timer should be cleared
-    expect(global.clearInterval).toHaveBeenCalledWith(123);
+    expect(global.clearInterval).toHaveBeenCalledWith(intervalId);
+
+    // Reset clearInterval mock
+    vi.mocked(global.clearInterval).mockClear();
 
     // Act - simulate tab becoming visible again
     Object.defineProperty(document, "hidden", {
@@ -143,7 +181,10 @@ describe("useKeepAliveSession", () => {
 
   it("should call the API with correct parameters", () => {
     // Arrange
-    renderHook(() => useKeepAliveSession("test-session-id"));
+    renderHook(() => useKeepAliveSession());
+
+    // Make sure setInterval was called
+    expect(global.setInterval).toHaveBeenCalled();
 
     // Get the interval callback
     const intervalCallback = (global.setInterval as any).mock.calls[0][0];

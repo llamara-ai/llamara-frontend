@@ -1,202 +1,427 @@
+import React from "react";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import useChatMessages from "@/hooks/useChatMessages";
-import usePromptApi from "@/hooks/api/useSendPromptApi";
+import useCreateSessionApi from "@/hooks/api/useCreateSessionApi";
 import useGetHistoryApi from "@/hooks/api/useGetHistoryApi";
-import type { ReactNode } from "react";
-import { AppContextProvider } from "@/services/AppContextService";
-import CacheProvider from "@/services/CacheService";
-import { LoadingProvider } from "@/services/LoadingService";
-import i18n from "i18next";
-import { I18nextProvider, initReactI18next } from "react-i18next";
-import { BrowserRouter } from "react-router-dom";
+import { useLoading } from "@/services/LoadingService";
+import { useGetSessions } from "@/services/GetSessionsService";
+import * as toastModule from "@/hooks/use-toast";
+import { readSelectedModel } from "@/hooks/useLocalStorage";
+import * as apiModule from "@/api";
+import { useTranslation } from "react-i18next";
 
-// Mock the configuration
-vi.mock("@/config", () => ({
-  default: {
-    securityConfig: {
-      anonymousUserSessionTimeout: 3600,
-      anonymousUserEnabled: true,
-    },
-    // Add other configuration values that might be needed
+// Mock all dependencies
+vi.mock("@/hooks/api/useCreateSessionApi");
+vi.mock("@/hooks/api/useGetHistoryApi");
+vi.mock("@/services/LoadingService");
+vi.mock("@/services/GetSessionsService");
+vi.mock("@/hooks/useLocalStorage");
+vi.mock("react-i18next");
+
+// Mock react-usestateref
+vi.mock("react-usestateref", () => ({
+  default: function useStateRef(initialValue: any) {
+    const [state, setState] = React.useState(initialValue);
+    const ref = React.useRef(initialValue);
+
+    const setStateWithRef = (newValue: any) => {
+      ref.current = newValue;
+      setState(newValue);
+      return newValue; // Return the value to ensure it's available immediately
+    };
+
+    return [state, setStateWithRef, ref];
   },
 }));
 
-// Mock the useKeepAliveSession hook
-vi.mock("@/hooks/useKeepAliveSession", () => ({
-  useKeepAliveSession: vi.fn(),
-}));
+describe("useChatMessages", () => {
+  // Setup common mocks
+  const mockSetLoading = vi.fn();
+  const mockTranslate = vi.fn((key) => key);
+  const mockAppendSessionLocal = vi.fn();
+  const mockSetActiveSessionId = vi.fn();
+  const mockToast = vi.fn();
+  const mockFetchHistory = vi.fn();
+  const mockHandleCreateSession = vi.fn();
+  const mockPrompt = vi.fn();
 
-// Mock the AppContextService
-vi.mock("@/services/AppContextService", () => {
-  const setCurrentActiveSessionId = vi.fn();
-  const useAppContext = vi.fn(() => ({
-    setCurrentActiveSessionId,
-    currentActiveSessionId: "mock-session-id",
-    // Add other context values that might be needed
-  }));
+  const mockActiveSessionIdRef: { current: string | null } = { current: null };
+  const mockActiveSessionIsNew = false;
 
-  return {
-    AppContextProvider: ({ children }: { children: ReactNode }) => children,
-    useAppContext,
-  };
-});
-
-// Mock the GetSessionsService
-vi.mock("@/services/GetSessionsService", () => {
-  const useGetSessions = vi.fn(() => ({
-    sessions: [],
-    loading: false,
-    error: null,
-    fetchSessions: vi.fn(),
-    appendSessionLocal: vi.fn(),
-    setCurrentActiveSessionId: vi.fn(),
-  }));
-
-  return {
-    useGetSessions,
-  };
-});
-
-vi.mock("@/hooks/api/useCreateSessionApi", () => ({
-  default: vi.fn(() => ({
-    handleCreateSession: vi.fn().mockResolvedValue({ id: "new-session-id" }),
-    error: null,
-  })),
-}));
-
-vi.mock("@/hooks/api/useSendPromptApi", () => ({
-  default: vi.fn(() => ({
-    response: null,
-    loading: false,
-    error: null,
-    sendPrompt: vi
-      .fn()
-      .mockResolvedValue({ response: "AI response", sources: [] }),
-  })),
-}));
-
-vi.mock("@/hooks/api/useGetHistoryApi", () => ({
-  default: vi.fn(() => ({
-    fetchHistory: vi.fn().mockResolvedValue([]),
-    loading: false,
-  })),
-}));
-
-vi.mock("@/hooks/useLocalStorage", () => ({
-  readSelectedModel: vi.fn(() => ({ uid: "mock-model-uid" })),
-}));
-
-i18n.use(initReactI18next).init({
-  resources: {
-    en: {
-      translation: {
-        "chatbot.errorGeneratePrompt": "Error generating prompt",
-      },
-    },
-  },
-  lng: "en",
-  interpolation: {
-    escapeValue: false,
-  },
-});
-
-const wrapper = ({ children }: { children: ReactNode }) => (
-  <I18nextProvider i18n={i18n}>
-    <AppContextProvider>
-      <CacheProvider>
-        <LoadingProvider>
-          <BrowserRouter>{children}</BrowserRouter>
-        </LoadingProvider>
-      </CacheProvider>
-    </AppContextProvider>
-  </I18nextProvider>
-);
-
-// Helper function to wait for all pending promises
-const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0));
-
-describe("useChatMessages Hook", () => {
   beforeEach(() => {
+    // Reset all mocks
+    vi.resetAllMocks();
+
+    // Setup default mock implementations
+    (useLoading as any).mockReturnValue({
+      setLoading: mockSetLoading,
+    });
+    (useTranslation as any).mockReturnValue({
+      t: mockTranslate,
+    });
+    (useGetSessions as any).mockReturnValue({
+      appendSessionLocal: mockAppendSessionLocal,
+      setActiveSessionId: mockSetActiveSessionId,
+      activeSessionIdRef: mockActiveSessionIdRef,
+      activeSessionIsNew: mockActiveSessionIsNew,
+    });
+
+    // Mock toast properly
+    vi.spyOn(toastModule, "toast").mockImplementation(mockToast);
+    (useGetHistoryApi as any).mockReturnValue({
+      fetchHistory: mockFetchHistory,
+      loading: false,
+    });
+    (useCreateSessionApi as any).mockReturnValue({
+      handleCreateSession: mockHandleCreateSession,
+      error: null,
+    });
+    (readSelectedModel as any).mockReturnValue({ uid: "model-123" });
+
+    // Mock prompt properly
+    vi.spyOn(apiModule, "prompt").mockImplementation(mockPrompt);
+    mockPrompt.mockResolvedValue({
+      response: { ok: true },
+      data: {
+        response: "AI response",
+        sources: [],
+      },
+    });
+
+    mockFetchHistory.mockResolvedValue([]);
+    mockHandleCreateSession.mockResolvedValue({ id: "new-session-123" });
+  });
+
+  afterEach(() => {
     vi.clearAllMocks();
   });
 
-  it("should initialize correctly", async () => {
-    const { result } = renderHook(() => useChatMessages(), { wrapper });
+  it("should initialize with empty chat messages", async () => {
+    const { result } = renderHook(() => useChatMessages());
 
+    // Wrap any state updates in act
     await act(async () => {
-      await flushPromises();
+      // Allow any state updates to process
+      await Promise.resolve();
     });
 
     expect(result.current.chatMessages).toEqual([]);
-    expect(result.current.loading).toBe(false);
+    expect(result.current.loadingHistory).toBe(false);
     expect(result.current.loadingResponse).toBe(false);
     expect(result.current.error).toBeNull();
   });
 
-  it("should handle session update", async () => {
-    const mockFetchHistory = vi.fn().mockResolvedValue([
-      {
-        text: "Old message",
-        type: "USER",
-        timestamp: "2024-06-01T12:00:00Z",
-      },
-    ]);
-    (useGetHistoryApi as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
-      fetchHistory: mockFetchHistory,
-      loading: false,
+  it("should handle sending a prompt with existing session", async () => {
+    mockActiveSessionIdRef.current = "existing-session-123";
+
+    const { result } = renderHook(() => useChatMessages());
+
+    // Wrap any state updates in act
+    await act(async () => {
+      // Allow any state updates to process
+      await Promise.resolve();
     });
 
-    const { result } = renderHook(() => useChatMessages(), { wrapper });
+    // We need to use a real Promise to ensure state updates are captured
+    let resolvePromise: () => void;
+    const waitForPromise = new Promise<void>((resolve) => {
+      resolvePromise = resolve;
+    });
+
+    mockPrompt.mockImplementation(() => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve({
+            response: { ok: true },
+            data: {
+              response: "AI response",
+              sources: [],
+            },
+          });
+          resolvePromise();
+        }, 10);
+      });
+    });
 
     await act(async () => {
-      await result.current.updateSessionId("session-123");
-      await flushPromises();
+      result.current.handlePromptAndMessages("Hello AI");
+      await waitForPromise;
     });
 
-    expect(result.current.chatMessages).toHaveLength(1);
-    expect(result.current.chatMessages[0].text).toBe("Old message");
+    // Verify the prompt was sent correctly
+    expect(mockPrompt).toHaveBeenCalledWith({
+      body: "Hello AI",
+      query: {
+        sessionId: "existing-session-123",
+        uid: "model-123",
+      },
+      headers: {
+        "Content-Type": "text/plain",
+      },
+    });
   });
 
-  it("should send a prompt and receive a response", async () => {
-    const mockResponse = { response: "AI response", sources: [] };
-    (usePromptApi as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
-      response: mockResponse,
-      loading: false,
-      error: null,
-      sendPrompt: vi.fn().mockResolvedValue(mockResponse),
+  it("should create a new session when sending a prompt without an active session", async () => {
+    mockActiveSessionIdRef.current = null;
+
+    // Mock the session creation and update
+    mockHandleCreateSession.mockImplementation(() => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          const newSession = { id: "new-session-123" };
+          mockActiveSessionIdRef.current = "new-session-123";
+          resolve(newSession);
+        }, 10);
+      });
     });
 
-    const { result } = renderHook(() => useChatMessages(), { wrapper });
+    const { result } = renderHook(() => useChatMessages());
+
+    // Wrap any state updates in act
+    await act(async () => {
+      // Allow any state updates to process
+      await Promise.resolve();
+    });
+
+    // We need to use a real Promise to ensure state updates are captured
+    let resolvePromise: () => void;
+    const waitForPromise = new Promise<void>((resolve) => {
+      resolvePromise = resolve;
+    });
+
+    mockPrompt.mockImplementation(() => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve({
+            response: { ok: true },
+            data: {
+              response: "AI response",
+              sources: [],
+            },
+          });
+          resolvePromise();
+        }, 20);
+      });
+    });
+
+    await act(async () => {
+      result.current.handlePromptAndMessages("Hello AI");
+      await waitForPromise;
+    });
+
+    // Verify session creation
+    expect(mockHandleCreateSession).toHaveBeenCalled();
+    expect(mockAppendSessionLocal).toHaveBeenCalledWith({
+      id: "new-session-123",
+    });
+    expect(mockSetActiveSessionId).toHaveBeenCalledWith(
+      "new-session-123",
+      true,
+    );
+
+    // Verify the prompt was sent correctly
+    expect(mockPrompt).toHaveBeenCalledWith({
+      body: "Hello AI",
+      query: {
+        sessionId: "new-session-123",
+        uid: "model-123",
+      },
+      headers: {
+        "Content-Type": "text/plain",
+      },
+    });
+  });
+
+  it("should handle error when no chat model is selected", async () => {
+    (readSelectedModel as any).mockReturnValue(null);
+
+    const { result } = renderHook(() => useChatMessages());
+
+    // Wrap any state updates in act
+    await act(async () => {
+      // Allow any state updates to process
+      await Promise.resolve();
+    });
 
     await act(async () => {
       await result.current.handlePromptAndMessages("Hello AI");
-      await flushPromises();
     });
 
-    expect(result.current.chatMessages).toHaveLength(2);
-    expect(result.current.chatMessages[0].text).toBe("AI response");
-    expect(result.current.chatMessages[1].text).toBe("Hello AI");
+    // Verify error handling
+    expect(mockToast).toHaveBeenCalledWith({
+      variant: "destructive",
+      title: "No chat model selected",
+      description: "Select a chat model at the sidebar to start chatting",
+    });
   });
 
-  it("should handle API errors gracefully", async () => {
-    (usePromptApi as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
-      response: null,
-      loading: false,
-      error: "API Error",
-      sendPrompt: vi.fn().mockRejectedValue(new Error("API Error")),
-    });
+  it("should handle error when session creation fails", async () => {
+    mockActiveSessionIdRef.current = null;
+    mockHandleCreateSession.mockResolvedValue(null);
 
-    const { result } = renderHook(() => useChatMessages(), { wrapper });
+    const { result } = renderHook(() => useChatMessages());
+
+    // Wrap any state updates in act
+    await act(async () => {
+      // Allow any state updates to process
+      await Promise.resolve();
+    });
 
     await act(async () => {
-      await result.current.handlePromptAndMessages("Test error");
-      await flushPromises();
+      await result.current.handlePromptAndMessages("Hello AI");
     });
 
-    expect(result.current.chatMessages).toHaveLength(2);
-    expect(result.current.chatMessages[1].text).toBe("Test error");
-    expect(result.current.chatMessages[0].type).toBe("SYSTEM");
-    expect(result.current.chatMessages[0].text).toBe("Error generating prompt");
+    // Verify error handling
+    expect(mockToast).toHaveBeenCalledWith({
+      variant: "destructive",
+      title: "Provided session id is invalid",
+      description: "Something went wrong. Please try again",
+    });
+  });
+
+  it("should handle API error when sending prompt", async () => {
+    mockActiveSessionIdRef.current = "session-123";
+    mockPrompt.mockRejectedValue(new Error("Network error"));
+
+    const { result } = renderHook(() => useChatMessages());
+
+    // Wrap any state updates in act
+    await act(async () => {
+      // Allow any state updates to process
+      await Promise.resolve();
+    });
+
+    await act(async () => {
+      await result.current.handlePromptAndMessages("Hello AI");
+    });
+
+    // Verify error handling
+    expect(mockToast).toHaveBeenCalledWith({
+      variant: "destructive",
+      title: "Failed to get response to prompt",
+      description: "Network error",
+    });
+  });
+
+  it("should handle non-OK response from API", async () => {
+    mockActiveSessionIdRef.current = "session-123";
+    mockPrompt.mockResolvedValue({
+      response: { ok: false, status: 500 },
+      data: undefined,
+    });
+
+    const { result } = renderHook(() => useChatMessages());
+
+    // Wrap any state updates in act
+    await act(async () => {
+      // Allow any state updates to process
+      await Promise.resolve();
+    });
+
+    await act(async () => {
+      await result.current.handlePromptAndMessages("Hello AI");
+    });
+
+    // Verify error handling
+    expect(mockToast).toHaveBeenCalledWith({
+      variant: "destructive",
+      title: "Failed to get response to prompt",
+      description: "Request failed with status: 500",
+    });
+  });
+
+  it("should handle null response data", async () => {
+    mockActiveSessionIdRef.current = "session-123";
+    mockPrompt.mockResolvedValue({
+      response: { ok: true },
+      data: null,
+    });
+
+    const { result } = renderHook(() => useChatMessages());
+
+    // Wrap any state updates in act
+    await act(async () => {
+      // Allow any state updates to process
+      await Promise.resolve();
+    });
+
+    await act(async () => {
+      await result.current.handlePromptAndMessages("Hello AI");
+    });
+
+    // Verify error handling
+    expect(mockToast).toHaveBeenCalledWith({
+      variant: "destructive",
+      title: "Failed to get response to prompt",
+      description: "No response from server",
+    });
+  });
+
+  it("should update loading states correctly", async () => {
+    mockActiveSessionIdRef.current = "session-123";
+
+    // Create a controlled promise to track loading state changes
+    let resolvePrompt: () => void;
+    mockPrompt.mockImplementation(() => {
+      return new Promise((resolve) => {
+        resolvePrompt = () => {
+          resolve({
+            response: { ok: true },
+            data: {
+              response: "AI response",
+              sources: [],
+            },
+          });
+        };
+      });
+    });
+
+    const { result } = renderHook(() => useChatMessages());
+
+    // Wrap any state updates in act
+    await act(async () => {
+      // Allow any state updates to process
+      await Promise.resolve();
+    });
+
+    // Initially not loading
+    expect(result.current.loadingResponse).toBe(false);
+
+    // Start the prompt request but don't resolve it yet
+    let promptPromise: Promise<void>;
+    await act(async () => {
+      promptPromise = result.current.handlePromptAndMessages("Hello AI");
+    });
+
+    // Should be loading now
+    expect(result.current.loadingResponse).toBe(true);
+
+    // Now resolve the prompt
+    await act(async () => {
+      resolvePrompt();
+      await promptPromise;
+    });
+
+    // No longer loading after response
+    expect(result.current.loadingResponse).toBe(false);
+  });
+
+  it("should handle history loading state", async () => {
+    (useGetHistoryApi as any).mockReturnValue({
+      fetchHistory: mockFetchHistory,
+      loading: true,
+    });
+
+    const { result } = renderHook(() => useChatMessages());
+
+    // Wrap any state updates in act
+    await act(async () => {
+      // Allow any state updates to process
+      await Promise.resolve();
+    });
+
+    expect(result.current.loadingHistory).toBe(true);
+    expect(mockSetLoading).toHaveBeenCalledWith(true);
   });
 });
