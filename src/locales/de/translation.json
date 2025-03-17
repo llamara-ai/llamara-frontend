@@ -1,5 +1,4 @@
 {
-  "pdfLocalCode": "de_DE ",
   "login": {
     "title": "Login",
     "button": "Weiterleitung zum OIDC Provider",
@@ -12,7 +11,7 @@
     "errorLoadHistory": "Fehler beim Laden der Chatverlauf",
     "errorGeneratePrompt": "Generieren einer Antwort fehlgeschlagen. Bitte versuchen Sie es erneut.",
     "promptInput": {
-      "placeholder": "Schreibe eine Nachricht...",
+      "placeholder": "Schreibe deine Nachricht hier...",
       "send": "Senden"
     },
     "deleteSessionSuccessful": "Die Session wurde erfolgreich gelöscht",
@@ -47,6 +46,11 @@
     }
   },
   "sidebar": {
+    "theme": {
+      "light": "Hell",
+      "dark": "Dunkel",
+      "system": "System"
+    },
     "login": "Anmelden",
     "logout": "Abmelden",
     "language": "Sprache",
@@ -74,8 +78,7 @@
       "modelSelectionInstruction": "Wähle ein Modell aus..."
     },
     "knowledge": "Wissen",
-    "chatbot": "Chatbot",
-    "unknownRole": "Unbekannte Rolle"
+    "chatbot": "Chatbot"
   },
   "knowledgePage": {
     "table": {
@@ -159,5 +162,13 @@
     "source": "Quelle",
     "type": "Typ",
     "size": "Größe"
+  },
+  "user": {
+    "anonymous": "Anonym",
+    "any": "Jeder"
+  },
+  "role": {
+    "admin": "Administrator",
+    "user": "Benutzer"
   }
 }

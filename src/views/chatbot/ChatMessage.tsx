@@ -132,7 +132,7 @@ export default function ChatMessage({
         <ChatBubbleAvatar
           className="bg-secondary"
           src={""}
-          fallback={getInitials(user?.name ?? user?.name ?? "Anonymous")}
+          fallback={getInitials(user?.name ?? user?.username ?? "Anonymous")}
         />
       ) : (
         <Tooltip>
@@ -189,36 +189,26 @@ function KnowledgeSourceRenderer({
   openPdf,
 }: Readonly<KnowledgeSourceRendererProps>) {
   const renderContent = (content: string) => {
-    const regex = /(\{[^}]*\})/g;
-    const parts = content.split(regex);
+    // split by source references
+    const parts = content.split(/(\{[^}]*})/g);
 
     return parts.map((part, index) => {
-      if (part.startsWith("{") && part.endsWith("}")) {
-        try {
-          // Remove outer curly braces and split by colon
-          const [key, value] = part
-            .slice(1, -1)
-            .split(":")
-            .map((s) => s.trim());
-
-          // Remove any remaining quotes from key and value
-          const cleanKey = key.replace(/["']/g, "");
-          const cleanValue = value.replace(/["']/g, "");
-
-          if (cleanKey === "knowledge_id") {
-            return (
-              <KnowledgeSource
-                key={cleanValue + index.toString()}
-                uuid={cleanValue}
-                openPdf={openPdf}
-                sources={sources}
-              />
-            );
-          }
-        } catch (error) {
-          console.error("Error parsing knowledge_id:", error);
-        }
-        return part;
+      // extract knowledge_id and embedding_id from source reference using named RegEx groups
+      // the following RegEx allows optional spaces and optional quotes around keys
+      const match =
+        /{ ?"?knowledge_id"?: ?"(?<kid>[a-fA-F0-9-]{36})", ?"?embedding_id"?: ?"(?<eid>[a-fA-F0-9-]{36})" ?}/.exec(
+          part,
+        );
+      if (match?.groups?.kid && match.groups.eid) {
+        return (
+          <KnowledgeSource
+            key={match.groups.kid + index.toString()}
+            knowledgeId={match.groups.kid}
+            embeddingId={match.groups.eid}
+            openPdf={openPdf}
+            sources={sources}
+          />
+        );
       }
       return part;
     });

@@ -7,7 +7,8 @@ import { KnowledgeSourceDetail } from "./KnowledgeSourceDetail";
 import { useState } from "react";
 
 interface KnowledgeSourceProps {
-  uuid: string | null;
+  knowledgeId: string | null;
+  embeddingId: string | null;
   sources: RagSourceRecord[] | undefined;
   openPdf: (uuid: string, label: string) => void;
 }
@@ -18,7 +19,8 @@ export interface HoverProps {
 }
 
 export function KnowledgeSource({
-  uuid,
+  knowledgeId,
+  embeddingId,
   sources,
   openPdf,
 }: Readonly<KnowledgeSourceProps>) {
@@ -29,7 +31,7 @@ export function KnowledgeSource({
     knowledge: null,
   });
 
-  const { knowledge, error } = useGetKnowledgeApi({ uuid });
+  const { knowledge, error } = useGetKnowledgeApi({ uuid: knowledgeId });
 
   const getDocType = () => {
     if (knowledge?.label) {
@@ -40,18 +42,20 @@ export function KnowledgeSource({
   };
 
   const handleFileSource = async (): Promise<void> => {
-    if (!uuid || error) return;
+    if (!knowledgeId || error) return;
 
     const docType = knowledge?.label?.split(".").pop()?.toLowerCase();
 
     if (docType === "pdf") {
-      openPdf(uuid, knowledge?.label ?? "document");
+      openPdf(knowledgeId, knowledge?.label ?? "document");
       return;
     }
-    await downloadFile(uuid, knowledge?.label);
+    await downloadFile(knowledgeId, knowledge?.label);
   };
 
-  const sourceContent = sources?.find((source) => source.knowledgeId === uuid);
+  const sourceContent = sources?.find(
+    (source) => source.embeddingId === embeddingId,
+  );
 
   const handleHover = () => {
     setHoverProps({
@@ -60,7 +64,7 @@ export function KnowledgeSource({
     });
   };
 
-  if (!uuid || error) {
+  if (!knowledgeId || error) {
     return (
       <span className="inline-flex items-center px-2 py-0.5 rounded border text-sm font-medium bg-foreground/5 text-red-600">
         {"Invalid Source. Cannot render source"}

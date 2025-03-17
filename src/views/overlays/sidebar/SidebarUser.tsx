@@ -28,7 +28,6 @@ import {
 import { useTheme } from "../../../components/theme-provider";
 import { useTranslation } from "react-i18next";
 import { getInitials } from "@/lib/getInitials";
-import i18next, { t } from "i18next";
 import useDeleteAllUserData from "@/hooks/api/useDeleteAllUserData";
 import { ConfirmDeleteModal } from "@/views/overlays/sidebar/ConfirmDeleteModal";
 import { useContext, useState } from "react";
@@ -52,7 +51,7 @@ export function SidebarUser() {
 
   const loggedIn = token.length > 0;
 
-  const username = user?.name ?? user?.username ?? "Anonymous";
+  const username = user?.name ?? user?.username ?? t("user.anonymous");
   const name = user?.name ?? username;
   const userRole = getUserRole(user?.roles);
   const changeLanguageHandler = (lang: string) => {
@@ -114,7 +113,11 @@ export function SidebarUser() {
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">{name}</span>
-                  <span className="truncate text-xs">{userRole}</span>
+                  {userRole !== null && (
+                    <span className="truncate text-xs">
+                      {t(`role.${userRole}`)}
+                    </span>
+                  )}
                 </div>
               </div>
             </DropdownMenuLabel>
@@ -127,7 +130,7 @@ export function SidebarUser() {
                 }}
               >
                 <Sun className="mr-2 h-4 w-4" />
-                Light Mode
+                {t("sidebar.theme.light")}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => {
@@ -135,7 +138,7 @@ export function SidebarUser() {
                 }}
               >
                 <Moon className="mr-2 h-4 w-4" />
-                Dark Mode
+                {t("sidebar.theme.dark")}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => {
@@ -143,7 +146,7 @@ export function SidebarUser() {
                 }}
               >
                 <LaptopMinimal className="mr-2 h-4 w-4" />
-                System
+                {t("sidebar.theme.system")}
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
@@ -155,7 +158,7 @@ export function SidebarUser() {
                     <Languages />
                     {t("sidebar.language")}:{" "}
                     {LanguageLabels.get(
-                      i18next.language.toLowerCase().split("-")[0],
+                      i18n.language.toLowerCase().split("-")[0],
                     )}
                   </DropdownMenuItem>
                 </DropdownMenuTrigger>
@@ -219,12 +222,12 @@ export function SidebarUser() {
   );
 }
 
-const getUserRole = (roles: string[] | undefined): string => {
+const getUserRole = (roles: string[] | undefined): string | null => {
   if (!roles) {
-    return t("sidebar.unknownRole");
+    return null;
   }
   if (roles.includes("admin")) {
-    return "Admin";
+    return "admin";
   }
-  return "User";
+  return "user";
 };

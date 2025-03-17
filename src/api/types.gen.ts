@@ -66,6 +66,7 @@ export type Permission = 'OWNER' | 'READWRITE' | 'READONLY' | 'NONE';
 
 export type RagSourceRecord = {
     knowledgeId?: Uuid;
+    embeddingId?: Uuid;
     content?: string;
 };
 
