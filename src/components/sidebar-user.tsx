@@ -2,6 +2,7 @@
 
 import {
   ChevronsUpDown,
+  Languages,
   LaptopMinimal,
   LogIn,
   LogOut,
@@ -29,6 +30,7 @@ import { useTheme } from "./theme-provider";
 import { UserInfoDto } from "@/api";
 import { useTranslation } from "react-i18next";
 import { getInitials } from "@/lib/getInitials";
+import i18next from "i18next";
 
 interface SidebarUserProps {
   user: UserInfoDto;
@@ -43,12 +45,15 @@ export function SidebarUser({
   login,
   logout,
 }: Readonly<SidebarUserProps>) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { isMobile } = useSidebar();
   const { setTheme } = useTheme();
   const username = user.name ?? user.username ?? "Anonymous";
   const name = user.name ?? username;
   const userRole = getUserRole(user.roles);
+  const changeLanguageHandler = (lang: string) => {
+    void i18n.changeLanguage(lang);
+  };
 
   return (
     <SidebarMenu>
@@ -70,12 +75,14 @@ export function SidebarUser({
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
+
           <DropdownMenuContent
             className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
             side={isMobile ? "bottom" : "right"}
             align="end"
             sideOffset={4}
           >
+            {/*Name Label*/}
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
@@ -90,6 +97,7 @@ export function SidebarUser({
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
+            {/* Theme selection*/}
             <DropdownMenuGroup>
               <DropdownMenuItem
                 onClick={() => {
@@ -117,6 +125,35 @@ export function SidebarUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
+            {/* Language Selection*/}
+            <DropdownMenuGroup>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <DropdownMenuItem>
+                    <Languages />
+                    {t("sidebar.language")}: {i18next.language.toUpperCase()}
+                  </DropdownMenuItem>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent side="right" align="start">
+                  <DropdownMenuItem
+                    onClick={() => {
+                      changeLanguageHandler("en");
+                    }}
+                  >
+                    English
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      changeLanguageHandler("de");
+                    }}
+                  >
+                    Deutsch
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            {/* Login*/}
             {loggedIn ? (
               <DropdownMenuItem onClick={logout}>
                 <LogOut />

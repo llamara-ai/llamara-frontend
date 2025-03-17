@@ -58,6 +58,7 @@
   "sidebar": {
     "login": "Anmelden",
     "logout": "Abmelden",
+    "language": "Sprache",
     "session": {
       "buttonEditLabel": "Label bearbeiten",
       "buttonDelete": "Session löschen",

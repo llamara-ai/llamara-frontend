@@ -58,6 +58,7 @@
   "sidebar": {
     "login": "Login",
     "logout": "Logout",
+    "language": "Language",
     "session": {
       "buttonEditLabel": "Edit label",
       "buttonDelete": "Delete Session",
