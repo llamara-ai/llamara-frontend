@@ -4,6 +4,7 @@ export type ChatMessageRecord = {
     type?: ChatMessageType;
     text?: string;
     timestamp?: Instant;
+    sources?: Array<RagSourceRecord>;
     modelProvider?: ChatModelProvider;
     modelName?: string;
 };
@@ -19,9 +20,9 @@ export type ChatModelContainer = {
 
 export type ChatModelProvider = 'AZURE' | 'OLLAMA' | 'OPENAI';
 
-export type ChatResponseDto = {
+export type ChatResponseRecord = {
     response?: string;
-    sources?: Array<SourceRecord>;
+    sources?: Array<RagSourceRecord>;
 };
 
 export type InfoDto = {
@@ -63,6 +64,11 @@ export type OidcInfoDto = {
 
 export type Permission = 'OWNER' | 'READWRITE' | 'READONLY' | 'NONE';
 
+export type RagSourceRecord = {
+    knowledgeId?: Uuid;
+    content?: string;
+};
+
 export type SecurityInfoDto = {
     anonymousUserEnabled?: boolean;
     anonymousUserSessionTimeout?: number;
@@ -72,11 +78,6 @@ export type Session = {
     id?: Uuid;
     createdAt?: Instant;
     label?: string;
-};
-
-export type SourceRecord = {
-    knowledgeId?: Uuid;
-    content?: string;
 };
 
 export type Uuid = string;
@@ -174,7 +175,7 @@ export type PromptResponses = {
     /**
      * OK
      */
-    200: ChatResponseDto;
+    200: ChatResponseRecord;
 };
 
 export type PromptResponse = PromptResponses[keyof PromptResponses];

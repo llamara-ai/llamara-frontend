@@ -1,4 +1,4 @@
-import { StrictMode } from "react";
+import { StrictMode, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import Routes from "./Routes";
@@ -12,7 +12,6 @@ import { LoadingProvider } from "./services/LoadingService";
 import LoadingOverlay from "./components/loading-overlay";
 import {
   AppContextProvider,
-  useInitAppContext,
   useAppContext,
 } from "@/services/AppContextService.tsx";
 import { UserContextProvider } from "@/services/UserContextService.tsx";
@@ -24,6 +23,7 @@ createRoot(document.getElementById("root")!).render(
       <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
         <CacheProvider>
           <LoadingProvider>
+            <InitComponent />
             <App />
             <Toaster />
             <LoadingOverlay />
@@ -34,10 +34,15 @@ createRoot(document.getElementById("root")!).render(
   </StrictMode>,
 );
 
-function App() {
-  initLanguage();
-  useInitAppContext();
+function InitComponent() {
+  useEffect(() => {
+    initLanguage();
+  }, []);
 
+  return null;
+}
+
+function App() {
   const { ready, authConfig } = useAppContext();
 
   // Wait for app context to be ready

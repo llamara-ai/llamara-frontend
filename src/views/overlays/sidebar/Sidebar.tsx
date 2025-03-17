@@ -29,7 +29,11 @@ const Sidebar: React.FC<SidebarProps> = ({
       sideBarContent={<SidebarContent />}
       footerChildren={
         <>
-          <RedirectButton />
+          {user.name === undefined && user.username === undefined ? (
+            <></>
+          ) : (
+            <RedirectButton />
+          )}
           <SidebarUser
             user={user}
             loggedIn={loggedIn}

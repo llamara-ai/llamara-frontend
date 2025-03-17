@@ -83,7 +83,7 @@ export function SidebarModelSelector({
                   ) : (
                     <>
                       {open ? (
-                        t("chatbot.sidebar.modelSelectionInstruction")
+                        t("sidebar.session.modelSelectionInstruction")
                       ) : (
                         <div className="text-center">?</div>
                       )}
@@ -102,7 +102,7 @@ export function SidebarModelSelector({
             sideOffset={4}
           >
             <DropdownMenuLabel className="text-xs text-muted-foreground">
-              {t("chatbot.sidebar.modelSelectionInstruction")}
+              {t("sidebar.session.modelSelectionInstruction")}
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             {models.map((model, index) => (

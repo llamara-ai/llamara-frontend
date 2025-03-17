@@ -1,9 +1,9 @@
 import { Card } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { useLogo } from "@/hooks/useLogo";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Footer from "@/views/overlays/Footer.tsx";
+import { Spinner } from "@/components/ui/spinner";
 
 interface LoadingViewProps {
   error?: string;
@@ -44,7 +44,7 @@ export default function LoadingView({ error }: Readonly<LoadingViewProps>) {
                 <h1 className="text-2xl font-semibold mb-4">
                   {t("loading.title")}
                 </h1>
-                <Progress value={33} className="w-[80%] mt-5" />
+                <Spinner size="large" className="mt-5" />
               </>
             )}
           </div>

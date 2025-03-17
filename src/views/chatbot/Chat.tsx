@@ -84,7 +84,8 @@ export default function Chat({
                 void handleRetryClick(index);
               }}
               showButtons={
-                message.type === "AI" && messages.length - 1 === index
+                (message.type === "AI" || message.type === "SYSTEM") &&
+                messages.length - 1 === index
               }
               openPdf={openPdf}
               className={messages.length - 1 === index ? "mb-4" : ""}
@@ -93,7 +94,7 @@ export default function Chat({
 
           {/* Loading */}
           {isGenerating && (
-            <ChatBubble variant="received">
+            <ChatBubble variant="received" className="mb-4">
               <ChatBubbleAvatar
                 className="bg-secondary flex justify-center items-center"
                 ImageClassName={`size-7 ${theme === "dark" ? "invert" : ""}`}

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ChatResponseDto, prompt } from "@/api";
+import { ChatResponseRecord, prompt } from "@/api";
 import { useToast } from "../use-toast";
 
 interface UsePromptApiProps {
@@ -9,7 +9,7 @@ interface UsePromptApiProps {
 }
 
 interface UsePromptApiResult {
-  response: ChatResponseDto | null;
+  response: ChatResponseRecord | null;
   loading: boolean;
   error: string | null;
 }
@@ -20,7 +20,7 @@ export default function usePromptApi({
   inputPrompt,
 }: UsePromptApiProps): UsePromptApiResult {
   const { toast } = useToast();
-  const [response, setResponse] = useState<ChatResponseDto | null>(null);
+  const [response, setResponse] = useState<ChatResponseRecord | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 

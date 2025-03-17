@@ -9,16 +9,6 @@
     "title": "Loading application..."
   },
   "chatbot": {
-    "sidebar": {
-      "title": "Past chats",
-      "recent7days": "Last 7 days",
-      "recent30days": "Last 30 days",
-      "recentYear": "Year",
-      "noSessions": "No sessions available",
-      "modelSelectionInstruction": "Select a model...",
-      "selectError": "Error when selecting the session with ID:",
-      "anonymousModeActive": "No chat histories are displayed because anonymous mode is active."
-    },
     "errorLoadHistory": "Error loading chat history",
     "errorGeneratePrompt": "Failed to generate a response. Please try again.",
     "promptInput": {
@@ -72,7 +62,15 @@
     "session": {
       "buttonEditLabel": "Edit label",
       "buttonDelete": "Delete Session",
-      "loading": "Loading session..."
+      "loading": "Loading session...",
+      "title": "Past chats",
+      "recent7days": "Last 7 days",
+      "recent30days": "Last 30 days",
+      "recentYear": "Year",
+      "noSessions": "No sessions available",
+      "modelSelectionInstruction": "Select a model...",
+      "selectError": "Error when selecting the session with ID:",
+      "anonymousModeActive": "No chat histories are displayed because anonymous mode is active."
     },
     "knowledge": "Knowledge",
     "chatbot": "Chatbot"
@@ -116,5 +114,15 @@
     "imprint": "Imprint",
     "privacyPolicy": "Privacy Policy",
     "hint": "LLMs can make mistakes. Check important information."
+  },
+  "knowledge": {
+    "createdAt": "Created on",
+    "lastUpdate": "Last update",
+    "permissions": "Access rights",
+    "noPermissions": "No access rights available",
+    "tags": "Tags",
+    "noTags": "No tags available",
+    "sourceContent": "Used content of the source",
+    "source": "Source"
   }
 }

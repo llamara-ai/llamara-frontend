@@ -14,6 +14,12 @@
           "timestamp" : {
             "$ref" : "#/components/schemas/Instant"
           },
+          "sources" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/RagSourceRecord"
+            }
+          },
           "modelProvider" : {
             "$ref" : "#/components/schemas/ChatModelProvider"
           },
@@ -47,7 +53,7 @@
         "type" : "string",
         "enum" : [ "AZURE", "OLLAMA", "OPENAI" ]
       },
-      "ChatResponseDTO" : {
+      "ChatResponseRecord" : {
         "type" : "object",
         "properties" : {
           "response" : {
@@ -56,7 +62,7 @@
           "sources" : {
             "type" : "array",
             "items" : {
-              "$ref" : "#/components/schemas/SourceRecord"
+              "$ref" : "#/components/schemas/RagSourceRecord"
             }
           }
         }
@@ -161,6 +167,17 @@
         "type" : "string",
         "enum" : [ "OWNER", "READWRITE", "READONLY", "NONE" ]
       },
+      "RagSourceRecord" : {
+        "type" : "object",
+        "properties" : {
+          "knowledgeId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "content" : {
+            "type" : "string"
+          }
+        }
+      },
       "SecurityInfoDTO" : {
         "type" : "object",
         "properties" : {
@@ -183,17 +200,6 @@
             "$ref" : "#/components/schemas/Instant"
           },
           "label" : {
-            "type" : "string"
-          }
-        }
-      },
-      "SourceRecord" : {
-        "type" : "object",
-        "properties" : {
-          "knowledgeId" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "content" : {
             "type" : "string"
           }
         }
@@ -327,7 +333,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/ChatResponseDTO"
+                  "$ref" : "#/components/schemas/ChatResponseRecord"
                 }
               }
             }
@@ -1120,7 +1126,7 @@
   },
   "info" : {
     "title" : "LLAMARA API",
-    "version" : "0.6.0",
+    "version" : "0.6.1-SNAPSHOT",
     "description" : "The official REST API for LLAMARA - the Large Language Assistant for Model Augmented Retrieval and Analysis - an LLM-based assistant for information retrieval from a provided knowledge base.",
     "contact" : {
       "name" : "LLAMARA GitHub Organization",

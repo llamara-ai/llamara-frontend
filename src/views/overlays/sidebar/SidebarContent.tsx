@@ -54,10 +54,10 @@ const SessionModelSidebar = () => {
     setSortedSessions(
       groupSessionsByDateForNavbar({
         sessions,
-        last7DaysLabel: t("chatbot.sidebar.recent7days"),
-        last30DaysLabel: t("chatbot.sidebar.recent30days"),
-        recentYearLabel: t("chatbot.sidebar.recentYear"),
-        noSessionsLabel: t("chatbot.sidebar.noSessions"),
+        last7DaysLabel: t("sidebar.session.recent7days"),
+        last30DaysLabel: t("sidebar.session.recent30days"),
+        recentYearLabel: t("sidebar.session.recentYear"),
+        noSessionsLabel: t("sidebar.session.noSessions"),
       }),
     );
   }, [sessions, t]);
@@ -105,11 +105,11 @@ const GetSessions = ({
     <>
       {user?.anonymous ? (
         <SidebarGroupLabel style={{ marginTop: 10, textAlign: "center" }}>
-          {t("chatbot.sidebar.anonymousModeActive")}
+          {t("sidebar.session.anonymousModeActive")}
         </SidebarGroupLabel>
       ) : (
         <SidebarSessionList
-          title={t("chatbot.sidebar.title")}
+          title={t("sidebar.session.title")}
           items={sortedSessions}
           setOnClick={onSelectSession}
         />

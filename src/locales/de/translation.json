@@ -9,16 +9,6 @@
     "title": "Lade die Anwendung..."
   },
   "chatbot": {
-    "sidebar": {
-      "title": "Vergangene Chats",
-      "recent7days": "Letzte 7 Tage",
-      "recent30days": "Letzte 30 Tage",
-      "recentYear": "Jahr",
-      "noSessions": "Keine Sessions vorhanden",
-      "selectError": "Fehler beim Auswählen der Session mit ID:",
-      "anonymousModeActive": "Es werden keine Chatverläufe angezeigt, da der anonyme Modus aktiv ist.",
-      "modelSelectionInstruction": "Wähle ein Modell aus..."
-    },
     "errorLoadHistory": "Fehler beim Laden der Chatverlauf",
     "errorGeneratePrompt": "Generieren einer Antwort fehlgeschlagen. Bitte versuchen Sie es erneut.",
     "promptInput": {
@@ -72,7 +62,15 @@
     "session": {
       "buttonEditLabel": "Label bearbeiten",
       "buttonDelete": "Session löschen",
-      "loading": "Lade Session..."
+      "loading": "Lade Session...",
+      "title": "Vergangene Chats",
+      "recent7days": "Letzte 7 Tage",
+      "recent30days": "Letzte 30 Tage",
+      "recentYear": "Jahr",
+      "noSessions": "Keine Sessions vorhanden",
+      "selectError": "Fehler beim Auswählen der Session mit ID:",
+      "anonymousModeActive": "Es werden keine Chatverläufe angezeigt, da der anonyme Modus aktiv ist.",
+      "modelSelectionInstruction": "Wähle ein Modell aus..."
     },
     "knowledge": "Wissen",
     "chatbot": "Chatbot"
@@ -116,5 +114,15 @@
     "imprint": "Impressum",
     "privacyPolicy": "Datenschutz",
     "hint": "LLMs können Fehler machen. Überprüfen Sie wichtige Informationen."
+  },
+  "knowledge": {
+    "createdAt": "Erstellt am",
+    "lastUpdate": "Letztes Update",
+    "permissions": "Zugriffsrechte",
+    "noPermissions": "Keine Zugriffsrechte vorhanden",
+    "tags": "Tags",
+    "noTags": "Keine Tags vorhanden",
+    "sourceContent": "Verwendeter Inhalt der Quelle",
+    "source": "Quelle"
   }
 }

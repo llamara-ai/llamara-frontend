@@ -105,6 +105,7 @@ export default function useChatMessages({
         text: response.response,
         type: "AI",
         modelProvider: getModelProviderFromUid(chatModelUIDRef.current),
+        sources: response.sources,
         timestamp: new Date().toISOString(),
       };
       setCurrentChatMessages([...currentChatMessages, messageRecord]);

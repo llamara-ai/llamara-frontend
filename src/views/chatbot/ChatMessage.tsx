@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   ChatBubble,
   ChatBubbleAvatar,
@@ -7,15 +8,14 @@ import { Check, Copy, RefreshCcw } from "lucide-react";
 import CodeDisplayBlock from "@/components/code-display-block";
 import { getInitials } from "@/lib/getInitials";
 import { getLogoFromModelProvider } from "@/lib/getLogoFromModelProvider";
-import React, { useState } from "react";
 import { useUserContext } from "@/services/UserContextService";
 import { useTranslation } from "react-i18next";
 import { useToast } from "@/hooks/use-toast";
-import { ChatMessageRecord } from "@/api";
+import type { ChatMessageRecord, RagSourceRecord } from "@/api";
 import { useTheme } from "@/components/theme-provider";
-import { KnowledgeSource } from "./KnowledgeSource";
-import Markdown, { Components } from "react-markdown";
+import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { KnowledgeSource } from "./KnowledgeSource";
 
 interface ChatMessageProps {
   message: ChatMessageRecord;
@@ -43,70 +43,85 @@ export default function ChatMessage({
 
   const handleCopyClick = () => {
     if (message.type === "AI" && message.text) {
-      setIsCopied(true);
       void navigator.clipboard.writeText(message.text);
-      toast({
-        title: t("chatbot.chat.copyMessage"),
-      });
+      setIsCopied(true);
+      toast({ title: t("chatbot.chat.copyMessage") });
       setTimeout(() => {
         setIsCopied(false);
       }, 1500);
     }
   };
 
+  const renderContent = () => {
+    if (!message.text) return null;
+
+    return (
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        components={{
+          code({ className, children, ...props }) {
+            const match = /language-(\w+)/.exec(className ?? "");
+            return match ? (
+              <CodeDisplayBlock
+                code={
+                  typeof children === "string"
+                    ? children.replace(/\n$/, "")
+                    : ""
+                }
+                lang={match[1]}
+              />
+            ) : (
+              <code className={className} {...props}>
+                {children}
+              </code>
+            );
+          },
+          p: ({ children }) => (
+            <KnowledgeSourceRenderer
+              openPdf={openPdf}
+              sources={message.sources}
+            >
+              {children}
+            </KnowledgeSourceRenderer>
+          ),
+          li: ({ children, ...props }) => (
+            <li {...props}>
+              <KnowledgeSourceRenderer
+                openPdf={openPdf}
+                sources={message.sources}
+              >
+                {children}
+              </KnowledgeSourceRenderer>
+            </li>
+          ),
+        }}
+      >
+        {message.text.replace(/\\n/g, "\n")}
+      </ReactMarkdown>
+    );
+  };
+
   return (
     <ChatBubble
-      variant={message.type == "USER" ? "sent" : "received"}
+      variant={message.type === "USER" ? "sent" : "received"}
       className={className}
     >
-      {message.type == "USER" ? (
-        <ChatBubbleAvatar
-          className="bg-secondary"
-          src={""}
-          fallback={getInitials(user?.name ?? user?.name ?? "Anonymous")}
-        />
-      ) : (
-        <ChatBubbleAvatar
-          className="bg-secondary flex justify-center items-center"
-          ImageClassName={`size-7 ${theme === "dark" ? "invert" : ""}`}
-          src={getLogoFromModelProvider(message.modelProvider)}
-          fallback={"AI"}
-        />
-      )}
-
+      <ChatBubbleAvatar
+        className={`bg-secondary ${message.type === "AI" ? "flex justify-center items-center" : ""}`}
+        src={
+          message.type === "AI"
+            ? getLogoFromModelProvider(message.modelProvider)
+            : ""
+        }
+        ImageClassName={`size-7 ${theme === "dark" ? "invert" : ""}`}
+        fallback={
+          message.type === "USER"
+            ? getInitials(user?.name ?? user?.username ?? "Anonymous")
+            : "AI"
+        }
+      />
       <ChatBubbleMessage>
-        {message.text
-          ?.toString()
-          .split("```")
-          .map((part: string, index: number) => {
-            if (index % 2 === 0) {
-              return (
-                <TextMessage
-                  key={
-                    message.timestamp
-                      ? message.timestamp + index.toString()
-                      : index
-                  }
-                  text={part}
-                  openPdf={openPdf}
-                />
-              );
-            } else {
-              return (
-                <pre
-                  className="whitespace-pre-wrap pt-2"
-                  key={
-                    message.timestamp
-                      ? message.timestamp + index.toString()
-                      : index
-                  }
-                >
-                  <CodeDisplayBlock code={part} lang="" />
-                </pre>
-              );
-            }
-          })}
-
+        {renderContent()}
         {showButtons && (
           <div className="flex items-center mt-1.5 gap-1">
             {!isGenerating && (
@@ -130,112 +145,70 @@ export default function ChatMessage({
   );
 }
 
-interface TextMessageProps {
-  text: string;
+interface KnowledgeSourceRendererProps {
+  children: React.ReactNode;
+  sources: RagSourceRecord[] | undefined;
   openPdf: (uuid: string, label: string) => void;
 }
 
-function TextMessage({ text, openPdf }: Readonly<TextMessageProps>) {
-  // Splitting the text at ``` markers
-  const parts = text.split(/(```[\s\S]*?```)/);
+function KnowledgeSourceRenderer({
+  children,
+  sources,
+  openPdf,
+}: Readonly<KnowledgeSourceRendererProps>) {
+  const renderContent = (content: string) => {
+    const regex = /(\{[^}]*\})/g;
+    const parts = content.split(regex);
 
-  const customComponents: Components = {
-    p: ({ children }) => (
-      <CustomParagraph openPdf={openPdf}>{children}</CustomParagraph>
-    ),
+    return parts.map((part, index) => {
+      if (part.startsWith("{") && part.endsWith("}")) {
+        try {
+          // Remove outer curly braces and split by colon
+          const [key, value] = part
+            .slice(1, -1)
+            .split(":")
+            .map((s) => s.trim());
+
+          // Remove any remaining quotes from key and value
+          const cleanKey = key.replace(/["']/g, "");
+          const cleanValue = value.replace(/["']/g, "");
+
+          if (cleanKey === "knowledge_id") {
+            return (
+              <KnowledgeSource
+                key={cleanValue + index.toString()}
+                uuid={cleanValue}
+                openPdf={openPdf}
+                sources={sources}
+              />
+            );
+          }
+        } catch (error) {
+          console.error("Error parsing knowledge_id:", error);
+        }
+        return part;
+      }
+      return part;
+    });
   };
 
-  return (
-    <>
-      {parts.map((part, index) => {
-        if (part.startsWith("```") && part.endsWith("```")) {
-          // Extracting the content and language from the code block
-          const [, lang, ...codeLines] = part.split("\n");
-          const code = codeLines.slice(0, -1).join("\n"); // Remove the last line with ```
-          return (
-            <pre
-              key={part.slice(0, 10) + index.toString()}
-              className="whitespace-pre-wrap pt-2"
-            >
-              <CodeDisplayBlock code={code} lang={lang.trim()} />
-            </pre>
-          );
-        } else {
-          return (
-            <Markdown
-              key={part.slice(0, 10) + index.toString()}
-              remarkPlugins={[remarkGfm]}
-              components={customComponents}
-            >
-              {part}
-            </Markdown>
-          );
-        }
-      })}
-    </>
-  );
-}
+  if (typeof children === "string") {
+    return <>{renderContent(children)}</>;
+  }
 
-interface CustomParagraphProp {
-  children: React.ReactNode;
-  openPdf: (uuid: string, label: string) => void;
-}
-
-function CustomParagraph({ children, openPdf }: Readonly<CustomParagraphProp>) {
-  const regex = /(\{[^}]*\})/g;
-  const elements: (string | React.JSX.Element)[] = [];
-  let lastIndex = 0;
-
-  // Convert children to a string, regardless of type
-  const content = React.Children.toArray(children)
-    .map((child) => {
-      if (typeof child === "string") return child;
-      if (React.isValidElement(child) && "children" in child.props) {
-        return React.Children.toArray(child)
-          .map((c) => (typeof c === "string" ? c : ""))
-          .join("");
-      }
-      return "";
-    })
-    .join("");
-
-  content.replace(regex, (match: string, _: string, offset: number) => {
-    if (offset > lastIndex) {
-      elements.push(content.slice(lastIndex, offset));
-    }
-
-    elements.push(
-      <KnowledgeSource key={offset} uuid={getUuid(match)} openPdf={openPdf} />,
+  if (Array.isArray(children)) {
+    return (
+      <>
+        {children.map((child, index) => (
+          <React.Fragment
+            key={typeof child === "string" ? child + index.toString() : index}
+          >
+            {typeof child === "string" ? renderContent(child) : child}
+          </React.Fragment>
+        ))}
+      </>
     );
-    lastIndex = offset + match.length;
-    return match;
-  });
-
-  if (lastIndex < content.length) {
-    elements.push(content.slice(lastIndex));
   }
 
-  return <p>{elements}</p>;
+  return <>{children}</>;
 }
-
-const getUuid = (text: string): string | null => {
-  try {
-    const parsedObject: { knowledge_id?: string } = JSON.parse(text) as {
-      knowledge_id?: string;
-    };
-    if (parsedObject.knowledge_id) {
-      return parsedObject.knowledge_id;
-    } else {
-      throw new Error(
-        "The field “knowledge_id” is missing in the JSON object.",
-      );
-    }
-  } catch (error) {
-    if (error instanceof SyntaxError) {
-      console.error("Text provide invalid source:", error.message);
-    } else {
-      console.error("Something went wrong:", (error as Error).message);
-    }
-  }
-  return null;
-};
