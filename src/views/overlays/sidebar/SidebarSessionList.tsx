@@ -46,9 +46,11 @@ export function SidebarSessionList({
 
   return (
     <SidebarGroup className="flex-1 overflow-auto pt-0">
-      <SidebarGroupLabel className={open ? "text-sm text-center" : ""}>
-        {title}
-      </SidebarGroupLabel>
+      {open && (
+        <SidebarGroupLabel className={"text-sm text-center"}>
+          {title}
+        </SidebarGroupLabel>
+      )}
       <SidebarMenu
         className={`top-0 left-0 transition-opacity duration-300 ${open ? "opacity-100" : "opacity-0"}`}
       >

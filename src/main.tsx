@@ -15,6 +15,7 @@ import {
   useAppContext,
 } from "@/services/AppContextService.tsx";
 import { UserContextProvider } from "@/services/UserContextService.tsx";
+import { SidebarProvider } from "@/components/ui/sidebar.tsx";
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 createRoot(document.getElementById("root")!).render(
@@ -50,7 +51,9 @@ function App() {
   return (
     <AuthProvider authConfig={authConfig}>
       <UserContextProvider>
-        <Routes />
+        <SidebarProvider>
+          <Routes />
+        </SidebarProvider>
       </UserContextProvider>
     </AuthProvider>
   );

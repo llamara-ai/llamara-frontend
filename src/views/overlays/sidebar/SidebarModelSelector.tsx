@@ -6,7 +6,6 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -105,7 +104,7 @@ export function SidebarModelSelector({
               {t("sidebar.session.modelSelectionInstruction")}
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            {models.map((model, index) => (
+            {models.map((model) => (
               <Tooltip key={model.uid}>
                 <TooltipTrigger asChild>
                   <DropdownMenuItem
@@ -126,7 +125,6 @@ export function SidebarModelSelector({
                       />
                     </div>
                     {model.label}
-                    <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
                   </DropdownMenuItem>
                 </TooltipTrigger>
                 <TooltipContent>

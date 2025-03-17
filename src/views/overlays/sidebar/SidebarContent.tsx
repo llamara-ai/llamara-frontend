@@ -19,7 +19,7 @@ import { useNavigate } from "react-router-dom";
 import { useUserContext } from "@/services/UserContextService";
 import { useGetSessions } from "@/services/GetSessionsService";
 import LoadingAnimation from "@/components/loading-animation";
-import RedirectButton from "./RedirectButton";
+import SidebarMainNav from "./SidebarMainNav.tsx";
 
 const SidebarContentFunc = () => {
   const { t } = useTranslation();
@@ -82,7 +82,7 @@ const SidebarContentFunc = () => {
           <GetSessions sortedSessions={sortedSessions} />
         )}
 
-        <RedirectButton />
+        <SidebarMainNav />
       </SidebarContent>
     </>
   );

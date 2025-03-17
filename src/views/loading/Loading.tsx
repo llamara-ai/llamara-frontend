@@ -1,8 +1,7 @@
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { useLogo } from "@/hooks/useLogo";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import Footer from "@/views/overlays/Footer.tsx";
 import { Spinner } from "@/components/ui/spinner";
 
 interface LoadingViewProps {
@@ -32,10 +31,10 @@ export default function LoadingView({ error }: Readonly<LoadingViewProps>) {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-background">
-      <div className="flex-1 flex flex-col items-center justify-center">
-        <Card className="p-10 max-w-[400px] w-full">
-          <div className="flex flex-col items-center">
+    <div className="flex w-screen h-screen ${theme === 'dark' ? 'bg-background text-foreground' : 'bg-white text-black'}">
+      <div className="flex-1 flex items-center justify-center">
+        <Card className="w-full max-w-md">
+          <CardContent className="flex flex-col items-center p-8">
             <img src={logoSrc} alt="Logo" className="mb-5" />
             {error ? (
               <h1 className="text-2xl font-semibold mb-4">{error}</h1>
@@ -47,10 +46,9 @@ export default function LoadingView({ error }: Readonly<LoadingViewProps>) {
                 <Spinner size="large" className="mt-5" />
               </>
             )}
-          </div>
+          </CardContent>
         </Card>
       </div>
-      <Footer />
     </div>
   );
 }

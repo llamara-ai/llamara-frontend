@@ -11,7 +11,7 @@ import { t } from "i18next";
 import { Bot, HardDriveUpload } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-export default function RedirectButton() {
+export default function SidebarMainNav() {
   const activePage = useCurrentPage();
   const { open } = useSidebar();
   const navigate = useNavigate();
@@ -30,7 +30,9 @@ export default function RedirectButton() {
             <Bot />
             {open && t("sidebar.chatbot")}
           </SidebarMenuButton>
-          {!user?.anonymous && (
+        </SidebarMenuItem>
+        {!user?.anonymous && (
+          <SidebarMenuItem>
             <SidebarMenuButton
               onClick={() => {
                 void navigate("/knowledge");
@@ -40,8 +42,8 @@ export default function RedirectButton() {
               <HardDriveUpload />
               {open && t("sidebar.knowledge")}
             </SidebarMenuButton>
-          )}
-        </SidebarMenuItem>
+          </SidebarMenuItem>
+        )}
       </SidebarMenu>
     </SidebarGroup>
   );
