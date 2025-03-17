@@ -5,8 +5,7 @@ export type ChatMessageRecord = {
     text?: string;
     timestamp?: Instant;
     sources?: Array<RagSourceRecord>;
-    modelProvider?: ChatModelProvider;
-    modelName?: string;
+    modelUID?: string;
 };
 
 export type ChatMessageType = 'SYSTEM' | 'USER' | 'AI' | 'TOOL_EXECUTION_RESULT' | 'CUSTOM';
@@ -41,6 +40,7 @@ export type Knowledge = {
     type?: KnowledgeType;
     checksum?: string;
     ingestionStatus?: IngestionStatus;
+    tokenCount?: number;
     createdAt?: Instant;
     lastUpdatedAt?: Instant;
     source?: string;

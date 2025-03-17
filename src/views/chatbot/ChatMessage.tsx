@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ChatBubble,
   ChatBubbleAvatar,
@@ -11,10 +11,20 @@ import { getLogoFromModelProvider } from "@/lib/getLogoFromModelProvider";
 import { useUserContext } from "@/services/UserContextService";
 import { useTranslation } from "react-i18next";
 import { useToast } from "@/hooks/use-toast";
-import type { ChatMessageRecord, RagSourceRecord } from "@/api";
+import type {
+  ChatMessageRecord,
+  ChatModelContainer,
+  RagSourceRecord,
+} from "@/api";
 import { useTheme } from "@/components/theme-provider";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
+import useAvailableModels from "@/hooks/api/useGetModelsApi";
 import { KnowledgeSource } from "./KnowledgeSource";
 
 interface ChatMessageProps {
@@ -40,6 +50,18 @@ export default function ChatMessage({
   const { theme } = useTheme();
 
   const [isCopied, setIsCopied] = useState(false);
+
+  const { models } = useAvailableModels();
+
+  const [usedModel, setUsedModel] = useState<ChatModelContainer | null>(null);
+
+  useEffect(() => {
+    for (const model of models) {
+      if (model.uid === message.modelUID) {
+        setUsedModel(model);
+      }
+    }
+  }, [models]);
 
   const handleCopyClick = () => {
     if (message.type === "AI" && message.text) {
@@ -106,20 +128,30 @@ export default function ChatMessage({
       variant={message.type === "USER" ? "sent" : "received"}
       className={className}
     >
-      <ChatBubbleAvatar
-        className={`bg-secondary ${message.type === "AI" ? "flex justify-center items-center" : ""}`}
-        src={
-          message.type === "AI"
-            ? getLogoFromModelProvider(message.modelProvider)
-            : ""
-        }
-        ImageClassName={`size-7 ${theme === "dark" ? "invert" : ""}`}
-        fallback={
-          message.type === "USER"
-            ? getInitials(user?.name ?? user?.username ?? "Anonymous")
-            : "AI"
-        }
-      />
+      {message.type == "USER" ? (
+        <ChatBubbleAvatar
+          className="bg-secondary"
+          src={""}
+          fallback={getInitials(user?.name ?? user?.name ?? "Anonymous")}
+        />
+      ) : (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span>
+              <ChatBubbleAvatar
+                className="bg-secondary flex justify-center items-center"
+                ImageClassName={`size-7 ${theme === "dark" ? "invert" : ""}`}
+                src={getLogoFromModelProvider(usedModel?.provider)}
+                fallback={"AI"}
+              />
+            </span>
+          </TooltipTrigger>
+          <TooltipContent>
+            {usedModel?.label ?? t("chatbot.chat.modelNameNotAvailable")}
+          </TooltipContent>
+        </Tooltip>
+      )}
+
       <ChatBubbleMessage>
         {renderContent()}
         {showButtons && (

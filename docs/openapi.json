@@ -20,10 +20,7 @@
               "$ref" : "#/components/schemas/RagSourceRecord"
             }
           },
-          "modelProvider" : {
-            "$ref" : "#/components/schemas/ChatModelProvider"
-          },
-          "modelName" : {
+          "modelUID" : {
             "type" : "string"
           }
         }
@@ -107,6 +104,10 @@
           },
           "ingestionStatus" : {
             "$ref" : "#/components/schemas/IngestionStatus"
+          },
+          "tokenCount" : {
+            "type" : "integer",
+            "format" : "int32"
           },
           "createdAt" : {
             "$ref" : "#/components/schemas/Instant"

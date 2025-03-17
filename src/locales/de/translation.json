@@ -39,7 +39,8 @@
         "error": {
           "generic": "Es ist ein Fehler aufgetreten."
         }
-      }
+      },
+      "modelNameNotAvailable": "Nicht mehr verfügbar"
     },
     "pdf": {
       "closeButton": "Schließen"

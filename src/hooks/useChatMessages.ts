@@ -6,7 +6,6 @@ import { combineErrors } from "@/lib/combineErrors";
 import { ChatMessageRecord, Session } from "@/api";
 import useGetHistoryApi from "./api/useGetHistoryApi";
 import { useLoading } from "@/services/LoadingService";
-import useAvailableModels from "./api/useGetModelsApi";
 import { readSelectedModel } from "./useLocalStorage";
 import { useKeepAliveSession } from "./useKeepAliveSession";
 
@@ -28,7 +27,6 @@ export default function useChatMessages({
 }: UseAddFileSourceApiProps): UseChatMessagesResponse {
   const { setLoading: setLoadingSpinner } = useLoading();
   const { t } = useTranslation();
-  const { getModelProviderFromUid } = useAvailableModels();
 
   // Keep alive session id, need to be useState but should be keep in sync with sessionIDRef.current
   const [keepAliveSessionId, setKeepAliveSessionId] = useState<string | null>(
@@ -117,7 +115,7 @@ export default function useChatMessages({
       const messageRecord: ChatMessageRecord = {
         text: response.response,
         type: "AI",
-        modelProvider: getModelProviderFromUid(chatModelUIDRef.current),
+        modelUID: chatModelUIDRef.current ?? undefined,
         sources: response.sources,
         timestamp: new Date().toISOString(),
       };
