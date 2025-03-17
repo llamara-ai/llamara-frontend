@@ -1,5 +1,3 @@
-"use client";
-
 import * as React from "react";
 import { useEffect, useState, useCallback, useRef } from "react";
 import useGetKnowledgeFileApi from "@/hooks/api/useGetKnowledgeFileApi";
@@ -16,7 +14,8 @@ import {
 } from "@/components/ui/dialog";
 import type { PDFDocumentProxy } from "pdfjs-dist";
 import printJS from "print-js";
-import { TextItem } from "pdfjs-dist/types/src/display/api";
+import type { TextItem } from "pdfjs-dist/types/src/display/api";
+import { t } from "i18next";
 
 interface PdfViewerProps {
   fileUuid: string;
@@ -50,6 +49,7 @@ const PdfViewer = ({ fileUuid, label }: PdfViewerProps) => {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [currentSearchIndex, setCurrentSearchIndex] = useState<number>(-1);
   const pageRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [observer, setObserver] = useState<IntersectionObserver | null>(null);
 
   useEffect(() => {
     if (fileData) {
@@ -67,14 +67,61 @@ const PdfViewer = ({ fileUuid, label }: PdfViewerProps) => {
     }
   }, [fileData]);
 
-  const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
+  const onDocumentLoadSuccess = ({ numPages }: PDFDocumentProxy) => {
     setNumPages(numPages);
+    setCurrentPage(1);
     pageRefs.current = new Array<HTMLDivElement | null>(numPages).fill(null);
+
+    // Initialize the observer after the document is loaded
+    initializeObserver();
   };
+
+  const initializeObserver = useCallback(() => {
+    if (observer) {
+      observer.disconnect();
+    }
+
+    const observerOptions = {
+      root: containerRef.current,
+      threshold: 0.5,
+    };
+
+    const observerCallback: IntersectionObserverCallback = (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const pageNumber = Number.parseInt(
+            entry.target.getAttribute("data-page-number") ?? "1",
+            10,
+          );
+          updateCurrentPage(pageNumber);
+        }
+      });
+    };
+
+    const updateCurrentPage = (pageNumber: number) => {
+      setCurrentPage((prevPage) => {
+        if (prevPage !== pageNumber) return pageNumber;
+        return prevPage;
+      });
+    };
+
+    const newObserver = new IntersectionObserver(
+      observerCallback,
+      observerOptions,
+    );
+    setObserver(newObserver);
+
+    pageRefs.current.forEach((ref) => {
+      if (ref) {
+        newObserver.observe(ref);
+      }
+    });
+  }, [observer]); // Added observer to dependencies
 
   const handlePreviousPage = () => {
     setCurrentPage((prevPage) => {
       const newPage = Math.max(prevPage - 1, 1);
+      scrollToPage(newPage);
       return newPage;
     });
   };
@@ -82,8 +129,16 @@ const PdfViewer = ({ fileUuid, label }: PdfViewerProps) => {
   const handleNextPage = () => {
     setCurrentPage((prevPage) => {
       const newPage = Math.min(prevPage + 1, numPages);
+      scrollToPage(newPage);
       return newPage;
     });
+  };
+
+  const scrollToPage = (pageNumber: number) => {
+    const pageElement = pageRefs.current[pageNumber - 1];
+    if (pageElement && containerRef.current) {
+      pageElement.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   };
 
   const handleSearch = async (term: string) => {
@@ -110,7 +165,7 @@ const PdfViewer = ({ fileUuid, label }: PdfViewerProps) => {
         results.push({
           pageIndex,
           matchIndex: matchIndex++,
-          text: pageText.substring(index, term.length),
+          text: pageText.substring(index, index + term.length),
         });
         index = pageText.toLowerCase().indexOf(term.toLowerCase(), index + 1);
       }
@@ -119,7 +174,9 @@ const PdfViewer = ({ fileUuid, label }: PdfViewerProps) => {
     setSearchResults(results);
     if (results.length > 0) {
       setCurrentSearchIndex(0);
-      setCurrentPage(results[0].pageIndex + 1);
+      const firstResultPage = results[0].pageIndex + 1;
+      setCurrentPage(firstResultPage);
+      scrollToPage(firstResultPage);
     }
   };
 
@@ -127,7 +184,9 @@ const PdfViewer = ({ fileUuid, label }: PdfViewerProps) => {
     if (searchResults.length > 0) {
       const nextIndex = (currentSearchIndex + 1) % searchResults.length;
       setCurrentSearchIndex(nextIndex);
-      setCurrentPage(searchResults[nextIndex].pageIndex + 1);
+      const nextPage = searchResults[nextIndex].pageIndex + 1;
+      setCurrentPage(nextPage);
+      scrollToPage(nextPage);
     }
   };
 
@@ -138,7 +197,9 @@ const PdfViewer = ({ fileUuid, label }: PdfViewerProps) => {
           ? searchResults.length - 1
           : currentSearchIndex - 1;
       setCurrentSearchIndex(prevIndex);
-      setCurrentPage(searchResults[prevIndex].pageIndex + 1);
+      const prevPage = searchResults[prevIndex].pageIndex + 1;
+      setCurrentPage(prevPage);
+      scrollToPage(prevPage);
     }
   };
 
@@ -177,32 +238,76 @@ const PdfViewer = ({ fileUuid, label }: PdfViewerProps) => {
   };
 
   const handleZoomIn = () => {
-    setScale((prevScale) => Math.min(prevScale + 0.1, 3));
+    setScale((prevScale) => {
+      const newScale = Math.min(prevScale + 0.1, 3);
+      setTimeout(() => {
+        updatePageNumbersAfterZoom();
+      }, 100);
+      return newScale;
+    });
   };
 
   const handleZoomOut = () => {
-    setScale((prevScale) => Math.max(prevScale - 0.1, 0.5));
+    setScale((prevScale) => {
+      const newScale = Math.max(prevScale - 0.1, 0.5);
+      setTimeout(() => {
+        updatePageNumbersAfterZoom();
+      }, 100);
+      return newScale;
+    });
   };
 
-  const handleWheel = useCallback((e: WheelEvent) => {
-    if (e.ctrlKey) {
-      e.preventDefault();
-      const delta = e.deltaY > 0 ? -0.1 : 0.1;
-      setScale((prevScale) => Math.min(Math.max(prevScale + delta, 0.5), 3));
+  const updatePageNumbersAfterZoom = useCallback(() => {
+    if (containerRef.current) {
+      const container = containerRef.current;
+      const containerRect = container.getBoundingClientRect();
+      const visiblePages = pageRefs.current.filter((pageRef) => {
+        if (pageRef) {
+          const pageRect = pageRef.getBoundingClientRect();
+          return (
+            pageRect.top < containerRect.bottom &&
+            pageRect.bottom > containerRect.top
+          );
+        }
+        return false;
+      });
+      if (visiblePages.length > 0) {
+        const firstVisiblePageIndex = pageRefs.current.indexOf(visiblePages[0]);
+        setCurrentPage(firstVisiblePageIndex + 1);
+      }
     }
-  }, []);
+  }, [pageRefs, containerRef]); // Added missing dependencies
 
   useEffect(() => {
     const container = containerRef.current;
     if (container) {
+      const handleWheel = (e: WheelEvent) => {
+        if (e.ctrlKey) {
+          e.preventDefault();
+          const delta = e.deltaY > 0 ? -0.1 : 0.1;
+          setScale((prevScale) => {
+            const newScale = Math.min(Math.max(prevScale + delta, 0.5), 3);
+            setTimeout(() => {
+              updatePageNumbersAfterZoom();
+            }, 100);
+            return newScale;
+          });
+        }
+      };
       container.addEventListener("wheel", handleWheel, { passive: false });
-    }
-    return () => {
-      if (container) {
+      return () => {
         container.removeEventListener("wheel", handleWheel);
+      };
+    }
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (observer) {
+        observer.disconnect();
       }
     };
-  }, [handleWheel]);
+  }, [observer]);
 
   return (
     <div className="w-full h-full flex flex-col bg-transparent">
@@ -252,8 +357,17 @@ const PdfViewer = ({ fileUuid, label }: PdfViewerProps) => {
                   rotate={rotation}
                   className="shadow-md"
                   inputRef={(ref) => {
-                    if (ref && currentPage === index + 1) {
-                      ref.scrollIntoView();
+                    if (ref) {
+                      pageRefs.current[index] = ref;
+                      if (observer) {
+                        observer.observe(ref);
+                      }
+                    }
+                  }}
+                  data-page-number={index + 1}
+                  onRenderSuccess={() => {
+                    if (index === 0) {
+                      setCurrentPage(1);
                     }
                   }}
                 />
@@ -270,22 +384,23 @@ const PdfViewer = ({ fileUuid, label }: PdfViewerProps) => {
       <Dialog open={showFileInfo} onOpenChange={setShowFileInfo}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>File Information</DialogTitle>
+            <DialogTitle>{t("knowledge.header")}</DialogTitle>
           </DialogHeader>
           {fileInfo && (
             <div>
               <p>
-                <strong>Name:</strong> {label}
+                <strong>{t("knowledge.name")}:</strong> {label}
               </p>
               <p>
-                <strong>Size:</strong> {fileInfo.size}
+                <strong>{t("knowledge.size")}:</strong> {fileInfo.size}
               </p>
               <p>
-                <strong>Type:</strong> {fileInfo.type}
+                <strong>{t("knowledge.type")}:</strong> {fileInfo.type}
               </p>
               {fileInfo.lastModified && (
                 <p>
-                  <strong>Last Modified:</strong> {fileInfo.lastModified}
+                  <strong>{t("knowledge.lastUpdate")}:</strong>{" "}
+                  {fileInfo.lastModified}
                 </p>
               )}
             </div>

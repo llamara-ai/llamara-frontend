@@ -1,36 +1,48 @@
-import { Button } from "@/components/ui/button";
-import { useSidebar } from "@/components/ui/sidebar";
+import {
+  SidebarGroup,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
+} from "@/components/ui/sidebar";
 import useCurrentPage from "@/hooks/useCurrentPage";
+import { useUserContext } from "@/services/UserContextService";
 import { t } from "i18next";
 import { Bot, HardDriveUpload } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function RedirectButton() {
   const activePage = useCurrentPage();
-  const isKnowledgePage = activePage === "knowledge";
-
-  const ButtonLabel = !isKnowledgePage
-    ? t("sidebar.knowledge")
-    : t("sidebar.chatbot");
-  const buttonIcon = !isKnowledgePage ? <HardDriveUpload /> : <Bot />;
-
   const { open } = useSidebar();
   const navigate = useNavigate();
-
-  const redirect = () => {
-    if (!isKnowledgePage) {
-      void navigate(`/knowledge`);
-    } else {
-      void navigate(`/`);
-    }
-  };
+  const { user } = useUserContext();
 
   return (
-    <Button
-      onClick={redirect}
-      className="bg-secondary border-primary border-1 text-primary hover:text-secondary"
-    >
-      {open ? <>{ButtonLabel}</> : <>{buttonIcon}</>}
-    </Button>
+    <SidebarGroup className="pt-4">
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            onClick={() => {
+              void navigate("/");
+            }}
+            className={activePage === "chatbot" ? "bg-secondary" : ""}
+          >
+            <Bot />
+            {open && t("sidebar.chatbot")}
+          </SidebarMenuButton>
+          {!user?.anonymous && (
+            <SidebarMenuButton
+              onClick={() => {
+                void navigate("/knowledge");
+              }}
+              className={activePage === "knowledge" ? "bg-secondary" : ""}
+            >
+              <HardDriveUpload />
+              {open && t("sidebar.knowledge")}
+            </SidebarMenuButton>
+          )}
+        </SidebarMenuItem>
+      </SidebarMenu>
+    </SidebarGroup>
   );
 }

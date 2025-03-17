@@ -17,6 +17,7 @@ import { useTranslation } from "react-i18next";
 import { useDropzone } from "react-dropzone";
 import { UploadIcon } from "lucide-react";
 import useFileStatus from "@/hooks/useFileStatus";
+import { useToast } from "@/hooks/use-toast";
 
 interface UploadFileDialogProps {
   knowledge?: Readonly<Knowledge> | null;
@@ -42,6 +43,7 @@ export default function UploadFileDialog({
   const { registerFiles } = useFileStatus();
 
   const { t } = useTranslation();
+  const { toast } = useToast();
 
   const [updateMode] = useState<boolean>(knowledge !== null);
 
@@ -78,6 +80,26 @@ export default function UploadFileDialog({
     }
     setStatus("uploading");
 
+    // Remove white spaces from file names
+    let removedWhiteSpaces = false;
+    const cleanedFiles: File[] = files.map((file) => {
+      if (file.name.includes(" ")) {
+        removedWhiteSpaces = true;
+        return new File([file], file.name.replace(/ /g, "_"), {
+          type: file.type,
+        });
+      }
+      return file;
+    });
+
+    // If white spaces were removed, show a toast
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (removedWhiteSpaces) {
+      toast({
+        title: t("knowledgePage.uploadFileDialog.whiteSpaces"),
+      });
+    }
+
     // If knowledge provided call update file source
     if (updateMode) {
       if (!knowledge?.id) {
@@ -85,10 +107,10 @@ export default function UploadFileDialog({
         setStatus("error");
         return;
       }
-      await handleUpdateFileSource(knowledge.id, files[0]);
+      await handleUpdateFileSource(knowledge.id, cleanedFiles[0]);
       await registerFiles([knowledge.id]);
     } else {
-      const fileId = await handleAddFileSource(files);
+      const fileId = await handleAddFileSource(cleanedFiles);
       if (fileId) await registerFiles(fileId);
     }
     setStatus("success");
@@ -125,7 +147,7 @@ export default function UploadFileDialog({
         <DialogDescription>
           <span
             {...getRootProps()}
-            className="block border-dashed border-2 p-6 text-center text-gray-500 cursor-pointer hover:bg-gray-100"
+            className="block border-dashed border-2 p-6 text-center text-(--muted) border-(--muted) hover:text-primary hover:border-primary cursor-pointer"
           >
             <input {...getInputProps()} multiple={!updateMode} />
             <UploadIcon className="inline pr-0 scale-150" />

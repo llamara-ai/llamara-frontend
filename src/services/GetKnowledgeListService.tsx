@@ -5,9 +5,11 @@ import { useToast } from "@/hooks/use-toast";
 
 interface UseGetAllKnowledgeApiResponse {
   allKnowledge: Knowledge[];
-  updateLocalKnowledge: (knowledge: Knowledge | null) => Promise<void>;
+  updateLocalKnowledge: (
+    newKnowledgeArray: Knowledge[] | null,
+  ) => Promise<void>;
   deleteLocalKnowledge: (knowledge: Knowledge) => Promise<void>;
-  addLocalKnowledge: (knowledge: Knowledge) => Promise<void>;
+  addLocalKnowledge: (knowledgeArray: Knowledge[]) => Promise<void>;
   error: string | null;
 }
 
@@ -76,43 +78,44 @@ export default function GetKnowledgeListProvider({
   };
 
   // add multiple knowledge to local state
-  const addLocalKnowledge = async (knowledge: Knowledge) => {
+  const addLocalKnowledge = async (knowledgeArray: Knowledge[]) => {
     //Refetch all knowledge if not available
     if (allKnowledge.length === 0) {
       await fetchAllKnowledge();
     }
+    const knowledgeToAdd: Knowledge[] = [];
 
-    // Check if knowledge already exists, if yes then update it
-    const existingKnowledge = allKnowledge.find((k) => k.id === knowledge.id);
-    if (existingKnowledge) {
-      toast({
-        variant: "default",
-        title: "File already exists",
-        description: "Updated the file",
-      });
-      await updateLocalKnowledge(knowledge);
-    } else {
-      const updatedKnowledge = [...allKnowledge, knowledge];
-
-      setAllKnowledge(updatedKnowledge);
-      setCache("allKnowledge", updatedKnowledge, 120);
+    for (const knowledge of knowledgeArray) {
+      // Check if knowledge already exists, if yes then update it
+      const existingKnowledge = allKnowledge.find((k) => k.id === knowledge.id);
+      if (existingKnowledge) {
+        await updateLocalKnowledge([knowledge]);
+      } else {
+        knowledgeToAdd.push(knowledge);
+      }
     }
+    const updatedKnowledge = allKnowledge.concat(knowledgeToAdd);
+    setAllKnowledge(updatedKnowledge);
+    setCache("allKnowledge", updatedKnowledge, 120);
   };
 
   // update Knowledge in local state
-  const updateLocalKnowledge = async (newKnowledge: Knowledge | null) => {
-    if (!newKnowledge) return;
+  const updateLocalKnowledge = async (
+    newKnowledgeArray: Knowledge[] | null,
+  ) => {
+    if (!newKnowledgeArray) return;
 
     //Refetch all knowledge if not available
     if (allKnowledge.length === 0) {
       await fetchAllKnowledge();
     }
-
-    const filteredKnowledges = allKnowledge.filter(
-      (k) => k.id !== newKnowledge.id,
-    );
-    const updatedKnowledges = [...filteredKnowledges, newKnowledge];
-
+    let filteredKnowledges = allKnowledge;
+    for (const newKnowledge of newKnowledgeArray) {
+      filteredKnowledges = filteredKnowledges.filter(
+        (k) => k.id !== newKnowledge.id,
+      );
+    }
+    const updatedKnowledges = filteredKnowledges.concat(newKnowledgeArray);
     setAllKnowledge(updatedKnowledges);
     setCache("allKnowledge", updatedKnowledges, 120);
   };

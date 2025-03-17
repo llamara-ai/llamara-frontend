@@ -16,32 +16,36 @@ export default function useFileStatus(): FileStatusResponse {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const registerFiles = async (newFiles: string[]) => {
+    const addedKnowledge: Knowledge[] = [];
     for (const fileId of newFiles) {
       const knowledge = await getKnowledgeApiFunction(fileId);
       if (knowledge) {
-        await addLocalKnowledge(knowledge);
+        addedKnowledge.push(knowledge);
         if (knowledge.ingestionStatus === "PENDING") {
           knowledgeListRef.current.push(knowledge);
         }
       }
     }
+    await addLocalKnowledge(addedKnowledge);
     startInterval();
   };
 
   const checkFileStatus = async () => {
+    const knowledgeList: Knowledge[] = [];
     for (const knowledgeFromList of knowledgeListRef.current) {
       if (!knowledgeFromList.id) return;
       const updatedKnowledge = await getKnowledgeApiFunction(
         knowledgeFromList.id,
       );
+      if (updatedKnowledge) knowledgeList.push(updatedKnowledge);
 
-      await updateLocalKnowledge(updatedKnowledge);
       if (updatedKnowledge?.ingestionStatus !== "PENDING") {
         knowledgeListRef.current = knowledgeListRef.current.filter(
           (k) => k.id !== updatedKnowledge?.id,
         );
       }
     }
+    await updateLocalKnowledge(knowledgeList);
   };
 
   useEffect(() => {

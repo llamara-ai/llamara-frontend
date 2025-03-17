@@ -1,4 +1,4 @@
-import { ChevronRight, type LucideIcon } from "lucide-react";
+import { ChevronRight, Clock, type LucideIcon } from "lucide-react";
 
 import {
   Collapsible,
@@ -45,8 +45,10 @@ export function SidebarSessionList({
   const { open } = useSidebar();
 
   return (
-    <SidebarGroup>
-      <SidebarGroupLabel>{title}</SidebarGroupLabel>
+    <SidebarGroup className="flex-1 overflow-auto pt-0">
+      <SidebarGroupLabel className={open ? "text-sm text-center" : ""}>
+        {title}
+      </SidebarGroupLabel>
       <SidebarMenu
         className={`top-0 left-0 transition-opacity duration-300 ${open ? "opacity-100" : "opacity-0"}`}
       >
@@ -91,7 +93,7 @@ const SessionGroup = ({ item, setOnClick }: SessionGroupProps) => {
       <SidebarMenuItem>
         <CollapsibleTrigger asChild>
           <SidebarMenuButton tooltip={item.title}>
-            {item.icon && <item.icon />}
+            <Clock />
             <span>{item.title}</span>
             <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
           </SidebarMenuButton>

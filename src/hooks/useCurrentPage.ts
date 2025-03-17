@@ -1,8 +1,5 @@
-import { useLocation } from "react-router-dom";
-
 export default function useCurrentPage() {
-  const location = useLocation();
-  const path = location.pathname;
+  const path = window.location.pathname;
 
   if (path === "/") {
     return "chatbot";

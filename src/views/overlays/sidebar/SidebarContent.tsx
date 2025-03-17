@@ -19,8 +19,9 @@ import { useNavigate } from "react-router-dom";
 import { useUserContext } from "@/services/UserContextService";
 import { useGetSessions } from "@/services/GetSessionsService";
 import LoadingAnimation from "@/components/loading-animation";
+import RedirectButton from "./RedirectButton";
 
-const SessionModelSidebar = () => {
+const SidebarContentFunc = () => {
   const { t } = useTranslation();
   const { toast } = useToast();
   const { models } = useGetModelsApi();
@@ -71,7 +72,7 @@ const SessionModelSidebar = () => {
           setActiveModel={setSelectedModel}
         />
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="flex flex-col">
         {loading ? (
           <LoadingAnimation
             loadingMessage={t("sidebar.session.loading")}
@@ -80,12 +81,14 @@ const SessionModelSidebar = () => {
         ) : (
           <GetSessions sortedSessions={sortedSessions} />
         )}
+
+        <RedirectButton />
       </SidebarContent>
     </>
   );
 };
 
-export default SessionModelSidebar;
+export default SidebarContentFunc;
 
 const GetSessions = ({
   sortedSessions,
@@ -104,7 +107,7 @@ const GetSessions = ({
   return (
     <>
       {user?.anonymous ? (
-        <SidebarGroupLabel style={{ marginTop: 10, textAlign: "center" }}>
+        <SidebarGroupLabel className="flex-1 overflow-auto pt-0 text-sm mt-3 text-center items-start">
           {t("sidebar.session.anonymousModeActive")}
         </SidebarGroupLabel>
       ) : (

@@ -73,7 +73,8 @@
       "modelSelectionInstruction": "Wähle ein Modell aus..."
     },
     "knowledge": "Wissen",
-    "chatbot": "Chatbot"
+    "chatbot": "Chatbot",
+    "unknownRole": "Unbekannte Rolle"
   },
   "knowledgePage": {
     "table": {
@@ -98,7 +99,8 @@
     "options": {
       "delete": "Löschen",
       "update": "Datei Aktualisieren",
-      "actions": "Aktionen"
+      "actions": "Aktionen",
+      "retry": "Erneut ingestion starten"
     },
     "uploadFileDialog": {
       "upload": "Datei Hochladen",
@@ -107,7 +109,8 @@
       "success": "Datei erfolgreich hochgeladen",
       "selectFile": "Datei auswählen",
       "selectFiles": "Dateien auswählen",
-      "fileSelected": "{{count}} Datei(en) ausgewählt"
+      "fileSelected": "{{count}} Datei(en) ausgewählt",
+      "whiteSpaces": "Es wurden Leerzeichen im Dateinamen entfernt"
     }
   },
   "footer": {
@@ -116,6 +119,8 @@
     "hint": "LLMs können Fehler machen. Überprüfen Sie wichtige Informationen."
   },
   "knowledge": {
+    "header": "Datei Informationen",
+    "name": "Name",
     "createdAt": "Erstellt am",
     "lastUpdate": "Letztes Update",
     "permissions": "Zugriffsrechte",
@@ -123,6 +128,8 @@
     "tags": "Tags",
     "noTags": "Keine Tags vorhanden",
     "sourceContent": "Verwendeter Inhalt der Quelle",
-    "source": "Quelle"
+    "source": "Quelle",
+    "type": "Typ",
+    "size": "Größe"
   }
 }

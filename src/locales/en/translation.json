@@ -73,7 +73,8 @@
       "anonymousModeActive": "No chat histories are displayed because anonymous mode is active."
     },
     "knowledge": "Knowledge",
-    "chatbot": "Chatbot"
+    "chatbot": "Chatbot",
+    "unknownRole": "Unknown role"
   },
   "knowledgePage": {
     "table": {
@@ -98,7 +99,8 @@
     "options": {
       "delete": "Delete",
       "update": "Update File",
-      "actions": "Actions"
+      "actions": "Actions",
+      "retry": "Retry ingestion"
     },
     "uploadFileDialog": {
       "upload": "Upload File",
@@ -107,7 +109,8 @@
       "success": "File uploaded successfully",
       "selectFile": "Select file",
       "selectFiles": "Select files",
-      "fileSelected": "{{count}} file(s) selected"
+      "fileSelected": "{{count}} file(s) selected",
+      "whiteSpaces": "Whitespace removed from file name"
     }
   },
   "footer": {
@@ -116,6 +119,8 @@
     "hint": "LLMs can make mistakes. Check important information."
   },
   "knowledge": {
+    "header": "File information",
+    "name": "Name",
     "createdAt": "Created on",
     "lastUpdate": "Last update",
     "permissions": "Access rights",
@@ -123,6 +128,8 @@
     "tags": "Tags",
     "noTags": "No tags available",
     "sourceContent": "Used content of the source",
-    "source": "Source"
+    "source": "Source",
+    "type": "Type",
+    "size": "Size"
   }
 }

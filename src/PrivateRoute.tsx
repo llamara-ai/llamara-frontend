@@ -8,7 +8,9 @@ interface PrivateRoute {
   forceRedirect: boolean;
 }
 
-export default function PrivateRoute(forceRedirect: Readonly<PrivateRoute>) {
+export default function PrivateRoute({
+  forceRedirect,
+}: Readonly<PrivateRoute>) {
   const navigate = useNavigate();
   const { ready, user } = useUserContext();
   const { loginInProgress }: IAuthContext = useContext(AuthContext);
@@ -18,9 +20,8 @@ export default function PrivateRoute(forceRedirect: Readonly<PrivateRoute>) {
       return;
     }
     if (
-      user === null &&
+      (user === null || user.anonymous) &&
       window.location.pathname !== "/login" &&
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       forceRedirect
     ) {
       void navigate("/login");

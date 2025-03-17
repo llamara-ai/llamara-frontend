@@ -8,6 +8,7 @@ import useGetHistoryApi from "./api/useGetHistoryApi";
 import { useLoading } from "@/services/LoadingService";
 import useAvailableModels from "./api/useGetModelsApi";
 import { readSelectedModel } from "./useLocalStorage";
+import { useKeepAliveSession } from "./useKeepAliveSession";
 
 interface UseAddFileSourceApiProps {
   appendSessionLocal: (session: Session | null) => void;
@@ -28,6 +29,12 @@ export default function useChatMessages({
   const { setLoading: setLoadingSpinner } = useLoading();
   const { t } = useTranslation();
   const { getModelProviderFromUid } = useAvailableModels();
+
+  // Keep alive session id, need to be useState but should be keep in sync with sessionIDRef.current
+  const [keepAliveSessionId, setKeepAliveSessionId] = useState<string | null>(
+    null,
+  );
+  useKeepAliveSession(keepAliveSessionId);
 
   const sessionIDRef = useRef<string | null>(null); // Need to use Ref because useState is async
   const chatModelUIDRef = useRef<string | null>(
@@ -56,6 +63,12 @@ export default function useChatMessages({
 
   const { fetchHistory, loading: loadingHistory } = useGetHistoryApi();
 
+  // Update session Id (keep keepAliveSessionId and sessionIDRef.current in sync)
+  const setSessionId = (sessionId: string | null) => {
+    sessionIDRef.current = sessionId;
+    setKeepAliveSessionId(sessionId);
+  };
+
   const updateSessionId = async (sessionId: string | null) => {
     // Reset chat messages and prompt input when sessionID changes
     setCurrentChatMessages([]);
@@ -65,7 +78,7 @@ export default function useChatMessages({
       setHistoryMessages(historySessions);
     }
 
-    sessionIDRef.current = sessionId;
+    setSessionId(sessionId);
 
     promptInput.current = ""; // Reset prompt input, need to avoid resend prompt
     setLoadingResponse(false);
@@ -91,7 +104,7 @@ export default function useChatMessages({
       appendSessionLocal(newSession);
 
       if (newSession?.id) {
-        sessionIDRef.current = newSession.id;
+        setSessionId(newSession.id);
       }
     }
     chatModelUIDRef.current = readSelectedModel()?.uid ?? null;

@@ -12,7 +12,6 @@ import { LoadingProvider } from "./services/LoadingService";
 import LoadingOverlay from "./components/loading-overlay";
 import {
   AppContextProvider,
-  useInitAppContext,
   useAppContext,
 } from "@/services/AppContextService.tsx";
 import { UserContextProvider } from "@/services/UserContextService.tsx";
@@ -24,6 +23,7 @@ createRoot(document.getElementById("root")!).render(
       <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
         <CacheProvider>
           <LoadingProvider>
+            <InitComponent />
             <App />
             <Toaster />
             <LoadingOverlay />
@@ -34,10 +34,12 @@ createRoot(document.getElementById("root")!).render(
   </StrictMode>,
 );
 
-function App() {
+function InitComponent() {
   initLanguage();
-  useInitAppContext();
+  return null;
+}
 
+function App() {
   const { ready, authConfig } = useAppContext();
 
   // Wait for app context to be ready

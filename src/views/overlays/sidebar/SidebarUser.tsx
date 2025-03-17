@@ -26,28 +26,18 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useTheme } from "../../../components/theme-provider";
-import { UserInfoDto } from "@/api";
 import { useTranslation } from "react-i18next";
 import { getInitials } from "@/lib/getInitials";
-import i18next from "i18next";
+import i18next, { t } from "i18next";
 import useDeleteAllUserData from "@/hooks/api/useDeleteAllUserData";
 import { ConfirmDeleteModal } from "@/views/overlays/sidebar/ConfirmDeleteModal";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useUserContext } from "@/services/UserContextService";
+import { AuthContext } from "react-oauth2-code-pkce";
+import { useNavigate } from "react-router-dom";
 
-interface SidebarUserProps {
-  user: UserInfoDto;
-  loggedIn: boolean;
-  login: () => void;
-  logout: () => void;
-}
-
-export function SidebarUser({
-  user,
-  loggedIn,
-  login,
-  logout,
-}: Readonly<SidebarUserProps>) {
+export function SidebarUser() {
   const { t, i18n } = useTranslation();
   const { isMobile } = useSidebar();
   const { setTheme } = useTheme();
@@ -55,10 +45,15 @@ export function SidebarUser({
   const [isDeleteUserDialogOpen, setIsDeleteUserDialogOpen] =
     useState<boolean>(false);
   const { toast } = useToast();
+  const { user } = useUserContext();
+  const navigate = useNavigate();
+  const { token, logOut } = useContext(AuthContext);
 
-  const username = user.name ?? user.username ?? "Anonymous";
-  const name = user.name ?? username;
-  const userRole = getUserRole(user.roles);
+  const loggedIn = token.length > 0;
+
+  const username = user?.name ?? user?.username ?? "Anonymous";
+  const name = user?.name ?? username;
+  const userRole = getUserRole(user?.roles);
   const changeLanguageHandler = (lang: string) => {
     void i18n.changeLanguage(lang);
   };
@@ -66,7 +61,11 @@ export function SidebarUser({
   const deleteUserAndLogout = async () => {
     await deleteAllUserData();
     setIsDeleteUserDialogOpen(false);
-    if (error === null) logout();
+    if (error === null) logOut();
+  };
+
+  const login = () => {
+    void navigate("/login");
   };
 
   const deleteUserAbort = () => {
@@ -177,16 +176,22 @@ export function SidebarUser({
             <DropdownMenuSeparator />
             {/* Login*/}
             <DropdownMenuGroup>
-              <DropdownMenuItem
-                onClick={() => {
-                  setIsDeleteUserDialogOpen(true);
-                }}
-              >
-                <Trash2 />
-                {t("sidebar.deleteUserData.button")}
-              </DropdownMenuItem>
+              {loggedIn && (
+                <DropdownMenuItem
+                  onClick={() => {
+                    setIsDeleteUserDialogOpen(true);
+                  }}
+                >
+                  <Trash2 />
+                  {t("sidebar.deleteUserData.button")}
+                </DropdownMenuItem>
+              )}
               {loggedIn ? (
-                <DropdownMenuItem onClick={logout}>
+                <DropdownMenuItem
+                  onClick={() => {
+                    logOut();
+                  }}
+                >
                   <LogOut />
                   {t("sidebar.logout")}
                 </DropdownMenuItem>
@@ -216,12 +221,10 @@ export function SidebarUser({
 
 const getUserRole = (roles: string[] | undefined): string => {
   if (!roles) {
-    return "";
+    return t("sidebar.unknownRole");
   }
-  roles.forEach((role) => {
-    if (role.toLowerCase() === "admin") {
-      return "Admin";
-    }
-  });
+  if (roles.includes("admin")) {
+    return "Admin";
+  }
   return "User";
 };
