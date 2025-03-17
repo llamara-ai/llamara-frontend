@@ -107,6 +107,7 @@
     },
     "uploadFileDialog": {
       "upload": "Upload File",
+      "update": "Update File",
       "selectfile": "Select file",
       "error": "Error uploading file",
       "success": "File uploaded successfully",

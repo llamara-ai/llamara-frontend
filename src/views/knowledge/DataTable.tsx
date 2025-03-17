@@ -33,7 +33,7 @@ interface DataTableProps {
   data: Knowledge[];
 }
 
-const globalFilterFn: FilterFn<Knowledge> = (row, filterValue) => {
+const globalFilterFn: FilterFn<Knowledge> = (row, _columnId, filterValue) => {
   const searchValue: string = String(filterValue).toLowerCase();
   const { tags, permissions, ...otherFields } = row.original;
 

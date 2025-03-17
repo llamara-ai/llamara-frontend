@@ -11,7 +11,7 @@ import KnowledgePermissions from "./KnowledgePermissions";
 // You can use a Zod schema here if you want.
 export default function Columns(
   onClickFile: (knowledge: Knowledge) => void,
-  onClickTagEdit: (knowledge: Knowledge) => void,
+  onClickTagEdit: (knowledgeId: string | null) => void,
 ): ColumnDef<Knowledge>[] {
   const { t } = useTranslation();
 

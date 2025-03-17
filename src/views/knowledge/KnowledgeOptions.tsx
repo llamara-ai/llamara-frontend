@@ -25,7 +25,7 @@ import useFileStatus from "@/hooks/useFileStatus";
 import useRetryIngestionApi from "@/hooks/api/useRetryIngestionApi";
 
 interface KnowledgeOptionsProps {
-  onClickTagEdit: (knowledge: Knowledge) => void;
+  onClickTagEdit: (knowledgeId: string | null) => void;
   knowledge: Readonly<Knowledge>;
 }
 
@@ -66,7 +66,7 @@ export default function KnowledgeOptions({
         </DropdownMenuLabel>
         <DropdownMenuItem
           onClick={() => {
-            onClickTagEdit(knowledge);
+            onClickTagEdit(knowledge.id ?? null);
           }}
         >
           <Tag className="mr-2 h-4 w-4" />

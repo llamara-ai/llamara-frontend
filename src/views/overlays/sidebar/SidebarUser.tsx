@@ -36,6 +36,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useUserContext } from "@/services/UserContextService";
 import { AuthContext } from "react-oauth2-code-pkce";
 import { useNavigate } from "react-router-dom";
+import { LanguageLabels } from "@/locales/Languages.ts";
 
 export function SidebarUser() {
   const { t, i18n } = useTranslation();
@@ -152,24 +153,23 @@ export function SidebarUser() {
                 <DropdownMenuTrigger asChild>
                   <DropdownMenuItem>
                     <Languages />
-                    {t("sidebar.language")}: {i18next.language.toUpperCase()}
+                    {t("sidebar.language")}:{" "}
+                    {LanguageLabels.get(
+                      i18next.language.toLowerCase().split("-")[0],
+                    )}
                   </DropdownMenuItem>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent side="right" align="start">
-                  <DropdownMenuItem
-                    onClick={() => {
-                      changeLanguageHandler("en");
-                    }}
-                  >
-                    English
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => {
-                      changeLanguageHandler("de");
-                    }}
-                  >
-                    Deutsch
-                  </DropdownMenuItem>
+                  {Array.from(LanguageLabels.keys()).map((lang) => (
+                    <DropdownMenuItem
+                      key={lang}
+                      onClick={() => {
+                        changeLanguageHandler(lang);
+                      }}
+                    >
+                      {LanguageLabels.get(lang)}
+                    </DropdownMenuItem>
+                  ))}
                 </DropdownMenuContent>
               </DropdownMenu>
             </DropdownMenuGroup>

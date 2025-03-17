@@ -2,16 +2,17 @@
 
 // Define all available languages
 import i18n from "i18next";
+import LanguageDetector from "i18next-browser-languagedetector";
 import { initReactI18next } from "react-i18next";
 import translationEN from "./en/translation.json";
 import translationDE from "./de/translation.json";
 
-export const nameMap = new Map([
-  ["English", "en"],
-  ["Deutsch", "de"],
+export const LanguageLabels = new Map([
+  ["en", "English"],
+  ["de", "Deutsch"],
 ]);
 
-export const resources = {
+const resources = {
   en: {
     translation: translationEN,
   },
@@ -21,12 +22,14 @@ export const resources = {
 };
 
 export function init() {
-  void i18n.use(initReactI18next).init({
-    resources,
-    lng: "en",
-    fallbackLng: "en",
-    interpolation: {
-      escapeValue: false,
-    },
-  });
+  void i18n
+    .use(LanguageDetector)
+    .use(initReactI18next)
+    .init({
+      resources,
+      fallbackLng: "en",
+      interpolation: {
+        escapeValue: false,
+      },
+    });
 }

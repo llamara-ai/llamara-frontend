@@ -1,6 +1,6 @@
 import type React from "react";
-import { useState, useCallback } from "react";
-import { X } from "lucide-react";
+import { useState, useCallback, useEffect } from "react";
+import { Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -14,19 +14,31 @@ import {
 import { Knowledge } from "@/api";
 import useKnowledgeTagApi from "@/hooks/api/useKnowledgeTagApi";
 import { t } from "i18next";
+import { useGetKnowledgeList } from "@/services/GetKnowledgeListService";
 
 interface TagInputModalProps {
-  knowledge: Knowledge | null;
+  knowledgeId: string | null;
   onClose: () => void;
 }
 
 export default function TagEditDialog({
-  knowledge,
+  knowledgeId,
   onClose,
 }: Readonly<TagInputModalProps>) {
+  const [knowledge, setKnowledge] = useState<Knowledge | null>(null);
   const [tags, setTags] = useState<string[]>(knowledge?.tags ?? []);
   const [inputValue, setInputValue] = useState("");
   const { updateKnowledgeTags } = useKnowledgeTagApi({ knowledge });
+  const { allKnowledge } = useGetKnowledgeList();
+
+  useEffect(() => {
+    if (knowledgeId) {
+      const knowledge = allKnowledge.find((k) => k.id === knowledgeId);
+      setKnowledge(knowledge ?? null);
+
+      setTags(knowledge?.tags ?? []);
+    }
+  }, [allKnowledge, knowledgeId]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
@@ -54,12 +66,12 @@ export default function TagEditDialog({
   }, []);
 
   const handleSubmit = async () => {
-    await updateKnowledgeTags(tags);
     onClose();
+    await updateKnowledgeTags(tags);
   };
 
   return (
-    <Dialog open={knowledge !== null} onOpenChange={onClose}>
+    <Dialog open={knowledgeId !== null} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px] max-h-[400px] overflow-auto">
         <DialogHeader>
           <DialogTitle>{t("knowledgePage.tagDialog.title")}</DialogTitle>
@@ -86,13 +98,23 @@ export default function TagEditDialog({
               </span>
             ))}
           </div>
-          <Input
-            type="text"
-            placeholder="Add a new tag"
-            value={inputValue}
-            onChange={handleInputChange}
-            onKeyDown={handleInputKeyDown}
-          />
+          <div className="flex gap-2">
+            <Input
+              type="text"
+              placeholder="Add a new tag"
+              value={inputValue}
+              onChange={handleInputChange}
+              onKeyDown={handleInputKeyDown}
+            />
+            <Button
+              onClick={() => {
+                addTag(inputValue.trim());
+              }}
+              variant={"outline"}
+            >
+              <Plus size={14} />
+            </Button>
+          </div>
         </div>
         <DialogFooter>
           <Button

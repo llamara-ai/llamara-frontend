@@ -107,6 +107,7 @@
     },
     "uploadFileDialog": {
       "upload": "Datei Hochladen",
+      "update": "Datei Aktualisieren",
       "selectfile": "Datei auswählen",
       "error": "Fehler beim Hochladen der Datei",
       "success": "Datei erfolgreich hochgeladen",
@@ -127,10 +128,10 @@
     "hint": "LLMs können Fehler machen. Überprüfen Sie wichtige Informationen."
   },
   "knowledge": {
-    "header": "Datei Informationen",
+    "header": "Datei-Informationen",
     "name": "Name",
     "createdAt": "Erstellt am",
-    "lastUpdate": "Letztes Update",
+    "lastUpdate": "Letzte Aktualisierung",
     "permissions": "Zugriffsrechte",
     "noPermissions": "Keine Zugriffsrechte vorhanden",
     "tags": "Tags",
