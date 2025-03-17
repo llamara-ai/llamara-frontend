@@ -12,6 +12,7 @@ import { X } from "lucide-react";
 import { t } from "i18next";
 import useDownloadFile from "@/hooks/useDownloadFile";
 import { useToast } from "@/hooks/use-toast";
+import TagEditDialog from "@/views/knowledge/TagEditDialog";
 
 export default function Knowledge() {
   const { allKnowledge } = useGetKnowledgeList();
@@ -20,6 +21,8 @@ export default function Knowledge() {
   const [showPdfWithUuid, setShowPdfWithUuid] = useState<string | null>(null);
   const [pdfLoading, setPdfLoading] = useState<string | null>(null);
   const { downloadFile } = useDownloadFile();
+  const [openTagEditDialogKnowledge, setOpenTagEditDialogKnowledge] =
+    useState<KnowledgeType | null>(null);
 
   const onClickFile = (knowledge: KnowledgeType) => {
     if (!knowledge.label || !knowledge.id) return;
@@ -42,7 +45,10 @@ export default function Knowledge() {
   return (
     <div className={`flex h-full mt-0 relative`}>
       <div className="container mx-auto py-10">
-        <DataTable columns={Columns(onClickFile)} data={allKnowledge} />
+        <DataTable
+          columns={Columns(onClickFile, setOpenTagEditDialogKnowledge)}
+          data={allKnowledge}
+        />
       </div>
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger asChild>
@@ -60,6 +66,14 @@ export default function Knowledge() {
           resetSelectedFiles={!isDialogOpen}
         />
       </Dialog>
+
+      <TagEditDialog
+        knowledge={openTagEditDialogKnowledge}
+        onClose={() => {
+          setOpenTagEditDialogKnowledge(null);
+        }}
+      />
+
       {showPdfWithUuid && pdfLoading && (
         <>
           <div

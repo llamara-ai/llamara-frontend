@@ -39,7 +39,7 @@ export default function GetSessionsProvider({
           setError(null);
           if (response.data) {
             setSessions(response.data);
-            setCache("sessions", response.data, 10);
+            setCache("sessions", response.data, 120);
           } else {
             setSessions([]);
           }

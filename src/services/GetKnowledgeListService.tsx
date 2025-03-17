@@ -42,7 +42,7 @@ export default function GetKnowledgeListProvider({
       setAllKnowledge(cachedAllKnowledge);
     } else if (!loading && !cachedLoading) {
       setLoading(true);
-      setCacheLoading(knowledgeListLoadingCacheKey, true, 120);
+      setCacheLoading(knowledgeListLoadingCacheKey, true, 30);
       try {
         const response = await getAllKnowledge();
         setError(null);
@@ -60,7 +60,7 @@ export default function GetKnowledgeListProvider({
           setError(error.message);
         }
       }
-      setCacheLoading(knowledgeListLoadingCacheKey, false, 10);
+      setCacheLoading(knowledgeListLoadingCacheKey, false, 30);
       setLoading(false);
     }
   };

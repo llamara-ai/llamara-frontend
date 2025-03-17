@@ -64,7 +64,7 @@ export default function useGetKnowledgeApi({
             setCacheNotFound(cacheNotFoundKey, true, null);
             throw new Error("Knowledge not found");
           } else {
-            setCache(cacheKey, response.data, 10);
+            setCache(cacheKey, response.data, 120);
           }
           setKnowledge(response.data);
         })
@@ -78,7 +78,7 @@ export default function useGetKnowledgeApi({
         })
         .finally(() => {
           setLoading(false);
-          setCacheLoading(cacheLoadingKey, false, 10);
+          setCacheLoading(cacheLoadingKey, false, 120);
         });
     } else if (cachedLoading) {
       const timer = setTimeout(() => {

@@ -1,6 +1,12 @@
 import { Knowledge } from "@/api";
 import useDeleteKnowledgeApi from "@/hooks/api/useDeleteKnowledgeApi";
-import { DeleteIcon, FilePenIcon, MoreVertical, RefreshCw } from "lucide-react";
+import {
+  DeleteIcon,
+  FilePenIcon,
+  MoreVertical,
+  RefreshCw,
+  Tag,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -18,7 +24,15 @@ import { useGetKnowledgeList } from "@/services/GetKnowledgeListService";
 import useFileStatus from "@/hooks/useFileStatus";
 import useRetryIngestionApi from "@/hooks/api/useRetryIngestionApi";
 
-export default function KnowledgeOptions(knowledge: Readonly<Knowledge>) {
+interface KnowledgeOptionsProps {
+  onClickTagEdit: (knowledge: Knowledge) => void;
+  knowledge: Readonly<Knowledge>;
+}
+
+export default function KnowledgeOptions({
+  onClickTagEdit,
+  knowledge,
+}: Readonly<KnowledgeOptionsProps>) {
   const { t } = useTranslation();
   const { handleDeleteKnowledge } = useDeleteKnowledgeApi();
   const { deleteLocalKnowledge } = useGetKnowledgeList();
@@ -52,13 +66,21 @@ export default function KnowledgeOptions(knowledge: Readonly<Knowledge>) {
         </DropdownMenuLabel>
         <DropdownMenuItem
           onClick={() => {
+            onClickTagEdit(knowledge);
+          }}
+        >
+          <Tag className="mr-2 h-4 w-4" />
+          {t("knowledgePage.options.editTags")}
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          onClick={() => {
             void handleFileDelete();
           }}
         >
           <DeleteIcon className="mr-2 h-4 w-4" />
           {t("knowledgePage.options.delete")}
         </DropdownMenuItem>
-        <DropdownMenuSeparator />
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <DropdownMenuItem

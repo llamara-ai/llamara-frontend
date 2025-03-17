@@ -80,6 +80,7 @@
     "table": {
       "label": "Label",
       "noData": "No data available",
+      "inputPlaceholder": "Search for files, tags, permissions...",
       "status": {
         "label": "Status",
         "succeeded": "Successful",
@@ -100,7 +101,8 @@
       "delete": "Delete",
       "update": "Update File",
       "actions": "Actions",
-      "retry": "Retry ingestion"
+      "retry": "Retry ingestion",
+      "editTags": "Edit tags"
     },
     "uploadFileDialog": {
       "upload": "Upload File",
@@ -111,6 +113,11 @@
       "selectFiles": "Select files",
       "fileSelected": "{{count}} file(s) selected",
       "whiteSpaces": "Whitespace removed from file name"
+    },
+    "tagDialog": {
+      "title": "Edit tags",
+      "description": "Add or remove tags for the selected file",
+      "submitButton": "Save"
     }
   },
   "footer": {

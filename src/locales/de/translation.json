@@ -80,6 +80,7 @@
     "table": {
       "label": "Name",
       "noData": "Keine Dateien vorhanden",
+      "inputPlaceholder": "Suche nach Dateien, Tags, Berechtigungen...",
       "status": {
         "label": "Status",
         "succeeded": "Erfolgreich",
@@ -100,7 +101,8 @@
       "delete": "Löschen",
       "update": "Datei Aktualisieren",
       "actions": "Aktionen",
-      "retry": "Erneut ingestion starten"
+      "retry": "Erneut ingestion starten",
+      "editTags": "Tags bearbeiten"
     },
     "uploadFileDialog": {
       "upload": "Datei Hochladen",
@@ -111,6 +113,11 @@
       "selectFiles": "Dateien auswählen",
       "fileSelected": "{{count}} Datei(en) ausgewählt",
       "whiteSpaces": "Es wurden Leerzeichen im Dateinamen entfernt"
+    },
+    "tagDialog": {
+      "title": "Tags bearbeiten",
+      "description": "Füge neue Tags hinzu oder lösche bestehende Tags",
+      "submitButton": "Speichern"
     }
   },
   "footer": {

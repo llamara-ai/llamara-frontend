@@ -1,15 +1,16 @@
+import React, { useState } from "react";
 import {
-  ColumnDef,
+  type ColumnDef,
   flexRender,
   getCoreRowModel,
   useReactTable,
-  SortingState,
+  type SortingState,
   getSortedRowModel,
-  ColumnFiltersState,
   getFilteredRowModel,
   getExpandedRowModel,
   getPaginationRowModel,
-  ExpandedState,
+  type ExpandedState,
+  type FilterFn,
 } from "@tanstack/react-table";
 
 import {
@@ -22,61 +23,78 @@ import {
 } from "@/components/ui/table";
 
 import TableAccordion from "./TableAccordion";
-
 import { Input } from "@/components/ui/input";
-
-import React, { useState } from "react";
-import { Knowledge } from "@/api";
+import type { Knowledge } from "@/api";
 import { t } from "i18next";
 import { DataTablePagination } from "./Pagination";
 
 interface DataTableProps {
-  columns: ColumnDef<Knowledge, Knowledge>[];
+  columns: ColumnDef<Knowledge>[];
   data: Knowledge[];
 }
 
-export default function DataTable({ columns, data }: Readonly<DataTableProps>) {
-  const [sorting, setSorting] = React.useState<SortingState>([
-    {
-      id: "label",
-      desc: false,
-    },
-  ]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
+const globalFilterFn: FilterFn<Knowledge> = (row, filterValue) => {
+  const searchValue: string = String(filterValue).toLowerCase();
+  const { tags, permissions, ...otherFields } = row.original;
+
+  // Check visible columns
+  const visibleMatch = Object.values(otherFields).some((value) =>
+    String(value).toLowerCase().includes(searchValue),
   );
+
+  // Check tags
+  const tagMatch =
+    tags?.some((tag) => tag.toLowerCase().includes(searchValue)) ?? false;
+
+  const permissionMatch = permissions
+    ? Object.entries(permissions).some(([key, permission]) => {
+        const keyMatch = key.toLowerCase().includes(searchValue);
+        const valueMatch = Object.values(permission).some((value) =>
+          String(value).toLowerCase().includes(searchValue),
+        );
+        return keyMatch || valueMatch;
+      })
+    : false;
+  return visibleMatch || tagMatch || permissionMatch;
+};
+
+export default function DataTable({ columns, data }: Readonly<DataTableProps>) {
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: "label", desc: false },
+  ]);
   const [expanded, setExpanded] = useState<ExpandedState>({});
+  const [globalFilter, setGlobalFilter] = useState("");
 
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getRowCanExpand: () => true,
+    globalFilterFn,
     state: {
       sorting,
-      columnFilters,
-      expanded: expanded,
+      expanded,
+      globalFilter,
     },
     onExpandedChange: setExpanded,
+    onGlobalFilterChange: setGlobalFilter,
   });
+
   return (
     <>
-      {/* Table */}
       <div>
-        {/* Search */}
         <div className="flex items-center py-4">
           <Input
-            placeholder="Filter Label..."
-            value={(table.getColumn("label")?.getFilterValue() as string) || ""}
-            onChange={(event) =>
-              table.getColumn("label")?.setFilterValue(event.target.value)
-            }
+            placeholder={t("knowledgePage.table.inputPlaceholder")}
+            value={globalFilter}
+            onChange={(event) => {
+              setGlobalFilter(event.target.value);
+            }}
             className="max-w-sm"
           />
         </div>
@@ -86,18 +104,16 @@ export default function DataTable({ columns, data }: Readonly<DataTableProps>) {
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead key={header.id}>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
-                      </TableHead>
-                    );
-                  })}
+                  {headerGroup.headers.map((header) => (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
+                    </TableHead>
+                  ))}
                 </TableRow>
               ))}
             </TableHeader>
@@ -139,7 +155,6 @@ export default function DataTable({ columns, data }: Readonly<DataTableProps>) {
         </div>
       </div>
 
-      {/* Pigination in extra file*/}
       <div className="pt-2">{DataTablePagination(table)}</div>
     </>
   );

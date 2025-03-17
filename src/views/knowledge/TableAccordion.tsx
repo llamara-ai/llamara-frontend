@@ -37,20 +37,31 @@ export default function TableAccordion({
   const updatedAt = formatDate(knowledge.lastUpdatedAt, "dd.MM yyyy HH:mm z");
   return (
     <div>
-      <p>
-        {t("knowledge.createdAt")}: {createdAt}
+      <p className="flex py-1 pl-2">
+        <span className="w-1/6 font-semibold">{t("knowledge.createdAt")}:</span>
+        <span className="w-3/4">{createdAt}</span>
       </p>
-      <p>
-        {t("knowledge.lastUpdate")}: {updatedAt}
+      <p className="flex py-1 pl-2">
+        <span className="w-1/6 font-semibold">
+          {t("knowledge.lastUpdate")}:
+        </span>
+        <span className="w-3/4">{updatedAt}</span>
       </p>
-      <p>
-        {t("knowledge.source")}: {knowledge.source}
+      <p className="flex py-1 pl-2">
+        <span className="w-1/6 font-semibold">{t("knowledge.source")}:</span>
+        <span className="w-3/4">{knowledge.source}</span>
       </p>
-      <p>
-        {t("knowledge.tags")}: {knowledge.tags}
+      <p className="flex py-1 pl-2">
+        <span className="w-1/6 font-semibold">{t("knowledge.tags")}:</span>
+        <span className="w-3/4">
+          {knowledge.tags ? knowledge.tags.join(", ") : ""}
+        </span>
       </p>
-      <p>
-        {t("knowledge.permissions")}: {permission()}
+      <p className="flex py-1 pl-2">
+        <span className="w-1/6 font-semibold">
+          {t("knowledge.permissions")}:
+        </span>
+        <span className="w-3/4">{permission()}</span>
       </p>
     </div>
   );
