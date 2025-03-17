@@ -261,7 +261,10 @@ const PdfViewer = ({ fileUuid, label }: PdfViewerProps) => {
             ))}
           </Document>
         ) : (
-          <LoadingAnimation loadingMessage="Loading PDF..." />
+          <LoadingAnimation
+            loadingMessage="Loading PDF..."
+            className="bg-gray-100"
+          />
         )}
       </div>
       <Dialog open={showFileInfo} onOpenChange={setShowFileInfo}>

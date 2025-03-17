@@ -10,6 +10,7 @@ export interface UseGetSessionsApiResponse {
   deleteSessionLocal: (sessionId: string) => void;
   animateInSession: Session | null;
   error: string | null;
+  loading: boolean;
 }
 
 const SessionsContext = createContext<UseGetSessionsApiResponse | null>(null);
@@ -93,6 +94,7 @@ export default function GetSessionsProvider({
       deleteSessionLocal,
       animateInSession,
       error,
+      loading,
     }),
     [
       sessions,
@@ -101,6 +103,7 @@ export default function GetSessionsProvider({
       deleteSessionLocal,
       animateInSession,
       error,
+      loading,
     ],
   );
 

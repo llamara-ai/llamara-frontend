@@ -60,7 +60,8 @@
     "logout": "Abmelden",
     "session": {
       "buttonEditLabel": "Label bearbeiten",
-      "buttonDelete": "Session löschen"
+      "buttonDelete": "Session löschen",
+      "loading": "Lade Session..."
     },
     "knowledge": "Wissen",
     "chatbot": "Chatbot"

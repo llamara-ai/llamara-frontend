@@ -3,13 +3,17 @@ import { Loader2 } from "lucide-react";
 
 interface LoadingAnimationProps {
   loadingMessage: string;
+  className?: string;
 }
 
 export default function LoadingAnimation({
   loadingMessage,
+  className = "",
 }: Readonly<LoadingAnimationProps>) {
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
+    <div
+      className={`flex flex-col items-center justify-center h-screen ${className}`}
+    >
       <motion.div
         animate={{ rotate: 360 }}
         transition={{

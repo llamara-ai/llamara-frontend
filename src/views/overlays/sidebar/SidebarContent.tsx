@@ -18,14 +18,13 @@ import { groupSessionsByDateForNavbar } from "@/lib/groupSessionsByDateForNavbar
 import { useNavigate } from "react-router-dom";
 import { useUserContext } from "@/services/UserContextService";
 import { useGetSessions } from "@/services/GetSessionsService";
+import LoadingAnimation from "@/components/loading-animation";
 
 const SessionModelSidebar = () => {
   const { t } = useTranslation();
   const { toast } = useToast();
-  const navigate = useNavigate();
-  const { user } = useUserContext();
   const { models } = useGetModelsApi();
-  const { sessions } = useGetSessions();
+  const { sessions, loading } = useGetSessions();
 
   const [selectedModel, setSelectedModel] = useState<ChatModelContainer | null>(
     readSelectedModel(),
@@ -51,10 +50,6 @@ const SessionModelSidebar = () => {
     }
   }, []);
 
-  const onSelectSession = (sessionId: string) => {
-    void navigate(`/?session=${sessionId}`);
-  };
-
   useEffect(() => {
     setSortedSessions(
       groupSessionsByDateForNavbar({
@@ -77,16 +72,13 @@ const SessionModelSidebar = () => {
         />
       </SidebarHeader>
       <SidebarContent>
-        {user?.anonymous ? (
-          <SidebarGroupLabel style={{ marginTop: 10, textAlign: "center" }}>
-            {t("chatbot.sidebar.anonymousModeActive")}
-          </SidebarGroupLabel>
-        ) : (
-          <SidebarSessionList
-            title={t("chatbot.sidebar.title")}
-            items={sortedSessions}
-            setOnClick={onSelectSession}
+        {loading ? (
+          <LoadingAnimation
+            loadingMessage={t("sidebar.session.loading")}
+            className="bg-transparent"
           />
+        ) : (
+          <GetSessions sortedSessions={sortedSessions} />
         )}
       </SidebarContent>
     </>
@@ -94,3 +86,34 @@ const SessionModelSidebar = () => {
 };
 
 export default SessionModelSidebar;
+
+const GetSessions = ({
+  sortedSessions,
+}: {
+  sortedSessions: SidebarSessionsGroup[];
+}) => {
+  const { t } = useTranslation();
+  const { user } = useUserContext();
+
+  const navigate = useNavigate();
+
+  const onSelectSession = (sessionId: string) => {
+    void navigate(`/?session=${sessionId}`);
+  };
+
+  return (
+    <>
+      {user?.anonymous ? (
+        <SidebarGroupLabel style={{ marginTop: 10, textAlign: "center" }}>
+          {t("chatbot.sidebar.anonymousModeActive")}
+        </SidebarGroupLabel>
+      ) : (
+        <SidebarSessionList
+          title={t("chatbot.sidebar.title")}
+          items={sortedSessions}
+          setOnClick={onSelectSession}
+        />
+      )}
+    </>
+  );
+};
