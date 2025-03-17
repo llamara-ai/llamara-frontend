@@ -91,7 +91,7 @@
       },
       "permission": {
         "owner": "Owner",
-        "readwrite": "Read / Write",
+        "readwrite": "Read/Write",
         "readonly": "Read",
         "none": "No Permission",
         "undefined": "unknown",
@@ -103,7 +103,9 @@
       "update": "Update File",
       "actions": "Actions",
       "retry": "Retry ingestion",
-      "editTags": "Edit tags"
+      "editTags": "Edit tags",
+      "editPermissions": "Edit permissions",
+      "noPermission": "No permissions"
     },
     "uploadFileDialog": {
       "upload": "Upload File",
@@ -120,6 +122,14 @@
       "title": "Edit tags",
       "description": "Add or remove tags for the selected file",
       "submitButton": "Save"
+    },
+    "permissionsDialog": {
+      "title": "Edit permissions",
+      "description": "Add or remove permissions for the selected file",
+      "usernamePlaceholder": "Enter username",
+      "selectPermission": "Select",
+      "add": "Add",
+      "save": "Save"
     }
   },
   "footer": {

@@ -7,13 +7,9 @@ import Footer from "./Footer";
 
 interface OverlayProps {
   children: React.ReactNode;
-  disableAddSession?: boolean;
 }
 
-export function Overlay({
-  children,
-  disableAddSession,
-}: Readonly<OverlayProps>) {
+export function Overlay({ children }: Readonly<OverlayProps>) {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useTranslation();
@@ -30,11 +26,7 @@ export function Overlay({
     <Sidebar>
       <div className="h-full flex flex-col">
         <div className="sticky top-0 z-40 ">
-          {disableAddSession ? (
-            <Header />
-          ) : (
-            <Header onClickNewSession={() => void onClickNewSession()} />
-          )}
+          <Header onClickNewSession={() => void onClickNewSession()} />
         </div>
         <div className="mx-4 h-full">{children}</div>
       </div>

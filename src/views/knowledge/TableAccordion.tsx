@@ -1,6 +1,5 @@
 import { Knowledge } from "@/api";
 import { formatDate } from "date-fns";
-import { useUserContext } from "@/services/UserContextService";
 import { translatePermissions } from "./KnowledgePermissions";
 import { t } from "i18next";
 
@@ -11,28 +10,14 @@ interface TableAccordionProps {
 export default function TableAccordion({
   knowledge,
 }: Readonly<TableAccordionProps>) {
-  const { user } = useUserContext();
-
   if (!knowledge.createdAt || !knowledge.lastUpdatedAt) {
     return;
   }
-  function permission() {
-    if (!knowledge.permissions || !user?.username) {
-      return "";
-    }
 
-    let permissions = "";
+  const listOfPermissionKeys = () => {
+    return knowledge.permissions ? Object.keys(knowledge.permissions) : [];
+  };
 
-    for (const key in knowledge.permissions) {
-      if (knowledge.permissions.hasOwnProperty(key)) {
-        const value = knowledge.permissions[key];
-        const permission = translatePermissions(value, t);
-        permissions += `${key}: ${permission},`;
-      }
-    }
-    permissions = permissions.substring(0, permissions.length - 1);
-    return permissions;
-  }
   const createdAt = formatDate(knowledge.createdAt, "dd.MM yyyy HH:mm z");
   const updatedAt = formatDate(knowledge.lastUpdatedAt, "dd.MM yyyy HH:mm z");
   return (
@@ -61,7 +46,21 @@ export default function TableAccordion({
         <span className="w-1/6 font-semibold">
           {t("knowledge.permissions")}:
         </span>
-        <span className="w-3/4">{permission()}</span>
+        <span className="w-3/4">
+          {listOfPermissionKeys().map((key, index) => {
+            return (
+              <span key={key}>
+                <span className="font-semibold">{key}: </span>
+                <span>
+                  {knowledge.permissions
+                    ? translatePermissions(knowledge.permissions[key], t)
+                    : ""}{" "}
+                  {listOfPermissionKeys().length - 1 > index && <>|</>}{" "}
+                </span>
+              </span>
+            );
+          })}
+        </span>
       </p>
     </div>
   );

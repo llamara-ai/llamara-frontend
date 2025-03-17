@@ -57,7 +57,7 @@ function Routes() {
             element={
               <GetSessionsProvider>
                 <GetKnowledgeListProvider>
-                  <Overlay disableAddSession={true}>
+                  <Overlay>
                     <Knowledge />
                   </Overlay>
                 </GetKnowledgeListProvider>

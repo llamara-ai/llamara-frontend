@@ -2,7 +2,7 @@ import DataTable from "./DataTable";
 import { useState } from "react";
 import { FloatingActionButton } from "@/components/ui/floating-action-button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
-import UploadFileDialog from "./UploadFileDialog";
+import UploadFileDialog from "./dialog/UploadFileDialog";
 import { useGetKnowledgeList } from "@/services/GetKnowledgeListService";
 import Columns from "./Columns";
 import { Knowledge as KnowledgeType } from "@/api";
@@ -12,7 +12,8 @@ import { X } from "lucide-react";
 import { t } from "i18next";
 import useDownloadFile from "@/hooks/useDownloadFile";
 import { useToast } from "@/hooks/use-toast";
-import TagEditDialog from "@/views/knowledge/TagEditDialog";
+import TagEditDialog from "@/views/knowledge/dialog/TagEditDialog";
+import PermissionDialog from "./dialog/PermissionDialog";
 
 export default function Knowledge() {
   const { allKnowledge } = useGetKnowledgeList();
@@ -22,6 +23,8 @@ export default function Knowledge() {
   const [pdfLoading, setPdfLoading] = useState<string | null>(null);
   const { downloadFile } = useDownloadFile();
   const [openTagEditDialogKnowledgeId, setOpenTagEditDialogKnowledgeId] =
+    useState<string | null>(null);
+  const [openPermissionDialogKnowledgeId, setOpenPermissionDialogKnowledgeId] =
     useState<string | null>(null);
 
   const onClickFile = (knowledge: KnowledgeType) => {
@@ -46,7 +49,11 @@ export default function Knowledge() {
     <div className={`flex h-full mt-0 relative`}>
       <div className="container mx-auto py-10">
         <DataTable
-          columns={Columns(onClickFile, setOpenTagEditDialogKnowledgeId)}
+          columns={Columns(
+            onClickFile,
+            setOpenTagEditDialogKnowledgeId,
+            setOpenPermissionDialogKnowledgeId,
+          )}
           data={allKnowledge}
         />
       </div>
@@ -71,6 +78,13 @@ export default function Knowledge() {
         knowledgeId={openTagEditDialogKnowledgeId}
         onClose={() => {
           setOpenTagEditDialogKnowledgeId(null);
+        }}
+      />
+
+      <PermissionDialog
+        knowledgeId={openPermissionDialogKnowledgeId}
+        onClose={() => {
+          setOpenPermissionDialogKnowledgeId(null);
         }}
       />
 

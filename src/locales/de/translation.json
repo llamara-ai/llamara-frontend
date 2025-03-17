@@ -91,8 +91,8 @@
       },
       "permission": {
         "owner": "Besitzer",
-        "readwrite": "Lese / Schreibe",
-        "readonly": "Lese",
+        "readwrite": "Lesen/Schreiben",
+        "readonly": "Lesen",
         "none": "Keine Zugriffsrechte",
         "undefined": "Unbekannt",
         "label": "Zugriffsrechte"
@@ -103,7 +103,9 @@
       "update": "Datei Aktualisieren",
       "actions": "Aktionen",
       "retry": "Erneut ingestion starten",
-      "editTags": "Tags bearbeiten"
+      "editTags": "Tags bearbeiten",
+      "editPermissions": "Zugriffsrechte bearbeiten",
+      "noPermission": "Keine Berechtigungen"
     },
     "uploadFileDialog": {
       "upload": "Datei Hochladen",
@@ -120,6 +122,14 @@
       "title": "Tags bearbeiten",
       "description": "Füge neue Tags hinzu oder lösche bestehende Tags",
       "submitButton": "Speichern"
+    },
+    "permissionsDialog": {
+      "title": "Zugriffsrechte bearbeiten",
+      "description": "Wähle die Zugriffsrechte für die Datei aus",
+      "usernamePlaceholder": "Benutzername eingeben",
+      "selectPermission": "Auswählen",
+      "add": "Hinzufügen",
+      "save": "Speichern"
     }
   },
   "footer": {

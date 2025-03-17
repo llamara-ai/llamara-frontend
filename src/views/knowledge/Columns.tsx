@@ -12,6 +12,7 @@ import KnowledgePermissions from "./KnowledgePermissions";
 export default function Columns(
   onClickFile: (knowledge: Knowledge) => void,
   onClickTagEdit: (knowledgeId: string | null) => void,
+  onClickPermissionEdit: (knowledgeId: string | null) => void,
 ): ColumnDef<Knowledge>[] {
   const { t } = useTranslation();
 
@@ -112,7 +113,11 @@ export default function Columns(
       id: "actions",
       cell: ({ row }) => {
         const knowledge = row.original;
-        return KnowledgeOptions({ knowledge, onClickTagEdit });
+        return KnowledgeOptions({
+          knowledge,
+          onClickTagEdit,
+          onClickPermissionEdit,
+        });
       },
     },
   ];
