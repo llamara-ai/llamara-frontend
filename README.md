@@ -1,64 +1,15 @@
-# ENV
+# LLAMARA Frontend
 
-Create an .env file with VITE_APP_REST_URL as the backend URL (used by vite for the proxy)
+LLAMARA - **L**arge **L**anguage **A**ssistant for **M**odel-**A**ugmented **R**etrieval and **A**nalysis - is an LLM-based assistant for information retrieval from a provided knowledge base.
+It aims at supporting researchers working with scientific papers, whitepapers and documentation,
+as well as possibly serving research findings in an accessible way to the public.
 
-# TODO
+> **NOTE:** This repository contains the LLAMARA frontend only.
 
-- Implement caching, some api calls will done more than once.
-- Store api call values
+LLAMARA Frontend is the official UI for the LLAMARA project.
+It is bundled with LLAMARA Backend in the [LLAMARA Distro](https://github.com/llamara-aio/llamara-distro) builds.
 
----
+Head over to the [LLAMARA Distro repository](https://github.com/llamara-ai/llamara-distro) to get started with LLAMARA.
 
-# React + TypeScript + Vite
+For development and building instructions, see the [DEVELOPMENT.md](DEVELOPMENT.md) and [BUILD.md](BUILD.md) files.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Setting up development environment
-
-You need NodeJS 22.13.0 or later installed.
-When using a Node version manager, run `nvm use` to switch to the correct version.
-
-Run the following commands to install the dependencies:
-
-```shell script
-npm install
-```
-
-## Running the development server
-
-To start the development server, run:
-
-```shell script
-npm run dev
-```
-
-## Linting
-
-This project uses ESLint as linter.
-
-To lint the code, run:
-
-```shell script
-npm run lint
-```
-
-To fix automatically fixable issues, run:
-
-```shell script
-npm run lint:fix
-```
-
-## Formatting
-
-This project uses Prettier for formatting.
-
-To format the code, run:
-
-```shell script
-npm run format
-```
