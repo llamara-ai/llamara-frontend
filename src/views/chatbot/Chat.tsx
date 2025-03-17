@@ -18,6 +18,7 @@ import { useUserContext } from "@/services/UserContextService";
 import { useToast } from "@/hooks/use-toast";
 import { getLogoFromModelProvider } from "@/lib/getLogoFromModelProvider";
 import useAvailableModels from "@/hooks/api/useGetModelsApi";
+import { useTheme } from "@/components/theme-provider";
 
 interface ChatProps {
   messages: ChatMessageRecord[];
@@ -38,6 +39,7 @@ export default function Chat({
 }: Readonly<ChatProps>) {
   const { t } = useTranslation();
   const { user } = useUserContext();
+  const { theme } = useTheme();
   const { toast } = useToast();
   const { getModelProviderFromUid } = useAvailableModels();
 
@@ -141,7 +143,7 @@ export default function Chat({
               ) : (
                 <ChatBubbleAvatar
                   className="bg-secondary flex justify-center items-center"
-                  ImageClassName="invert size-7"
+                  ImageClassName={`size-7 ${theme === "dark" ? "invert" : ""}`}
                   src={getLogoFromModelProvider(message.modelProvider)}
                   fallback={"AI"}
                 />
@@ -224,7 +226,7 @@ export default function Chat({
       </div>
 
       {/* Form and Footer fixed at the bottom */}
-      <div className="w-5/6 pb-4 px-4 sticky bottom-3 left-0 right-0 bg-transparent ">
+      <div className="w-5/6 pb-1 px-4 sticky bottom-3 left-0 right-0 bg-transparent">
         <form
           ref={formRef}
           // eslint-disable-next-line @typescript-eslint/no-misused-promises

@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import Sidebar from "../sidebar/Sidebar";
 import { useReadSelectedModel } from "@/hooks/useLocalStorage";
 import { useLocation, useNavigate } from "react-router-dom";
+import Footer from "@/views/overlays/Footer.tsx";
 import useGetSessionsApi from "@/hooks/api/useGetSessionsApi";
 
 export default function Chatbot() {
@@ -82,6 +83,7 @@ export default function Chatbot() {
           />
         </div>
       </div>
+      <Footer />
     </Sidebar>
   );
 }

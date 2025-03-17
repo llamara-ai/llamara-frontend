@@ -3,6 +3,7 @@ import { Progress } from "@/components/ui/progress";
 import { useLogo } from "@/hooks/useLogo";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import Footer from "@/views/overlays/Footer.tsx";
 
 interface LoadingViewProps {
   error?: string;
@@ -31,22 +32,25 @@ export default function LoadingView({ error }: Readonly<LoadingViewProps>) {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-background">
-      <Card className="p-10 max-w-[400px] w-full">
-        <div className="flex flex-col items-center">
-          <img src={logoSrc} alt="Logo" className="mb-5" />
-          {error ? (
-            <h1 className="text-2xl font-semibold mb-4">{error}</h1>
-          ) : (
-            <>
-              <h1 className="text-2xl font-semibold mb-4">
-                {t("loading.title")}
-              </h1>
-              <Progress value={33} className="w-[80%] mt-5" />
-            </>
-          )}
-        </div>
-      </Card>
+    <div className="flex flex-col h-screen bg-background">
+      <div className="flex-1 flex flex-col items-center justify-center">
+        <Card className="p-10 max-w-[400px] w-full">
+          <div className="flex flex-col items-center">
+            <img src={logoSrc} alt="Logo" className="mb-5" />
+            {error ? (
+              <h1 className="text-2xl font-semibold mb-4">{error}</h1>
+            ) : (
+              <>
+                <h1 className="text-2xl font-semibold mb-4">
+                  {t("loading.title")}
+                </h1>
+                <Progress value={33} className="w-[80%] mt-5" />
+              </>
+            )}
+          </div>
+        </Card>
+      </div>
+      <Footer />
     </div>
   );
 }

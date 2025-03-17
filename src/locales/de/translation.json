@@ -45,5 +45,9 @@
       "buttonEditLabel": "Label bearbeiten",
       "buttonDelete": "Session löschen"
     }
+  },
+  "footer": {
+    "imprint": "Impressum",
+    "privacyPolicy": "Datenschutz"
   }
 }

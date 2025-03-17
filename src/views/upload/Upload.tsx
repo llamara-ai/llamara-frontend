@@ -1,5 +1,6 @@
 import SidebarContent from "../sidebar/SidebarContent";
 import Sidebar from "../sidebar/Sidebar";
+import Footer from "@/views/overlays/Footer.tsx";
 import useGetSessionsApi from "@/hooks/api/useGetSessionsApi";
 
 export default function Upload() {
@@ -14,6 +15,7 @@ export default function Upload() {
       <div className="h-full text-center justify-center items-center">
         <h1>Upload Page</h1>
       </div>
+      <Footer />
     </Sidebar>
   );
 }

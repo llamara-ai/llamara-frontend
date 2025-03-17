@@ -18,6 +18,10 @@ export interface AppContext {
   setSecurityConfig: (security: SecurityInfoDTO) => void;
   authConfig: TAuthConfig;
   setAuthConfig: (authConfig: TAuthConfig) => void;
+  imprintUrl: string | null;
+  setImprintUrl: (imprintUrl: string | null) => void;
+  privacyPolicyUrl: string | null;
+  setPrivacyPolicyUrl: (privacyPolicyUrl: string | null) => void;
 }
 
 const AppContext = createContext<AppContext | undefined>(undefined);
@@ -28,6 +32,8 @@ export const AppContextProvider: FC<{ children: ReactNode }> = ({
   const [ready, setReady] = useState(false);
   const [securityConfig, setSecurityConfig] = useState({} as SecurityInfoDTO);
   const [authConfig, setAuthConfig] = useState({} as TAuthConfig);
+  const [imprintUrl, setImprintUrl] = useState<string | null>(null);
+  const [privacyPolicyUrl, setPrivacyPolicyUrl] = useState<string | null>(null);
 
   const value = useMemo(
     () => ({
@@ -37,6 +43,10 @@ export const AppContextProvider: FC<{ children: ReactNode }> = ({
       setSecurityConfig,
       authConfig,
       setAuthConfig,
+      imprintUrl,
+      setImprintUrl,
+      privacyPolicyUrl,
+      setPrivacyPolicyUrl,
     }),
     [
       ready,
@@ -45,6 +55,10 @@ export const AppContextProvider: FC<{ children: ReactNode }> = ({
       setSecurityConfig,
       authConfig,
       setAuthConfig,
+      imprintUrl,
+      setImprintUrl,
+      privacyPolicyUrl,
+      setPrivacyPolicyUrl,
     ],
   );
 
@@ -60,7 +74,14 @@ export const useAppContext = () => {
 };
 
 export function useInitAppContext() {
-  const { ready, setReady, setSecurityConfig, setAuthConfig } = useAppContext();
+  const {
+    ready,
+    setReady,
+    setSecurityConfig,
+    setAuthConfig,
+    setImprintUrl,
+    setPrivacyPolicyUrl,
+  } = useAppContext();
 
   if (ready) {
     return;
@@ -97,6 +118,13 @@ export function useInitAppContext() {
       };
 
       setAuthConfig(authConfig);
+
+      if (response.data.imprintLink) {
+        setImprintUrl(response.data.imprintLink);
+      }
+      if (response.data.privacyPolicyLink) {
+        setPrivacyPolicyUrl(response.data.privacyPolicyLink);
+      }
 
       setReady(true);
     })
