@@ -1,0 +1,73 @@
+name: CI Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main"]
+    paths-ignore: ["**/*.md"]
+    tags:
+      - "v*.*"
+      - "v*.*.*"
+  pull_request:
+    branches: ["main"]
+    paths-ignore: ["**/*.md"]
+
+env:
+  NODE_VERSION: "20.12.2"
+
+permissions:
+  contents: write
+
+jobs:
+  vite:
+    name: Vite Build
+
+    runs-on: "ubuntu-24.04"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up NodeJS
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Cache node modules
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules # npm cache files are stored in `~/.npm` on Linux/macOS
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('**/package.json', '**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: Install Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+      - name: Run Prettier
+        run: npm run format:check
+      - name: Run Tests
+        run: npm run test:coverage --ignore-scripts
+
+      - name: Build
+        run: npm run build
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: |
+            dist
+
+      - name: Upload test coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: vitest-coverage
+          path: |
+            coverage
