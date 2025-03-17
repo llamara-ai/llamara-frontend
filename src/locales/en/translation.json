@@ -38,6 +38,7 @@
     }
   },
   "sidebar": {
+    "login": "Login",
     "logout": "Logout"
   }
 }

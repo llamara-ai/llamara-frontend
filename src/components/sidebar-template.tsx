@@ -16,6 +16,8 @@ interface OverlayProps {
 
 interface SidebarProps {
   userInfo: UserInfoDTO;
+  loggedIn: boolean;
+  login: () => void;
   logout: () => void;
 }
 
@@ -23,6 +25,8 @@ const sidebarTemplate: React.FC<OverlayProps & SidebarProps> = ({
   sideBarContent,
   children,
   userInfo,
+  loggedIn,
+  login,
   logout,
 }) => {
   return (
@@ -30,7 +34,7 @@ const sidebarTemplate: React.FC<OverlayProps & SidebarProps> = ({
       <Sidebar collapsible="icon">
         {sideBarContent}
         <SidebarFooter>
-          <NavUser user={userInfo} logout={logout} />
+          <NavUser user={userInfo} loggedIn={loggedIn} login={login} logout={logout} />
         </SidebarFooter>
         <SidebarRail />
       </Sidebar>

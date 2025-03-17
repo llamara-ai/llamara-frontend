@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronsUpDown, LaptopMinimal, LogOut, Moon, Sun } from "lucide-react";
+import { ChevronsUpDown, LaptopMinimal, LogIn, LogOut, Moon, Sun } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -24,14 +24,17 @@ import { useTranslation } from "react-i18next";
 
 interface NavUserProps {
   user: UserInfoDTO;
+  loggedIn: boolean;
+  login: () => void;
   logout: () => void;
 }
 
-export function NavUser({ user, logout }: Readonly<NavUserProps>) {
+export function NavUser({ user, loggedIn, login, logout }: Readonly<NavUserProps>) {
   const { t } = useTranslation();
   const { isMobile } = useSidebar();
   const { setTheme } = useTheme();
-  const username = user.name ?? user.username ?? "Anonymous";
+  const username = user.name || user.username || "Anonymous";
+  const name = user.name || username
   const userRole = getUserRole(user.roles);
 
   return (
@@ -49,8 +52,7 @@ export function NavUser({ user, logout }: Readonly<NavUserProps>) {
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">{username}</span>
-                <span className="truncate text-xs">{userRole}</span>
+                <span className="truncate font-semibold">{name}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -69,7 +71,7 @@ export function NavUser({ user, logout }: Readonly<NavUserProps>) {
                   </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">{username}</span>
+                  <span className="truncate font-semibold">{name}</span>
                   <span className="truncate text-xs">{userRole}</span>
                 </div>
               </div>
@@ -102,10 +104,17 @@ export function NavUser({ user, logout }: Readonly<NavUserProps>) {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={logout}>
-              <LogOut />
-              {t("sidebar.logout")}
-            </DropdownMenuItem>
+            {
+              loggedIn ?
+                <DropdownMenuItem onClick={logout}>
+                  <LogOut />
+                  {t("sidebar.logout")}
+                </DropdownMenuItem> :
+                <DropdownMenuItem onClick={login}>
+                  <LogIn />
+                  {t("sidebar.login")}
+                </DropdownMenuItem>
+            }
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
