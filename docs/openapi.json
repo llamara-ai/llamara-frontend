@@ -31,6 +31,24 @@
           },
           "description" : {
             "type" : "string"
+          },
+          "provider" : {
+            "$ref" : "#/components/schemas/ChatModelProvider"
+          }
+        }
+      },
+      "ChatModelProvider" : {
+        "type" : "string",
+        "enum" : [ "AZURE", "OLLAMA", "OPENAI" ]
+      },
+      "InfoDTO" : {
+        "type" : "object",
+        "properties" : {
+          "security" : {
+            "$ref" : "#/components/schemas/SecurityInfoDTO"
+          },
+          "oidc" : {
+            "$ref" : "#/components/schemas/OidcInfoDTO"
           }
         }
       },
@@ -93,9 +111,41 @@
         "type" : "string",
         "enum" : [ "FILE", "WEBLINK" ]
       },
+      "OidcInfoDTO" : {
+        "type" : "object",
+        "properties" : {
+          "authServerUrl" : {
+            "type" : "string"
+          },
+          "clientId" : {
+            "type" : "string"
+          },
+          "authorizationPath" : {
+            "type" : "string"
+          },
+          "logoutPath" : {
+            "type" : "string"
+          },
+          "tokenPath" : {
+            "type" : "string"
+          }
+        }
+      },
       "Permission" : {
         "type" : "string",
         "enum" : [ "OWNER", "READWRITE", "READONLY", "NONE" ]
+      },
+      "SecurityInfoDTO" : {
+        "type" : "object",
+        "properties" : {
+          "anonymousUserEnabled" : {
+            "type" : "boolean"
+          },
+          "anonymousUserSessionTimeout" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }
       },
       "Session" : {
         "type" : "object",
@@ -147,6 +197,25 @@
     }
   },
   "paths" : {
+    "/rest" : {
+      "get" : {
+        "summary" : "Get configuration required by the frontend.",
+        "operationId" : "configuration",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/InfoDTO"
+                }
+              }
+            }
+          }
+        },
+        "tags" : [ "Root Resource" ]
+      }
+    },
     "/rest/chat/models" : {
       "get" : {
         "summary" : "Get the available chat models.",
@@ -220,67 +289,6 @@
             "description" : "OK",
             "content" : {
               "text/plain" : {
-                "schema" : {
-                  "type" : "string"
-                }
-              }
-            }
-          },
-          "404" : {
-            "description" : "No chat model or no session with given ID found."
-          },
-          "401" : {
-            "description" : "Not Authorized"
-          },
-          "403" : {
-            "description" : "Not Allowed"
-          }
-        },
-        "tags" : [ "Chat Resource" ],
-        "security" : [ {
-          "SecurityScheme" : [ "admin", "user", "anonymous_user" ]
-        } ]
-      }
-    },
-    "/rest/chat/prompt/stream" : {
-      "post" : {
-        "summary" : "Send a prompt to the given chat model.",
-        "operationId" : "sendPromptStreamResponse",
-        "parameters" : [ {
-          "description" : "ID of the session to use",
-          "name" : "sessionId",
-          "required" : true,
-          "in" : "query",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        }, {
-          "description" : "UID of the chat model to use",
-          "name" : "uid",
-          "required" : true,
-          "in" : "query",
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "text/plain" : {
-              "schema" : {
-                "type" : "string"
-              }
-            }
-          },
-          "required" : true
-        },
-        "responses" : {
-          "400" : {
-            "description" : "Bad Request, usually returned when an operation is requested before the user has logged in."
-          },
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "text/event-stream" : {
                 "schema" : {
                   "type" : "string"
                 }
@@ -747,7 +755,7 @@
   },
   "info" : {
     "title" : "LLAMARA API",
-    "version" : "0.4.0-SNAPSHOT"
+    "version" : "0.5.0-SNAPSHOT"
   },
   "servers" : [ {
     "url" : "http://localhost:8080",

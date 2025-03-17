@@ -1,0 +1,44 @@
+{
+    "login": {
+        "title": "Login",
+        "button": "Redirection to OIDC provider",
+        "loggedInButton": "Already logged in. Continue to the application"
+    },
+    "loading": {
+        "title": "Loading application..."
+    },
+    "chatbot": {
+        "sidebar" : {
+            "title": "Past chats",
+            "recent7days": "Last 7 days",
+            "recent30days": "Last 30 days",
+            "recentYear": "Year",
+            "noSessions": "No sessions available",
+            "modelSelectionInstruction": "Select a model...",
+            "selectError": "Error when selecting the session with ID:",
+            "anonymousModeActive": "No chat histories are displayed because anonymous mode is active."
+        },
+        "errorLoadHistory": "Error loading chat history",
+        "errorGeneratePrompt": "Failed to generate a response. Please try again.",
+        "promptInput": {
+            "placeholder": "Write a message...",
+            "send": "Send"
+        },
+        "deleteSessionSuccessful": "The session was successfully deleted",
+        "errorModelNotAvailable": "The selected model is no longer available",
+        "newSession": "Create new session",
+        "newSessionCreate": "New session created",
+        "noSessionLabel": "No session label available",
+        "chat": {
+            "newChat" : {
+                "title": "How can I help you?",
+                "subtitle": "Chat with your data",
+                "text": "Welcome to our innovative chatbot! With our application, you can interact directly with your data, get answers to complex questions and find relevant information quickly and easily. Harness the power of AI to use knowledge more efficiently - anytime, anywhere."
+            }
+        }
+    },
+    "sidebar": {
+        "logout": "Logout"
+    }
+    
+}

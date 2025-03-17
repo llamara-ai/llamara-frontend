@@ -12,6 +12,14 @@ export type ChatModelContainer = {
     uid?: string;
     label?: string;
     description?: string;
+    provider?: ChatModelProvider;
+};
+
+export type ChatModelProvider = 'AZURE' | 'OLLAMA' | 'OPENAI';
+
+export type InfoDTO = {
+    security?: SecurityInfoDTO;
+    oidc?: OidcInfoDTO;
 };
 
 export type IngestionStatus = 'PENDING' | 'SUCCEEDED' | 'FAILED';
@@ -36,7 +44,20 @@ export type Knowledge = {
 
 export type KnowledgeType = 'FILE' | 'WEBLINK';
 
+export type OidcInfoDTO = {
+    authServerUrl?: string;
+    clientId?: string;
+    authorizationPath?: string;
+    logoutPath?: string;
+    tokenPath?: string;
+};
+
 export type Permission = 'OWNER' | 'READWRITE' | 'READONLY' | 'NONE';
+
+export type SecurityInfoDTO = {
+    anonymousUserEnabled?: boolean;
+    anonymousUserSessionTimeout?: number;
+};
 
 export type Session = {
     id?: UUID;
@@ -52,6 +73,10 @@ export type UserInfoDTO = {
 };
 
 export type UUID = string;
+
+export type ConfigurationResponse = (InfoDTO);
+
+export type ConfigurationError = unknown;
 
 export type GetModelsResponse = (Array<ChatModelContainer>);
 
@@ -74,24 +99,6 @@ export type PromptData = {
 export type PromptResponse = (string);
 
 export type PromptError = (unknown);
-
-export type SendPromptStreamResponseData = {
-    body: string;
-    query: {
-        /**
-         * ID of the session to use
-         */
-        sessionId: UUID;
-        /**
-         * UID of the chat model to use
-         */
-        uid: string;
-    };
-};
-
-export type SendPromptStreamResponseResponse = (string);
-
-export type SendPromptStreamResponseError = (unknown);
 
 export type GetSessionsResponse = (Array<Session>);
 

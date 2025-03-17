@@ -1,18 +1,16 @@
 "use client"
 
 import {
-  BadgeCheck,
-  Bell,
   ChevronsUpDown,
-  CreditCard,
+  LaptopMinimal,
   LogOut,
-  Sparkles,
+  Moon,
+  Sun,
 } from "lucide-react"
 
 import {
   Avatar,
   AvatarFallback,
-  AvatarImage,
 } from "@/components/ui/avatar"
 import {
   DropdownMenu,
@@ -29,17 +27,25 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { useTheme } from "./theme-provider"
+import { UserInfoDTO } from "@/api"
+import { useTranslation } from "react-i18next"
 
-export function NavUser({
-  user,
-}: {
-  user: {
-    name: string
-    email: string
-    avatar: string
-  }
-}) {
-  const { isMobile } = useSidebar()
+
+interface NavUserProps {
+  user: UserInfoDTO;
+  logout: () => void;
+}
+
+
+
+export function NavUser({ user, logout }: Readonly<NavUserProps>) {
+  const { t } = useTranslation();
+  const { isMobile } = useSidebar();
+  const { setTheme } = useTheme();
+  const username = (user.name ?? user.username ?? "Anonymous");
+  const userRole = getUserRole(user.roles);
+
 
   return (
     <SidebarMenu>
@@ -51,12 +57,11 @@ export function NavUser({
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                <AvatarFallback className="rounded-lg">{getInitials(username)}</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">{user.name}</span>
-                <span className="truncate text-xs">{user.email}</span>
+                <span className="truncate font-semibold">{username}</span>
+                <span className="truncate text-xs">{userRole}</span> 
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -70,45 +75,58 @@ export function NavUser({
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                  <AvatarFallback className="rounded-lg">{getInitials(username)}</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">{user.name}</span>
-                  <span className="truncate text-xs">{user.email}</span>
+                  <span className="truncate font-semibold">{username}</span>
+                  <span className="truncate text-xs">{userRole}</span> 
                 </div>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <Sparkles />
-                Upgrade to Pro
+              <DropdownMenuItem onClick={() => setTheme("light")}>
+                <Sun className="mr-2 h-4 w-4" />
+                Light Mode
               </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
-                Account
+              <DropdownMenuItem onClick={() => setTheme("dark")}>
+                <Moon className="mr-2 h-4 w-4" />
+                Dark Mode
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCard />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Bell />
-                Notifications
+              <DropdownMenuItem onClick={() => setTheme("system")}>
+                <LaptopMinimal className="mr-2 h-4 w-4" />
+                System
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <LogOut />
-              Log out
+              <LogOut onClick={logout} />
+              {t("sidebar.logout")} 
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
   )
+}
+
+
+const getInitials = (name: string): string => {
+  if ("Anonymous" === name) {
+    return "AN"
+  }
+
+  return name.split(" ").map((n) => n[0]).join("").toLocaleUpperCase();
+}
+
+const getUserRole = (roles: string[] | undefined): string => {
+  if (!roles) {
+    return "";
+  }
+  roles.forEach(role => {
+    if (role.toLowerCase() === "admin") {
+      return "Admin";
+    }
+  });
+  return "User";
 }

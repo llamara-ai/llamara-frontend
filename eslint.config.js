@@ -1,28 +1,31 @@
-import js from '@eslint/js'
-import globals from 'globals'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
-import tseslint from 'typescript-eslint'
+// @ts-check
 
-export default tseslint.config(
-  { ignores: ['dist'] },
+import eslint from '@eslint/js';
+import tseslint from 'typescript-eslint';
+
+const files = ['src/**/*.tsx', 'src/**/*.ts'];
+
+export default [
   {
-    extends: [js.configs.recommended, ...tseslint.configs.recommended],
-    files: ['**/*.{ts,tsx}'],
-    languageOptions: {
-      ecmaVersion: 2020,
-      globals: globals.browser,
-    },
-    plugins: {
-      'react-hooks': reactHooks,
-      'react-refresh': reactRefresh,
-    },
-    rules: {
-      ...reactHooks.configs.recommended.rules,
-      'react-refresh/only-export-components': [
-        'warn',
-        { allowConstantExport: true },
-      ],
-    },
+    ...eslint.configs.recommended,
+    files
   },
-)
+  ...tseslint.configs.recommended.map(conf => ({
+    ...conf,
+    files
+  })),
+  ...tseslint.configs.strict.map(conf => ({
+    ...conf,
+    files
+  })),
+  ...tseslint.configs.stylistic.map(conf => ({
+    ...conf,
+    files
+  })),
+  {
+    ignores: [
+      'src/api/**',
+      'src/components/ui/**',
+    ]
+  },
+]
