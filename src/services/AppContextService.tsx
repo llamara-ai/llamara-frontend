@@ -70,6 +70,10 @@ export const AppContextProvider: FC<{ children: ReactNode }> = ({
         decodeToken: true,
         autoLogin: false,
       };
+      if (oidcInfo.audience != null) {
+        authConfig.extraAuthParameters = {};
+        authConfig.extraAuthParameters.audience = oidcInfo.audience;
+      }
       setAuthConfig(authConfig);
       if (configResponse.data.imprintLink) {
         setImprintUrl(configResponse.data.imprintLink);

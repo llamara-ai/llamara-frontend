@@ -60,6 +60,7 @@ export type OidcInfoDto = {
     authorizationPath?: string;
     logoutPath?: string;
     tokenPath?: string;
+    audience?: string;
 };
 
 export type Permission = 'OWNER' | 'READWRITE' | 'READONLY' | 'NONE';

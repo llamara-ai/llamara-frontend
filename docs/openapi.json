@@ -161,6 +161,9 @@
           },
           "tokenPath" : {
             "type" : "string"
+          },
+          "audience" : {
+            "type" : "string"
           }
         }
       },

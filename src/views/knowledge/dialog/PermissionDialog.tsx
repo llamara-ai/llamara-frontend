@@ -30,6 +30,8 @@ interface PermissionsDialogProps {
   onClose: () => void;
 }
 
+const USER_ANY = "*";
+
 export default function PermissionsDialog({
   knowledgeId,
   onClose,
@@ -151,49 +153,84 @@ export default function PermissionsDialog({
             </Button>
           </div>
           <hr />
-          {Object.entries(permissions).map(([username, permission]) => (
-            <div
-              key={username}
-              className="grid grid-cols-[1fr,auto,auto] gap-2 items-center"
+          {Object.entries(permissions)
+            .filter((p) => p[0] != USER_ANY)
+            .map(([username, permission]) => (
+              <div // permission entry for specific user
+                key={username}
+                className="grid grid-cols-[1fr,auto,auto] gap-2 items-center"
+              >
+                <span className="ml-2 w-3/4">{username}</span>
+                <Select
+                  disabled={
+                    username === user?.username || permission === "OWNER"
+                  }
+                  defaultValue={permission}
+                  onValueChange={(value: Permission) => {
+                    handlePermissionChange(username, value);
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="OWNER" disabled={true}>
+                      {t("knowledgePage.table.permission.owner")}
+                    </SelectItem>
+                    <SelectItem value="READWRITE">
+                      {t("knowledgePage.table.permission.readwrite")}
+                    </SelectItem>
+                    <SelectItem value="READONLY">
+                      {t("knowledgePage.table.permission.readonly")}
+                    </SelectItem>
+                    <SelectItem value="NONE" disabled={true}>
+                      {t("knowledgePage.table.permission.none")}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    handleRemovePermission(username);
+                  }}
+                  disabled={username === user?.username}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+          <div // permission entry for any user
+            key="any"
+            className="grid grid-cols-[1fr,auto,auto] gap-2 items-center"
+          >
+            <span className="ml-2 w-3/4">{t("user.any")}</span>
+            <Select
+              defaultValue={permissions[USER_ANY] ?? "NONE"}
+              onValueChange={(value: Permission) => {
+                if (value === "NONE") {
+                  handleRemovePermission(USER_ANY);
+                  return;
+                }
+                handlePermissionChange(USER_ANY, value);
+              }}
             >
-              <span className="ml-2 w-3/4">{username}</span>
-              <Select
-                disabled={username === user?.username || permission === "OWNER"}
-                defaultValue={permission}
-                onValueChange={(value: Permission) => {
-                  handlePermissionChange(username, value);
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="OWNER" disabled={true}>
-                    {t("knowledgePage.table.permission.owner")}
-                  </SelectItem>
-                  <SelectItem value="READWRITE">
-                    {t("knowledgePage.table.permission.readwrite")}
-                  </SelectItem>
-                  <SelectItem value="READONLY">
-                    {t("knowledgePage.table.permission.readonly")}
-                  </SelectItem>
-                  <SelectItem value="NONE" disabled={true}>
-                    {t("knowledgePage.table.permission.none")}
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => {
-                  handleRemovePermission(username);
-                }}
-                disabled={username === user?.username}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-          ))}
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="READONLY">
+                  {t("knowledgePage.table.permission.readonly")}
+                </SelectItem>
+                <SelectItem value="NONE">
+                  {t("knowledgePage.table.permission.none")}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+            <Button variant="ghost" size="icon" disabled={true}>
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
         <DialogFooter>
           <Button
