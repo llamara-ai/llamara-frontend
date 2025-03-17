@@ -14,7 +14,7 @@ import { SidebarModelSelector as ChatbotSidebarHeader } from "./SidebarModelSele
 import { useToast } from "@/hooks/use-toast";
 import { groupSessionsByDateForNavbar } from "@/lib/groupSessionsByDateForNavbar";
 import { useNavigate } from 'react-router-dom';
-import useGetBackendInformation from "@/hooks/api/useGetBackendInformation";
+import { useAppContext } from '@/services/AppContextService.tsx'
 
 // No need to provide onSelectedModel if not provided only store the selected model in local storage
 interface SidebarProps {
@@ -72,8 +72,7 @@ const SessionModelSidebar: React.FC<SidebarProps> = ({ onSelectedModel }) => {
   const {sessions} = useGetSessionsApi();
   const sortedSessions = groupSessionsByDateForNavbar(sessions)
 
-  
-  const {isAnonymousMode, loading} = useGetBackendInformation();
+  const { securityConfig } = useAppContext();
 
   return (
     <>
@@ -83,8 +82,7 @@ const SessionModelSidebar: React.FC<SidebarProps> = ({ onSelectedModel }) => {
                               setActiveModel={setSelectedModel} />
       </SidebarHeader>
       <SidebarContent>
-        {!loading &&  // Only show anything when finished loading     
-          isAnonymousMode ? 
+        {securityConfig.anonymousUserEnabled ?
           <SidebarGroupLabel style={{marginTop: 10, textAlign: "center"}}>{t("chatbot.sidebar.anonymousModeActive")}</SidebarGroupLabel>:
           <ChatbotSidebarMain title={t("chatbot.sidebar.title")} items={sortedSessions} setOnClick={onSelectSession} />
         }

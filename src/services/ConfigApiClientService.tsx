@@ -7,7 +7,6 @@ export const useSetApiClientConfig = () => {
     
     useEffect(() => {
       if (token) {
-        console.log("token changed")
         client.setConfig({
           headers: {
             Authorization: 'Bearer ' + token,

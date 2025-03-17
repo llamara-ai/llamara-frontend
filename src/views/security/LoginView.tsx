@@ -3,16 +3,16 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { AuthContext, type IAuthContext } from 'react-oauth2-code-pkce'
 import { useContext } from 'react'
-import useLoginApi from '@/hooks/api/useLoginApi'
 import { useNavigate } from 'react-router-dom'
 import { useLogo } from '@/hooks/useLogo';
+import { useUserContext } from '@/services/UserContextService.tsx'
 
 export default function LoginView() {
   const { t } = useTranslation();
   const logoSrc = useLogo();
   const navigate = useNavigate();  
   const { logIn }: IAuthContext = useContext(AuthContext);
-  const { userInfo } = useLoginApi();
+  const { user } = useUserContext();
 
   return (
     <div className="flex items-center justify-center min-h-screen ${theme === 'dark' ? 'bg-background text-foreground' : 'bg-white text-black'}`}">
@@ -26,7 +26,7 @@ export default function LoginView() {
             className="mb-6"
           />
           {
-            userInfo?.anonymous === false ? 
+            user?.anonymous === false ?
               <Button className="w-full" onClick={() => navigate("/")} >
                 {t("login.loggedInButton")}
               </Button> :

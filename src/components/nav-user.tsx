@@ -99,9 +99,9 @@ export function NavUser({ user, logout }: Readonly<NavUserProps>) {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <LogOut onClick={logout} />
-              {t("sidebar.logout")} 
+            <DropdownMenuItem onClick={logout}>
+                <LogOut/>
+                {t("sidebar.logout")} 
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
