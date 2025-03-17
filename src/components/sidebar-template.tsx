@@ -1,4 +1,3 @@
-import { SidebarUser } from "@/components/sidebar-user";
 import {
   Sidebar,
   SidebarFooter,
@@ -7,7 +6,6 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar.tsx";
 import { ReactNode } from "react";
-import { UserInfoDto } from "@/api";
 
 interface OverlayProps {
   sideBarContent: ReactNode;
@@ -15,35 +13,16 @@ interface OverlayProps {
   footerChildren?: ReactNode;
 }
 
-interface SidebarProps {
-  userInfo: UserInfoDto;
-  loggedIn: boolean;
-  login: () => void;
-  logout: () => void;
-}
-
-const sidebarTemplate: React.FC<OverlayProps & SidebarProps> = ({
+const sidebarTemplate: React.FC<OverlayProps> = ({
   sideBarContent,
   children,
   footerChildren,
-  userInfo,
-  loggedIn,
-  login,
-  logout,
 }) => {
   return (
     <SidebarProvider>
       <Sidebar collapsible="icon">
         {sideBarContent}
-        <SidebarFooter>
-          {footerChildren}
-          <SidebarUser
-            user={userInfo}
-            loggedIn={loggedIn}
-            login={login}
-            logout={logout}
-          />
-        </SidebarFooter>
+        <SidebarFooter>{footerChildren}</SidebarFooter>
         <SidebarRail />
       </Sidebar>
       <SidebarInset>{children}</SidebarInset>

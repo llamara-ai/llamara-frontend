@@ -59,6 +59,16 @@
     "login": "Anmelden",
     "logout": "Abmelden",
     "language": "Sprache",
+    "deleteUserData": {
+      "button": "Alle Daten löschen",
+      "confirmDialogTitle": "Löschung aller Nutzerdaten",
+      "confirmDialogDescription": "Bist du dir sicher dass du alle Daten löschen willst? Diese können nicht mehr wiederhergestellt werden.",
+      "cancel": "Abbrechen",
+      "confirm": "Bestätigen",
+      "confirmationMessage": "Alle Benutzerdaten erfolgreich gelöscht",
+      "abortTitle": "Abgebrochen",
+      "abortDescription": "Es wurden keine Nutzer Daten gelöscht"
+    },
     "session": {
       "buttonEditLabel": "Label bearbeiten",
       "buttonDelete": "Session löschen",

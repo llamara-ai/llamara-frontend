@@ -5,6 +5,7 @@ import { useUserContext } from "@/services/UserContextService.tsx";
 import { useNavigate } from "react-router-dom";
 import SidebarContent from "./SidebarContent";
 import RedirectButton from "./RedirectButton";
+import { SidebarUser } from "@/views/overlays/sidebar/SidebarUser";
 
 interface SidebarProps {
   children: ReactNode;
@@ -25,17 +26,23 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <SidebarTemplate
-      userInfo={user}
-      loggedIn={loggedIn}
-      login={() => {
-        void navigate("/login");
-      }}
-      logout={() => {
-        console.log("Logging out");
-        logOut();
-      }}
       sideBarContent={<SidebarContent />}
-      footerChildren={<RedirectButton />}
+      footerChildren={
+        <>
+          <RedirectButton />
+          <SidebarUser
+            user={user}
+            loggedIn={loggedIn}
+            login={() => {
+              void navigate("/login");
+            }}
+            logout={() => {
+              console.log("Logging out");
+              logOut();
+            }}
+          />
+        </>
+      }
     >
       {children}
     </SidebarTemplate>

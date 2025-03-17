@@ -1,5 +1,3 @@
-"use client";
-
 import {
   ChevronsUpDown,
   Languages,
@@ -8,6 +6,7 @@ import {
   LogOut,
   Moon,
   Sun,
+  Trash2,
 } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -26,11 +25,15 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { useTheme } from "./theme-provider";
+import { useTheme } from "../../../components/theme-provider";
 import { UserInfoDto } from "@/api";
 import { useTranslation } from "react-i18next";
 import { getInitials } from "@/lib/getInitials";
 import i18next from "i18next";
+import useDeleteAllUserData from "@/hooks/api/useDeleteAllUserData";
+import { ConfirmDeleteModal } from "@/views/overlays/sidebar/ConfirmDeleteModal";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 interface SidebarUserProps {
   user: UserInfoDto;
@@ -48,11 +51,30 @@ export function SidebarUser({
   const { t, i18n } = useTranslation();
   const { isMobile } = useSidebar();
   const { setTheme } = useTheme();
+  const { deleteAllUserData, error } = useDeleteAllUserData();
+  const [isDeleteUserDialogOpen, setIsDeleteUserDialogOpen] =
+    useState<boolean>(false);
+  const { toast } = useToast();
+
   const username = user.name ?? user.username ?? "Anonymous";
   const name = user.name ?? username;
   const userRole = getUserRole(user.roles);
   const changeLanguageHandler = (lang: string) => {
     void i18n.changeLanguage(lang);
+  };
+
+  const deleteUserAndLogout = async () => {
+    await deleteAllUserData();
+    setIsDeleteUserDialogOpen(false);
+    if (error === null) logout();
+  };
+
+  const deleteUserAbort = () => {
+    toast({
+      variant: "default",
+      title: t("sidebar.deleteUserData.abortTitle"),
+      description: t("sidebar.deleteUserData.abortDescription"),
+    });
   };
 
   return (
@@ -154,20 +176,40 @@ export function SidebarUser({
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             {/* Login*/}
-            {loggedIn ? (
-              <DropdownMenuItem onClick={logout}>
-                <LogOut />
-                {t("sidebar.logout")}
+            <DropdownMenuGroup>
+              <DropdownMenuItem
+                onClick={() => {
+                  setIsDeleteUserDialogOpen(true);
+                }}
+              >
+                <Trash2 />
+                {t("sidebar.deleteUserData.button")}
               </DropdownMenuItem>
-            ) : (
-              <DropdownMenuItem onClick={login}>
-                <LogIn />
-                {t("sidebar.login")}
-              </DropdownMenuItem>
-            )}
+              {loggedIn ? (
+                <DropdownMenuItem onClick={logout}>
+                  <LogOut />
+                  {t("sidebar.logout")}
+                </DropdownMenuItem>
+              ) : (
+                <DropdownMenuItem onClick={login}>
+                  <LogIn />
+                  {t("sidebar.login")}
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
+      <ConfirmDeleteModal
+        isOpen={isDeleteUserDialogOpen}
+        onConfirm={() => {
+          void deleteUserAndLogout();
+        }}
+        onClose={() => {
+          setIsDeleteUserDialogOpen(false);
+        }}
+        onAbort={deleteUserAbort}
+      />
     </SidebarMenu>
   );
 }

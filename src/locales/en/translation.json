@@ -59,6 +59,16 @@
     "login": "Login",
     "logout": "Logout",
     "language": "Language",
+    "deleteUserData": {
+      "button": "Delete all data",
+      "confirmDialogTitle": "Delete all user data",
+      "confirmDialogDescription": "Are you sure you want to delete all data? This data can no longer be restored.",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "confirmationMessage": "All user data successfully deleted",
+      "abortTitle": "Aborted",
+      "abortDescription": "No user data was deleted"
+    },
     "session": {
       "buttonEditLabel": "Edit label",
       "buttonDelete": "Delete Session",
