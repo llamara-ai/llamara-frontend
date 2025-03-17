@@ -1,8 +1,8 @@
 {
   "login": {
     "title": "Login",
-    "button": "Weiterleitung zum OIDC Provider",
-    "loggedInButton": "Bereits angemeldet. Weiter zur Anwendung"
+    "button": "Weiter zum externen Anmeldedienst",
+    "loggedInButton": "Bereits angemeldet: Weiter zur Anwendung"
   },
   "loading": {
     "title": "Lade die Anwendung..."

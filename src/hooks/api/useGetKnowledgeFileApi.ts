@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { getKnowledgeFile } from "@/api";
 import { useToast } from "../use-toast";
-import { combineErrors } from "@/lib/combineErrors";
 
 type FileData = Blob | File | undefined;
 interface UseGetKnowledgeFileApiProps {
@@ -33,7 +32,11 @@ export default function useGetKnowledgeFileApi({
         }
       });
   }, [uuid, toast]);
-  return { fileData, error: combineErrors([error, errorFunction]) };
+  return {
+    fileData,
+    error:
+      error || errorFunction ? (error ?? "") + (errorFunction ?? "") : null,
+  };
 }
 
 export function useGetKnowledgeFileApiFunction() {

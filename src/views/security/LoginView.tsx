@@ -16,7 +16,7 @@ export default function LoginView() {
   const { user } = useUserContext();
 
   return (
-    <div className="flex w-screen h-screen ${theme === 'dark' ? 'bg-background text-foreground' : 'bg-white text-black'}">
+    <div className="flex flex-col w-screen h-screen ${theme === 'dark' ? 'bg-background text-foreground' : 'bg-white text-black'}">
       <div className="flex-1 flex items-center justify-center">
         <Card className="w-full max-w-md">
           <CardContent className="flex flex-col items-center p-8">

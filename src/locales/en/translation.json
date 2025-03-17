@@ -1,8 +1,8 @@
 {
   "login": {
     "title": "Login",
-    "button": "Redirection to OIDC provider",
-    "loggedInButton": "Already logged in. Continue to the application"
+    "button": "Continue to external login service",
+    "loggedInButton": "Already logged in: Continue to the application"
   },
   "loading": {
     "title": "Loading application..."

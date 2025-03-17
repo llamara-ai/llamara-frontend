@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import usePromptApi from "./api/useSendPromptApi";
 import { useTranslation } from "react-i18next";
 import useCreateSessionApi from "./api/useCreateSessionApi";
-import { combineErrors } from "@/lib/combineErrors";
 import { ChatMessageRecord, Session } from "@/api";
 import useGetHistoryApi from "./api/useGetHistoryApi";
 import { useLoading } from "@/services/LoadingService";
@@ -140,6 +139,9 @@ export default function useChatMessages({
     updateSessionId,
     loading,
     loadingResponse,
-    error: combineErrors([errorPrompt, errorSession]),
+    error:
+      errorPrompt || errorSession
+        ? (errorPrompt ?? "") + (errorSession ?? "")
+        : null,
   };
 }

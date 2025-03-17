@@ -34,5 +34,21 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
+    test: {
+      globals: true,
+      environment: "jsdom",
+      coverage: {
+        exclude: [
+          "**src/components/**",
+          "scripts/",
+          "**src/api**",
+          "**dist**",
+          "**config.js",
+          "**config.ts",
+          "public/",
+          "**src/**.d.ts**",
+        ],
+      },
+    },
   };
 });
