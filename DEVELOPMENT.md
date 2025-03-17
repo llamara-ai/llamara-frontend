@@ -60,7 +60,6 @@ Run the tests with:
 npm run test
 ```
 
-
 ## API Client
 
 Our API client is generated with [Hey API](https://heyapi.dev/) based on the OpenAPI specification of the LLAMARA Backend.

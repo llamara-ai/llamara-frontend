@@ -12,4 +12,3 @@ It is bundled with LLAMARA Backend in the [LLAMARA Distro](https://github.com/ll
 Head over to the [LLAMARA Distro repository](https://github.com/llamara-ai/llamara-distro) to get started with LLAMARA.
 
 For development and building instructions, see the [DEVELOPMENT.md](DEVELOPMENT.md) and [BUILD.md](BUILD.md) files.
-
