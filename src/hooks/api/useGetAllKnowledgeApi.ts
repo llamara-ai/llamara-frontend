@@ -21,6 +21,7 @@ export default function useGetAllKnowledgeApi(): UseGetAllKnowledgeApiResponse {
       setLoading(true);
       getAllKnowledge()
         .then((response) => {
+          setError(null);
           if (response.data) {
             setCache("allKnowledge", response.data, 10);
             setAllKnowledge(response.data);

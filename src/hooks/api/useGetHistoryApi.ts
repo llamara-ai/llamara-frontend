@@ -24,7 +24,9 @@ export default function useGetHistoryApi(): UseGetHistoryApiResponse {
   const fetchHistory = async ({
     sessionId,
   }: FetchHistoryProps): Promise<ChatMessageRecord[]> => {
-    const cachedHistory = getCache("history" + sessionId);
+    const cachedHistory = getCache(
+      sessionId ? "history" + sessionId : "history",
+    );
     if (cachedHistory) {
       return cachedHistory;
     }
@@ -39,6 +41,7 @@ export default function useGetHistoryApi(): UseGetHistoryApiResponse {
       try {
         const response = await getHistory(options);
         if (response.data) {
+          setError(null);
           setCache("history" + sessionId, response.data, 10);
           setLoading(false);
           return response.data;

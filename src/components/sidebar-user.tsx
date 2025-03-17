@@ -1,6 +1,13 @@
 "use client";
 
-import { ChevronsUpDown, LaptopMinimal, LogIn, LogOut, Moon, Sun } from "lucide-react";
+import {
+  ChevronsUpDown,
+  LaptopMinimal,
+  LogIn,
+  LogOut,
+  Moon,
+  Sun,
+} from "lucide-react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -21,20 +28,26 @@ import {
 import { useTheme } from "./theme-provider";
 import { UserInfoDTO } from "@/api";
 import { useTranslation } from "react-i18next";
+import { getInitials } from "@/lib/getInitials";
 
-interface NavUserProps {
+interface SidebarUserProps {
   user: UserInfoDTO;
   loggedIn: boolean;
   login: () => void;
   logout: () => void;
 }
 
-export function NavUser({ user, loggedIn, login, logout }: Readonly<NavUserProps>) {
+export function SidebarUser({
+  user,
+  loggedIn,
+  login,
+  logout,
+}: Readonly<SidebarUserProps>) {
   const { t } = useTranslation();
   const { isMobile } = useSidebar();
   const { setTheme } = useTheme();
-  const username = user.name || user.username || "Anonymous";
-  const name = user.name || username
+  const username = user.name ?? user.username ?? "Anonymous";
+  const name = user.name ?? username;
   const userRole = getUserRole(user.roles);
 
   return (
@@ -104,35 +117,23 @@ export function NavUser({ user, loggedIn, login, logout }: Readonly<NavUserProps
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            {
-              loggedIn ?
-                <DropdownMenuItem onClick={logout}>
-                  <LogOut />
-                  {t("sidebar.logout")}
-                </DropdownMenuItem> :
-                <DropdownMenuItem onClick={login}>
-                  <LogIn />
-                  {t("sidebar.login")}
-                </DropdownMenuItem>
-            }
+            {loggedIn ? (
+              <DropdownMenuItem onClick={logout}>
+                <LogOut />
+                {t("sidebar.logout")}
+              </DropdownMenuItem>
+            ) : (
+              <DropdownMenuItem onClick={login}>
+                <LogIn />
+                {t("sidebar.login")}
+              </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
   );
 }
-
-const getInitials = (name: string): string => {
-  if ("Anonymous" === name) {
-    return "AN";
-  }
-
-  return name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toLocaleUpperCase();
-};
 
 const getUserRole = (roles: string[] | undefined): string => {
   if (!roles) {

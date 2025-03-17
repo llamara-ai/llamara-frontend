@@ -4,6 +4,8 @@ export type ChatMessageRecord = {
     type?: ChatMessageType;
     text?: string;
     timestamp?: Instant;
+    modelProvider?: ChatModelProvider;
+    modelName?: string;
 };
 
 export type ChatMessageType = 'SYSTEM' | 'USER' | 'AI' | 'TOOL_EXECUTION_RESULT';
@@ -20,6 +22,8 @@ export type ChatModelProvider = 'AZURE' | 'OLLAMA' | 'OPENAI';
 export type InfoDTO = {
     security?: SecurityInfoDTO;
     oidc?: OidcInfoDTO;
+    imprintLink?: string;
+    privacyPolicyLink?: string;
 };
 
 export type IngestionStatus = 'PENDING' | 'SUCCEEDED' | 'FAILED';
@@ -131,6 +135,25 @@ export type GetHistoryResponse = (Array<ChatMessageRecord>);
 
 export type GetHistoryError = (unknown);
 
+export type SetSessionLabelData = {
+    path: {
+        /**
+         * UID of the session to set the label for
+         */
+        sessionId: UUID;
+    };
+    query: {
+        /**
+         * session label to set
+         */
+        label: string;
+    };
+};
+
+export type SetSessionLabelResponse = (unknown);
+
+export type SetSessionLabelError = (unknown);
+
 export type GetAllKnowledgeResponse = (Array<Knowledge>);
 
 export type GetAllKnowledgeError = (unknown);
@@ -199,6 +222,63 @@ export type GetKnowledgeFileData = {
 export type GetKnowledgeFileResponse = (unknown);
 
 export type GetKnowledgeFileError = (unknown);
+
+export type SetKnowledgeLabelData = {
+    path: {
+        /**
+         * UID of the knowledge to set the label for
+         */
+        id: UUID;
+    };
+    query: {
+        /**
+         * the knowledge label to set
+         */
+        label: string;
+    };
+};
+
+export type SetKnowledgeLabelResponse = (unknown);
+
+export type SetKnowledgeLabelError = (unknown);
+
+export type RemoveKnowledgeTagData = {
+    path: {
+        /**
+         * UID of the knowledge to which the tag should be removed
+         */
+        id: UUID;
+    };
+    query: {
+        /**
+         * tag to remove
+         */
+        tag: string;
+    };
+};
+
+export type RemoveKnowledgeTagResponse = (unknown);
+
+export type RemoveKnowledgeTagError = (unknown);
+
+export type AddKnowledgeTagData = {
+    path: {
+        /**
+         * UID of the knowledge to which the tag should be added
+         */
+        id: UUID;
+    };
+    query: {
+        /**
+         * tag to add
+         */
+        tag: string;
+    };
+};
+
+export type AddKnowledgeTagResponse = (unknown);
+
+export type AddKnowledgeTagError = (unknown);
 
 export type LoginResponse = (UserInfoDTO);
 

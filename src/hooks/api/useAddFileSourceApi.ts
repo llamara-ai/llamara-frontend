@@ -30,6 +30,7 @@ export default function useAddFileSourceApi({
     addFileSource(options)
       .then((response) => {
         if (response.data) {
+          setError(null);
           setFileUUIDs(response.data);
         } else {
           setFileUUIDs([]);

@@ -3,12 +3,14 @@ import usePromptApi from "./api/useSendPromptApi";
 import { useTranslation } from "react-i18next";
 import useCreateSessionApi from "./api/useCreateSessionApi";
 import { combineErrors } from "@/lib/combineErrors";
-import { ChatMessageRecord } from "@/api";
+import { ChatMessageRecord, Session } from "@/api";
 import useGetHistoryApi from "./api/useGetHistoryApi";
 import { useLoading } from "@/services/LoadingService";
+import useAvailableModels from "./api/useGetModelsApi";
 
 interface UseAddFileSourceApiProps {
   chatModelUID: string | null;
+  appendSessionLocal: (session: Session | null) => void;
 }
 
 interface UseChatMessagesResponse {
@@ -22,9 +24,12 @@ interface UseChatMessagesResponse {
 
 export default function useChatMessages({
   chatModelUID,
+  appendSessionLocal,
 }: UseAddFileSourceApiProps): UseChatMessagesResponse {
   const { setLoading: setLoadingSpinner } = useLoading();
   const { t } = useTranslation();
+  const { getModelProviderFromUid } = useAvailableModels();
+
   const sessionIDRef = useRef<string | null>(null); // Need to use Ref because useState is async
   const chatModelUIDRef = useRef<string | null>(chatModelUID);
   const [currentChatMessages, setCurrentChatMessages] = useState<
@@ -80,6 +85,10 @@ export default function useChatMessages({
     setCurrentChatMessages([...currentChatMessages, messageRecord]);
     if (sessionIDRef.current === null) {
       const newSession = await handleCreateSession();
+
+      // Add session to local session list
+      appendSessionLocal(newSession);
+
       if (newSession?.id) {
         sessionIDRef.current = newSession.id;
       }
@@ -94,6 +103,7 @@ export default function useChatMessages({
       const messageRecord: ChatMessageRecord = {
         text: response,
         type: "AI",
+        modelProvider: getModelProviderFromUid(chatModelUIDRef.current),
         timestamp: new Date().toISOString(),
       };
       setCurrentChatMessages([...currentChatMessages, messageRecord]);

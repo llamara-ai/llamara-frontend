@@ -34,10 +34,16 @@
         "title": "Wie kann ich dir helfen?",
         "subtitle": "Chatte mit deinen Daten",
         "text": "Willkommen bei unserem innovativen Chatbot! Mit unserer Anwendung kannst du direkt mit deinen Daten interagieren, Antworten auf komplexe Fragen erhalten und relevante Informationen schnell und einfach finden. Nutze die Power der KI, um Wissen effizienter zu nutzen – jederzeit und überall."
-      }
+      },
+      "copyMessage": "Nachricht in die Zwischenablage kopiert!"
     }
   },
   "sidebar": {
-    "logout": "Abmelden"
+    "login": "Anmelden",
+    "logout": "Abmelden",
+    "session": {
+      "buttonEditLabel": "Label bearbeiten",
+      "buttonDelete": "Session löschen"
+    }
   }
 }

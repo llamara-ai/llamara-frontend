@@ -1,4 +1,4 @@
-import { NavUser } from "@/components/nav-user";
+import { SidebarUser } from "@/components/sidebar-user";
 import {
   Sidebar,
   SidebarFooter,
@@ -34,7 +34,12 @@ const sidebarTemplate: React.FC<OverlayProps & SidebarProps> = ({
       <Sidebar collapsible="icon">
         {sideBarContent}
         <SidebarFooter>
-          <NavUser user={userInfo} loggedIn={loggedIn} login={login} logout={logout} />
+          <SidebarUser
+            user={userInfo}
+            loggedIn={loggedIn}
+            login={login}
+            logout={logout}
+          />
         </SidebarFooter>
         <SidebarRail />
       </Sidebar>

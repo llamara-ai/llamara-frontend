@@ -11,8 +11,14 @@ default:
     - ILT
 
 stages:
-  - build
   - test
+  - build
+  - backend
+
+test:
+  stage: test
+  script:
+    - npm run test
 
 build:
   stage: build
@@ -23,7 +29,11 @@ build:
       - dist/
     expire_in: 4 week
 
-test:
-  stage: test
-  script:
-    - npm run test
+trigger_backend:
+  stage: backend
+  trigger:
+    project: $BACKEND_PROJECT_URL
+    branch: develop
+  when: on_success
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'

@@ -28,6 +28,9 @@ export default function usePromptApi({
     if (inputPrompt !== "" && sessionID !== null && chatModelUID !== null) {
       const options = {
         body: inputPrompt,
+        // TODO: Remove the following body serializer work-around once https://github.com/hey-api/openapi-ts/pull/1589 is merged and published
+        // eslint-disable-next-line
+        bodySerializer: (str: any) => str,
         query: {
           sessionId: sessionID,
           uid: chatModelUID,
@@ -41,6 +44,7 @@ export default function usePromptApi({
         .then((responseObject) => {
           const data = responseObject.data;
           if (data) {
+            setError(null);
             setResponse(responseObject.data);
           } else {
             setError("No response from server");

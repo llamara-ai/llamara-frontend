@@ -8,10 +8,15 @@ import { useTranslation } from "react-i18next";
 import Sidebar from "../sidebar/Sidebar";
 import { useReadSelectedModel } from "@/hooks/useLocalStorage";
 import { useLocation, useNavigate } from "react-router-dom";
+import useGetSessionsApi from "@/hooks/api/useGetSessionsApi";
 
 export default function Chatbot() {
   const { toast } = useToast();
   const { t } = useTranslation();
+
+  const useSessionsApiInstance = useGetSessionsApi();
+  const { appendSessionLocal } = useSessionsApiInstance;
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -28,6 +33,7 @@ export default function Chatbot() {
     updateSessionId,
   } = useChatMessages({
     chatModelUID: chatModelUIDRef.current,
+    appendSessionLocal,
   });
 
   useEffect(() => {
@@ -56,6 +62,7 @@ export default function Chatbot() {
     <Sidebar
       sideBarContent={
         <SidebarContent
+          useSessionsApiInstance={useSessionsApiInstance}
           onSelectedModel={(modelUid) => (chatModelUIDRef.current = modelUid)}
         />
       }
@@ -68,6 +75,7 @@ export default function Chatbot() {
           <Chat
             messages={chatMessages}
             handleSubmit={onSubmit}
+            currentSelectedModelId={chatModelUIDRef.current}
             isLoading={loading}
             isGenerating={loadingResponse}
             lockSendPrompt={inputLock}

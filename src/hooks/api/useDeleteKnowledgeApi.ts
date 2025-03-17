@@ -24,9 +24,9 @@ export default function useDeleteKnowledgeApi({
         id: uuid,
       },
     };
-
     deleteKnowledge(options)
       .then(() => {
+        setError(null);
         console.log("Deleted knowledge with id:", uuid);
       })
       .catch((error: Error) => {

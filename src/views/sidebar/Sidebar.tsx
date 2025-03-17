@@ -9,7 +9,6 @@ interface SidebarProps {
   children: ReactNode;
 }
 
-// TODO: Logout not working properly
 const Sidebar: React.FC<SidebarProps> = ({
   sideBarContent,
   children,
@@ -18,7 +17,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   const { user } = useUserContext();
   const { token, logOut } = useContext(AuthContext);
 
-  const loggedIn = token.length > 0
+  const loggedIn = token.length > 0;
 
   if (!user) {
     return null;
@@ -29,7 +28,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       userInfo={user}
       loggedIn={loggedIn}
       login={() => {
-        void navigate('/login')
+        void navigate("/login");
       }}
       logout={() => {
         console.log("Logging out");

@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
-type Theme = "dark" | "light" | "system";
+type ComputedTheme = "dark" | "light";
+type Theme = "system" | ComputedTheme;
 
 interface ThemeProviderProps {
   children: React.ReactNode;
@@ -9,12 +10,23 @@ interface ThemeProviderProps {
 }
 
 interface ThemeProviderState {
-  theme: Theme;
+  theme: ComputedTheme;
   setTheme: (theme: Theme) => void;
 }
 
+const computeSystemTheme = (theme: Theme) => {
+  if (theme === "system") {
+    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    } else {
+      return "light";
+    }
+  }
+  return theme;
+};
+
 const initialState: ThemeProviderState = {
-  theme: "system",
+  theme: computeSystemTheme("system"),
   setTheme: () => null,
 };
 
@@ -22,13 +34,13 @@ const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
 
 export function ThemeProvider({
   children,
-  defaultTheme = "system",
+  defaultTheme = computeSystemTheme("system"),
   storageKey = "vite-ui-theme",
   ...props
 }: Readonly<ThemeProviderProps>) {
-  const [theme, setTheme] = useState<Theme>(
+  const [theme, setTheme] = useState<ComputedTheme>(
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    () => (localStorage.getItem(storageKey) as Theme) || defaultTheme,
+    () => (localStorage.getItem(storageKey) as ComputedTheme) || defaultTheme,
   );
 
   useEffect(() => {
@@ -36,25 +48,15 @@ export function ThemeProvider({
 
     root.classList.remove("light", "dark");
 
-    if (theme === "system") {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
-        .matches
-        ? "dark"
-        : "light";
-
-      root.classList.add(systemTheme);
-      return;
-    }
-
-    root.classList.add(theme);
+    root.classList.add(computeSystemTheme(theme));
   }, [theme]);
 
   const value = useMemo(
     () => ({
-      theme,
+      theme: computeSystemTheme(theme),
       setTheme: (theme: Theme) => {
         localStorage.setItem(storageKey, theme);
-        setTheme(theme);
+        setTheme(computeSystemTheme(theme));
       },
     }),
     [theme, storageKey],

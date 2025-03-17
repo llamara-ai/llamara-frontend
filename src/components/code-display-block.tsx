@@ -1,10 +1,10 @@
 "use client";
 import React from "react";
-import { CodeBlock, dracula } from "react-code-blocks";
+import { CodeBlock, dracula, github } from "react-code-blocks";
 import { Button } from "./ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Check, ClipboardCopy } from "lucide-react";
-//import { useTheme } from "next-themes";
+import { useTheme } from "./theme-provider";
 
 interface ButtonCodeblockProps {
   code: string;
@@ -17,7 +17,7 @@ export default function CodeDisplayBlock({
   const [isCopied, setIsCopied] = React.useState(false);
   const { toast } = useToast();
 
-  //const { theme } = useTheme();
+  const { theme } = useTheme();
 
   const copyToClipboard = () => {
     void navigator.clipboard.writeText(code);
@@ -45,16 +45,10 @@ export default function CodeDisplayBlock({
         )}
       </Button>
       <CodeBlock
-        /*customStyle={
-          theme === "dark"
-            ? { background: "#303033" }
-            : { background: "#fcfcfc" }
-        }*/
         text={code}
         language="tsx"
         showLineNumbers={false}
-        theme={dracula}
-        //theme={theme === "dark" ? dracula : github}
+        theme={theme === "dark" ? dracula : github}
       />
     </div>
   );

@@ -32,6 +32,7 @@ export default function useUpdateFileSourceApiApi({
 
     updateFileSource(options)
       .then((response) => {
+        setError(null);
         console.log("Updated knowledge:", response);
       })
       .catch((error: Error) => {

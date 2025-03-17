@@ -23,6 +23,7 @@ import {
 import { ChatModelContainer } from "@/api";
 import { t } from "i18next";
 import { useLogo } from "@/hooks/useLogo";
+import { getLogoFromModelProvider } from "@/lib/getLogoFromModelProvider";
 
 export interface SidebarModelSelectorProps {
   models: ChatModelContainer[];
@@ -31,21 +32,12 @@ export interface SidebarModelSelectorProps {
 }
 
 export function SidebarModelSelector({
-  models: modelsInput,
-  selectedModel: selectedModelInput,
+  models,
+  selectedModel,
   setActiveModel,
 }: Readonly<SidebarModelSelectorProps>) {
   const { isMobile, open } = useSidebar();
   const logoSrc = useLogo();
-
-  /* TODO: Remove this part if backend implement to give type over rest endpoint */
-  const models = addModelLogo(modelsInput);
-  let selectedModel = undefined;
-  if (selectedModelInput) {
-    selectedModel = addModelLogo([selectedModelInput])[0];
-  }
-
-  /* ------------------ */
 
   const onClickSelectModel = (model: ChatModelContainer) => {
     setActiveModel(model);
@@ -78,18 +70,24 @@ export function SidebarModelSelector({
               {selectedModel && (
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-black text-white">
                   <img
-                    src={selectedModel.logo}
+                    src={getLogoFromModelProvider(selectedModel.provider)}
                     alt={selectedModel.label}
                     className="w-6 h-6 invert"
                   />
                 </div>
               )}
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">
+                <span className="truncate font-semibold inline-block">
                   {selectedModel ? (
                     <>{selectedModel.label}</>
                   ) : (
-                    <>{t("chatbot.sidebar.modelSelectionInstruction")}</>
+                    <>
+                      {open ? (
+                        t("chatbot.sidebar.modelSelectionInstruction")
+                      ) : (
+                        <div className="text-center">?</div>
+                      )}
+                    </>
                   )}
                 </span>
               </div>
@@ -119,7 +117,10 @@ export function SidebarModelSelector({
                   >
                     <div className="flex size-6 items-center justify-center rounded-sm bg-black">
                       <img
-                        src={model.logo}
+                        src={
+                          model.provider &&
+                          getLogoFromModelProvider(model.provider)
+                        }
                         alt={model.label}
                         className="w-5 h-5 invert"
                       />
@@ -143,40 +144,3 @@ export function SidebarModelSelector({
     </SidebarMenu>
   );
 }
-
-//TODO: Only until backend implement forwarding model type
-
-interface ChatModelContainerWithLogo extends ChatModelContainer {
-  logo: string;
-}
-
-const azureIcon = "azure.svg";
-const openaiIcon = "openai.svg";
-const ollamaIcon = "ollama.svg";
-const botIcon = "bot.svg";
-
-const addModelLogo = (models: ChatModelContainer[]) => {
-  const modelsWithLogo: ChatModelContainerWithLogo[] = [];
-  models.forEach((model) => {
-    if (!model.label || !model.uid) return;
-    let icon;
-    if (model.uid.includes("azure")) {
-      icon = azureIcon;
-    } else if (model.uid.includes("openai")) {
-      icon = openaiIcon;
-    } else if (model.uid.includes("llama")) {
-      icon = ollamaIcon;
-    } else {
-      icon = botIcon;
-    }
-
-    modelsWithLogo.push({
-      label: model.label,
-      uid: model.uid,
-      description: model.description,
-      logo: icon,
-    });
-  });
-
-  return modelsWithLogo;
-};

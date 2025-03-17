@@ -1,27 +1,17 @@
+import { useTheme } from "@/components/theme-provider";
 import { useEffect, useState } from "react";
 
 export function useLogo() {
   const [logoSrc, setLogoSrc] = useState("/logo.svg");
+  const { theme } = useTheme();
 
   useEffect(() => {
-    const updateLogo = () => {
-      const prefersDarkScheme = window.matchMedia(
-        "(prefers-color-scheme: dark)",
-      ).matches;
-      setLogoSrc(prefersDarkScheme ? "/logo-dark.svg" : "/logo.svg");
-    };
-
-    updateLogo(); // Initial check
-    window
-      .matchMedia("(prefers-color-scheme: dark)")
-      .addEventListener("change", updateLogo);
-
-    return () => {
-      window
-        .matchMedia("(prefers-color-scheme: dark)")
-        .removeEventListener("change", updateLogo);
-    };
-  }, []);
+    if (theme === "dark") {
+      setLogoSrc("/logo-dark.svg");
+    } else {
+      setLogoSrc("/logo.svg");
+    }
+  }, [theme]);
 
   return logoSrc;
 }

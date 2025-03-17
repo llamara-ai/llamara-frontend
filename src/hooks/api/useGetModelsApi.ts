@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
-import { ChatModelContainer, getModels } from "@/api";
+import { ChatModelContainer, ChatModelProvider, getModels } from "@/api";
 import { useToast } from "../use-toast";
 import { useCache } from "@/services/CacheService";
 
 interface UseAvailableModelsResponse {
   models: ChatModelContainer[];
   error: string | null;
+  getModelProviderFromUid: (
+    currentSelectedModelId: string | null,
+  ) => ChatModelProvider | undefined;
 }
 
 export default function useAvailableModels(): UseAvailableModelsResponse {
@@ -18,6 +21,7 @@ export default function useAvailableModels(): UseAvailableModelsResponse {
   useEffect(() => {
     const cachedModels = getCache("models");
     if (cachedModels) {
+      setError(null);
       setModels(cachedModels);
     } else if (!loading) {
       setLoading(true);
@@ -45,5 +49,12 @@ export default function useAvailableModels(): UseAvailableModelsResponse {
     }
   }, [loading]);
 
-  return { models, error };
+  const getModelProviderFromUid = (
+    currentSelectedModelId: string | null,
+  ): ChatModelProvider | undefined => {
+    return models.find((model) => model.uid === currentSelectedModelId)
+      ?.provider;
+  };
+
+  return { models, getModelProviderFromUid, error };
 }

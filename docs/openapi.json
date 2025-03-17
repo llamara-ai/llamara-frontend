@@ -13,6 +13,12 @@
           },
           "timestamp" : {
             "$ref" : "#/components/schemas/Instant"
+          },
+          "modelProvider" : {
+            "$ref" : "#/components/schemas/ChatModelProvider"
+          },
+          "modelName" : {
+            "type" : "string"
           }
         }
       },
@@ -49,6 +55,12 @@
           },
           "oidc" : {
             "$ref" : "#/components/schemas/OidcInfoDTO"
+          },
+          "imprintLink" : {
+            "type" : "string"
+          },
+          "privacyPolicyLink" : {
+            "type" : "string"
           }
         }
       },
@@ -457,6 +469,50 @@
         } ]
       }
     },
+    "/rest/chat/sessions/{sessionId}/label" : {
+      "put" : {
+        "summary" : "Set the label of a session identified by its ID.",
+        "operationId" : "setSessionLabel",
+        "parameters" : [ {
+          "description" : "UID of the session to set the label for",
+          "name" : "sessionId",
+          "required" : true,
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "session label to set",
+          "name" : "label",
+          "required" : true,
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "400" : {
+            "description" : "Bad Request, usually returned when an operation is requested before the user has logged in."
+          },
+          "200" : {
+            "description" : "OK"
+          },
+          "404" : {
+            "description" : "No session with the given ID found."
+          },
+          "401" : {
+            "description" : "Not Authorized"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "tags" : [ "Chat Resource" ],
+        "security" : [ {
+          "SecurityScheme" : [ "admin", "user", "anonymous_user" ]
+        } ]
+      }
+    },
     "/rest/knowledge" : {
       "get" : {
         "summary" : "Get all knowledge.",
@@ -699,6 +755,127 @@
         "tags" : [ "Knowledge Resource" ],
         "security" : [ {
           "SecurityScheme" : [ "admin", "user", "anonymous_user" ]
+        } ]
+      }
+    },
+    "/rest/knowledge/{id}/label" : {
+      "put" : {
+        "summary" : "Set the label of a single knowledge identified by its ID.",
+        "operationId" : "setKnowledgeLabel",
+        "parameters" : [ {
+          "description" : "UID of the knowledge to set the label for",
+          "name" : "id",
+          "required" : true,
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "the knowledge label to set",
+          "name" : "label",
+          "required" : true,
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "404" : {
+            "description" : "No knowledge with the given id found."
+          },
+          "401" : {
+            "description" : "Not Authorized"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "tags" : [ "Knowledge Resource" ],
+        "security" : [ {
+          "SecurityScheme" : [ "admin", "user" ]
+        } ]
+      }
+    },
+    "/rest/knowledge/{id}/tag" : {
+      "delete" : {
+        "summary" : "Remove a tag from a single knowledge identified by its ID.",
+        "operationId" : "removeKnowledgeTag",
+        "parameters" : [ {
+          "description" : "UID of the knowledge to which the tag should be removed",
+          "name" : "id",
+          "required" : true,
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "tag to remove",
+          "name" : "tag",
+          "required" : true,
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "404" : {
+            "description" : "No knowledge with the given id found."
+          },
+          "401" : {
+            "description" : "Not Authorized"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "tags" : [ "Knowledge Resource" ],
+        "security" : [ {
+          "SecurityScheme" : [ "admin", "user" ]
+        } ]
+      },
+      "put" : {
+        "summary" : "Add a tag to a single knowledge identified by its ID.",
+        "operationId" : "addKnowledgeTag",
+        "parameters" : [ {
+          "description" : "UID of the knowledge to which the tag should be added",
+          "name" : "id",
+          "required" : true,
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "tag to add",
+          "name" : "tag",
+          "required" : true,
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "404" : {
+            "description" : "No knowledge with the given id found."
+          },
+          "401" : {
+            "description" : "Not Authorized"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "tags" : [ "Knowledge Resource" ],
+        "security" : [ {
+          "SecurityScheme" : [ "admin", "user" ]
         } ]
       }
     },

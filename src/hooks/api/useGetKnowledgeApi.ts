@@ -27,6 +27,7 @@ export default function useGetKnowledgeApi({
     };
     getKnowledge(options)
       .then((response) => {
+        setError(null);
         setKnowledge(response.data);
       })
       .catch((error: Error) => {

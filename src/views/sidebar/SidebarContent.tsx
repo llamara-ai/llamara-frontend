@@ -6,36 +6,44 @@ import {
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ChatModelContainer } from "@/api";
-import useGetSessionsApi from "@/hooks/api/useGetSessionsApi";
 import useGetModelsApi from "@/hooks/api/useGetModelsApi";
 import {
   useReadSelectedModel,
   useWriteSelectedModel,
 } from "@/hooks/useLocalStorage";
-import { SidebarSessionList as ChatbotSidebarMain } from "./SidebarSessionList";
+import { SidebarSessionsGroup, SidebarSessionList } from "./SidebarSessionList";
 import { SidebarModelSelector as ChatbotSidebarHeader } from "./SidebarModelSelector";
 import { useToast } from "@/hooks/use-toast";
 import { groupSessionsByDateForNavbar } from "@/lib/groupSessionsByDateForNavbar";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "@/services/AppContextService.tsx";
+import { UseGetSessionsApiResponse } from "@/hooks/api/useGetSessionsApi";
 
 // No need to provide onSelectedModel if not provided only store the selected model in local storage
 interface SidebarProps {
+  useSessionsApiInstance: UseGetSessionsApiResponse;
   onSelectedModel?: (modelUid: string | null) => void;
 }
 
-const SessionModelSidebar: React.FC<SidebarProps> = ({
+const SessionModelSidebar = ({
+  useSessionsApiInstance,
   onSelectedModel,
 }: Readonly<SidebarProps>) => {
   const { t } = useTranslation();
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  const { sessions } = useSessionsApiInstance;
+
+  const { models } = useGetModelsApi();
+  const { securityConfig } = useAppContext();
+
   const [selectedModel, setSelectedModel] = useState<ChatModelContainer | null>(
     useReadSelectedModel(),
   );
-
-  const { models } = useGetModelsApi();
+  const [sortedSessions, setSortedSessions] = useState<SidebarSessionsGroup[]>(
+    [],
+  );
 
   // Update parent component with selected model
   // If no method is provided store the selected model in local storage
@@ -71,10 +79,17 @@ const SessionModelSidebar: React.FC<SidebarProps> = ({
     void navigate(`/?session=${sessionId}`);
   };
 
-  const { sessions } = useGetSessionsApi();
-  const sortedSessions = groupSessionsByDateForNavbar(sessions);
-
-  const { securityConfig } = useAppContext();
+  useEffect(() => {
+    setSortedSessions(
+      groupSessionsByDateForNavbar({
+        sessions,
+        last7DaysLabel: t("chatbot.sidebar.recent7days"),
+        last30DaysLabel: t("chatbot.sidebar.recent30days"),
+        recentYearLabel: t("chatbot.sidebar.recentYear"),
+        noSessionsLabel: t("chatbot.sidebar.noSessions"),
+      }),
+    );
+  }, [sessions, t]);
 
   return (
     <>
@@ -91,10 +106,11 @@ const SessionModelSidebar: React.FC<SidebarProps> = ({
             {t("chatbot.sidebar.anonymousModeActive")}
           </SidebarGroupLabel>
         ) : (
-          <ChatbotSidebarMain
+          <SidebarSessionList
             title={t("chatbot.sidebar.title")}
             items={sortedSessions}
             setOnClick={onSelectSession}
+            useSessionsApiInstance={useSessionsApiInstance}
           />
         )}
       </SidebarContent>

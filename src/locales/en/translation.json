@@ -34,11 +34,16 @@
         "title": "How can I help you?",
         "subtitle": "Chat with your data",
         "text": "Welcome to our innovative chatbot! With our application, you can interact directly with your data, get answers to complex questions and find relevant information quickly and easily. Harness the power of AI to use knowledge more efficiently - anytime, anywhere."
-      }
+      },
+      "copyMessage": "Message copied to clipboard!"
     }
   },
   "sidebar": {
     "login": "Login",
-    "logout": "Logout"
+    "logout": "Logout",
+    "session": {
+      "buttonEditLabel": "Edit label",
+      "buttonDelete": "Delete Session"
+    }
   }
 }

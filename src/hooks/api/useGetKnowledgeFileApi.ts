@@ -28,6 +28,7 @@ export default function useGetKnowledgeFileApi({
 
     getKnowledgeFile(options)
       .then(() => {
+        setError(null);
         //TODO: Response type is unkown
       })
       .catch((error: Error) => {

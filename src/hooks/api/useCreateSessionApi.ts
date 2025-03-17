@@ -19,6 +19,7 @@ export default function useCreateSessionApi(): UseCreateSessionApiResponse {
       const session = response.data;
 
       if (session) {
+        setError(null);
         setSession(session);
         return session;
       } else {

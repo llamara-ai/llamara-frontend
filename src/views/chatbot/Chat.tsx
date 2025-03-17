@@ -1,38 +1,28 @@
 import {
   ChatBubble,
-  ChatBubbleAction,
   ChatBubbleAvatar,
   ChatBubbleMessage,
 } from "@/components/ui/chat/chat-bubble";
 import { ChatInput } from "@/components/ui/chat/chat-input";
 import { ChatMessageList } from "@/components/ui/chat/chat-message-list";
 import { Button } from "@/components/ui/button";
-import { CopyIcon, CornerDownLeft, RefreshCcw, Volume2 } from "lucide-react";
+import { Check, Copy, CornerDownLeft, RefreshCcw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import CodeDisplayBlock from "@/components/code-display-block";
 import { ChatMessageRecord } from "@/api";
 import { useTranslation } from "react-i18next";
-
-const ChatAiIcons = [
-  {
-    icon: CopyIcon,
-    label: "Copy",
-  },
-  {
-    icon: RefreshCcw,
-    label: "Refresh",
-  },
-  {
-    icon: Volume2,
-    label: "Volume",
-  },
-];
+import { getInitials } from "@/lib/getInitials";
+import { useUserContext } from "@/services/UserContextService";
+import { useToast } from "@/hooks/use-toast";
+import { getLogoFromModelProvider } from "@/lib/getLogoFromModelProvider";
+import useAvailableModels from "@/hooks/api/useGetModelsApi";
 
 interface ChatProps {
   messages: ChatMessageRecord[];
   handleSubmit: (prompt: string) => Promise<void>;
+  currentSelectedModelId: string | null;
   isLoading: boolean;
   isGenerating: boolean;
   lockSendPrompt: boolean;
@@ -41,22 +31,35 @@ interface ChatProps {
 export default function Chat({
   messages,
   handleSubmit,
+  currentSelectedModelId,
   isLoading,
   isGenerating,
   lockSendPrompt,
 }: Readonly<ChatProps>) {
   const { t } = useTranslation();
+  const { user } = useUserContext();
+  const { toast } = useToast();
+  const { getModelProviderFromUid } = useAvailableModels();
+
+  // Get current selected model provider to display logo when loading
+  const currentSelectedModelProvider = getModelProviderFromUid(
+    currentSelectedModelId,
+  );
 
   const [promptInput, setPromptInput] = useState<string>("");
+  const [isCopied, setIsCopied] = useState(false);
 
   const messagesRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
     if (messagesRef.current) {
-      messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
+      const { offsetHeight, scrollHeight, scrollTop } = messagesRef.current;
+      if (scrollHeight <= scrollTop + offsetHeight + 100) {
+        messagesRef.current.scrollTo(0, scrollHeight);
+      }
     }
-  }, [messages]);
+  }, [messagesRef]);
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -77,27 +80,39 @@ export default function Chat({
     setPromptInput(e.target.value);
   };
 
-  const handleActionClick = async (action: string, messageIndex: number) => {
-    console.log("Action clicked:", action, "Message index:", messageIndex);
-    if (action === "Refresh") {
-      try {
-        await handleSubmit(messages[messageIndex].text ?? "");
-      } catch (error) {
-        console.error("Error reloading:", error);
+  const handleRetryClick = async (messageIndex: number) => {
+    try {
+      let index = messageIndex;
+      while (messages[index].type !== "USER" && index > 0) {
+        index--;
       }
+      await handleSubmit(messages[index].text ?? "");
+    } catch (error) {
+      console.error("Error reloading:", error);
     }
+  };
 
-    if (action === "Copy") {
-      const message = messages[messageIndex];
-      if (message.type === "AI" && message.text) {
-        await navigator.clipboard.writeText(message.text);
-      }
+  const handleCopyClick = (messageIndex: number) => {
+    const message = messages[messageIndex];
+    if (message.type === "AI" && message.text) {
+      setIsCopied(true);
+      void navigator.clipboard.writeText(message.text);
+      toast({
+        title: t("chatbot.chat.copyMessage"),
+      });
+      setTimeout(() => {
+        setIsCopied(false);
+      }, 1500);
     }
   };
 
   return (
     <div className="flex flex-col h-full mx-5 items-center justify-center ">
-      <div className="flex-1 overflow-y-auto py-6 flex-grow flex items-center justify-center w-5/6">
+      <div
+        className="flex-1 overflow-y-auto flex-grow flex items-center justify-center w-5/6"
+        style={{ maxHeight: "calc(100vh - 225px)" }}
+        ref={messagesRef}
+      >
         <ChatMessageList>
           {/* Initial Message */}
           {messages.length === 0 && (
@@ -115,10 +130,23 @@ export default function Chat({
               key={message.timestamp ? message.timestamp : index}
               variant={message.type == "USER" ? "sent" : "received"}
             >
-              <ChatBubbleAvatar
-                src=""
-                fallback={message.type == "USER" ? "👨🏽" : "🤖"}
-              />
+              {message.type == "USER" ? (
+                <ChatBubbleAvatar
+                  className="bg-secondary"
+                  src={""}
+                  fallback={getInitials(
+                    user?.name ?? user?.name ?? "Anonymous",
+                  )}
+                />
+              ) : (
+                <ChatBubbleAvatar
+                  className="bg-secondary flex justify-center items-center"
+                  ImageClassName="invert size-7"
+                  src={getLogoFromModelProvider(message.modelProvider)}
+                  fallback={"AI"}
+                />
+              )}
+
               <ChatBubbleMessage>
                 {message.text
                   ?.toString()
@@ -127,7 +155,11 @@ export default function Chat({
                     if (index % 2 === 0) {
                       return (
                         <Markdown
-                          key={`${message.timestamp}-${index}`}
+                          key={
+                            message.timestamp
+                              ? message.timestamp + index.toString()
+                              : index
+                          }
                           remarkPlugins={[remarkGfm]}
                         >
                           {part}
@@ -137,7 +169,11 @@ export default function Chat({
                       return (
                         <pre
                           className="whitespace-pre-wrap pt-2"
-                          key={`${message.timestamp}-${index}`}
+                          key={
+                            message.timestamp
+                              ? message.timestamp + index.toString()
+                              : index
+                          }
                         >
                           <CodeDisplayBlock code={part} lang="" />
                         </pre>
@@ -149,20 +185,20 @@ export default function Chat({
                   <div className="flex items-center mt-1.5 gap-1">
                     {!isGenerating && (
                       <>
-                        {ChatAiIcons.map((icon, iconIndex) => {
-                          const Icon = icon.icon;
-                          return (
-                            <ChatBubbleAction
-                              variant="outline"
-                              className="size-5"
-                              key={`${icon.label}-${iconIndex.toString()}`}
-                              icon={<Icon className="size-3" />}
-                              onClick={() =>
-                                void handleActionClick(icon.label, index)
-                              }
-                            />
-                          );
-                        })}
+                        <button onClick={() => void handleRetryClick(index)}>
+                          <RefreshCcw className="size-4 bg-transparent" />
+                        </button>
+                        <button
+                          onClick={() => {
+                            handleCopyClick(index);
+                          }}
+                        >
+                          {isCopied ? (
+                            <Check className="size-4 bg-transparent scale-100 transition-all" />
+                          ) : (
+                            <Copy className="size-4 bg-transparent scale-100 transition-all" />
+                          )}
+                        </button>
                       </>
                     )}
                   </div>
@@ -174,27 +210,33 @@ export default function Chat({
           {/* Loading */}
           {isGenerating && (
             <ChatBubble variant="received">
-              <ChatBubbleAvatar src="" fallback="🤖" />
+              <ChatBubbleAvatar
+                className="bg-secondary flex justify-center items-center"
+                ImageClassName="invert size-7"
+                src={getLogoFromModelProvider(currentSelectedModelProvider)}
+                fallback={"AI"}
+              />
               <ChatBubbleMessage isLoading />
             </ChatBubble>
           )}
         </ChatMessageList>
+        <div ref={messagesRef}></div>
       </div>
 
       {/* Form and Footer fixed at the bottom */}
-      <div className="w-5/6 p-4 sticky bottom-3 left-0 right-0 bg-transparent ">
+      <div className="w-5/6 pb-4 px-4 sticky bottom-3 left-0 right-0 bg-transparent ">
         <form
           ref={formRef}
           // eslint-disable-next-line @typescript-eslint/no-misused-promises
           onSubmit={onSubmit}
-          className="relative rounded-2xl border bg-background focus-within:ring-1 focus-within:ring-ring"
+          className="relative rounded-2xl border bg-secondary focus-within:ring-1 focus-within:ring-secondary-foreground"
         >
           <ChatInput
             value={promptInput}
             onKeyDown={onKeyDown}
             onChange={handleInputChange}
             placeholder="Type your message here..."
-            className="rounded-2xl bg-background border-0 shadow-none focus-visible:ring-0"
+            className="rounded-2xl border-0 shadow-none focus-visible:ring-0"
           />
           <div className="flex items-center p-3 pt-0">
             <Button
