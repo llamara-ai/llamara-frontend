@@ -80,12 +80,21 @@
   "knowledgePage": {
     "table": {
       "label": "Name",
+      "noData": "Keine Dateien vorhanden",
       "status": {
         "label": "Status",
         "succeeded": "Erfolgreich",
         "failed": "Fehlgeschlagen",
         "unknown": "Unbekannt",
         "pending": "Läuft"
+      },
+      "permission": {
+        "owner": "Besitzer",
+        "readwrite": "Lese / Schreibe",
+        "readonly": "Lese",
+        "none": "Keine Zugriffsrechte",
+        "undefined": "Unbekannt",
+        "label": "Zugriffsrechte"
       }
     },
     "options": {

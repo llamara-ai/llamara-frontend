@@ -80,12 +80,21 @@
   "knowledgePage": {
     "table": {
       "label": "Label",
+      "noData": "No data available",
       "status": {
         "label": "Status",
         "succeeded": "Successful",
         "failed": "Failed",
         "pending": "Pending",
         "unknown": "Unknown"
+      },
+      "permission": {
+        "owner": "Owner",
+        "readwrite": "Read / Write",
+        "readonly": "Read",
+        "none": "No Permission",
+        "undefined": "unknown",
+        "label": "Permission"
       }
     },
     "options": {

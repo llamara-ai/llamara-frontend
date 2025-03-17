@@ -25,7 +25,7 @@ export function Overlay({ children }: Readonly<OverlayProps>) {
   return (
     <Sidebar>
       <div className="h-full flex flex-col">
-        <div className="sticky top-0 z-50 ">
+        <div className="sticky top-0 z-40 ">
           <Header onClickNewSession={() => void onClickNewSession()} />
         </div>
         <div className="mx-4 h-full">{children}</div>

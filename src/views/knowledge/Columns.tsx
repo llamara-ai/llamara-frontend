@@ -5,11 +5,13 @@ import { Button } from "@/components/ui/button";
 import KnowledgeOptions from "./KnowledgeOptions";
 import KnowledgeStatus from "./KnowledgeStatus";
 import { useTranslation } from "react-i18next";
+import KnowledgePermissions from "./KnowledgePermissions";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
-
-export default function Columns(): ColumnDef<Knowledge>[] {
+export default function Columns(
+  onClickFile: (knowledge: Knowledge) => void,
+): ColumnDef<Knowledge>[] {
   const { t } = useTranslation();
 
   return [
@@ -45,8 +47,42 @@ export default function Columns(): ColumnDef<Knowledge>[] {
           </Button>
         );
       },
+      cell: ({ row }) => {
+        const knowledge = row.original;
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => {
+              onClickFile(knowledge);
+            }}
+          >
+            {knowledge.label}
+          </Button>
+        );
+      },
     },
-
+    {
+      accessorKey: "permissions",
+      header: ({ column }) => {
+        return (
+          <div className="w-auto">
+            <Button
+              variant="ghost"
+              onClick={() => {
+                column.toggleSorting(column.getIsSorted() === "asc", true);
+              }}
+            >
+              {t("knowledgePage.table.permission.label")}
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
+        );
+      },
+      cell: ({ row }) => {
+        const knowledge = row.original;
+        return KnowledgePermissions(knowledge);
+      },
+    },
     {
       accessorKey: "ingestionStatus",
       header: ({ column }) => {
@@ -55,7 +91,7 @@ export default function Columns(): ColumnDef<Knowledge>[] {
             <Button
               variant="ghost"
               onClick={() => {
-                column.toggleSorting(column.getIsSorted() === "asc");
+                column.toggleSorting(column.getIsSorted() === "asc", true);
               }}
             >
               {t("knowledgePage.table.status.label")}
