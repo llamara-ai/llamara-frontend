@@ -132,7 +132,7 @@ export default function ChatMessage({
         <ChatBubbleAvatar
           className="bg-secondary"
           src={""}
-          fallback={getInitials(user?.name ?? user?.username ?? "Anonymous")}
+          fallback={getInitials(user?.name ?? user?.name ?? "Anonymous")}
         />
       ) : (
         <Tooltip>

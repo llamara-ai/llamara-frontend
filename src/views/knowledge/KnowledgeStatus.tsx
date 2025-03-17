@@ -2,6 +2,7 @@ import { Knowledge } from "@/api";
 import { CheckCircle2, CircleAlert, CircleMinus, CircleX } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
+// Styles the ingestion status
 export default function KnowledgeStatus(
   knowledge: Readonly<Knowledge | undefined>,
 ) {

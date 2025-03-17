@@ -22,7 +22,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import TableAccordion from "./TableAccordion";
+import TableAccordion from "./TableExpandable";
 import { Input } from "@/components/ui/input";
 import type { Knowledge } from "@/api";
 import { t } from "i18next";
@@ -88,6 +88,7 @@ export default function DataTable({ columns, data }: Readonly<DataTableProps>) {
   return (
     <>
       <div>
+        {/*Search Bar*/}
         <div className="flex items-center py-4">
           <Input
             placeholder={t("knowledgePage.table.inputPlaceholder")}

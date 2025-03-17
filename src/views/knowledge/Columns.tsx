@@ -7,8 +7,7 @@ import KnowledgeStatus from "./KnowledgeStatus";
 import { useTranslation } from "react-i18next";
 import KnowledgePermissions from "./KnowledgePermissions";
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
+//Defines the columns of the data table.
 export default function Columns(
   onClickFile: (knowledge: Knowledge) => void,
   onClickTagEdit: (knowledgeId: string | null) => void,
@@ -18,7 +17,6 @@ export default function Columns(
 
   return [
     // Left most column
-
     {
       id: "collapseable",
       cell: ({ row }) => {

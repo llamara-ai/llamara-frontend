@@ -130,6 +130,15 @@
       "selectPermission": "Select",
       "add": "Add",
       "save": "Save"
+    },
+    "pagination": {
+      "page": "Page",
+      "of": "of",
+      "firstPage": "Go to first page",
+      "nextPage": "Go to next page",
+      "prevPage": "Go to previous page",
+      "lastPage": "Go to last page",
+      "rowsPerPage": "Rows per page"
     }
   },
   "footer": {

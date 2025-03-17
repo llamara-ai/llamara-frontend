@@ -130,6 +130,15 @@
       "selectPermission": "Auswählen",
       "add": "Hinzufügen",
       "save": "Speichern"
+    },
+    "pagination": {
+      "page": "Seite",
+      "of": "von",
+      "firstPage": "Zur ersten Seite",
+      "nextPage": "Zur nächsten Seite",
+      "prevPage": "Zur vorherigen Seite",
+      "lastPage": "Zur letzten Seite",
+      "rowsPerPage": "Zeilen pro Seite"
     }
   },
   "footer": {

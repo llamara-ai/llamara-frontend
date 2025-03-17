@@ -32,6 +32,7 @@ interface KnowledgeOptionsProps {
   knowledge: Readonly<Knowledge>;
 }
 
+// Dropdown menu item of the data table
 export default function KnowledgeOptions({
   onClickTagEdit,
   onClickPermissionEdit,

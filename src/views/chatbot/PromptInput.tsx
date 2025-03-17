@@ -2,6 +2,7 @@ import { ChatInput } from "@/components/ui/chat/chat-input";
 import { Button } from "@/components/ui/button";
 import { SendHorizontal } from "lucide-react";
 import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface PromptInputProps {
   handleSubmit: (prompt: string) => Promise<void>;
@@ -16,6 +17,7 @@ export default function PromptInput({
   isLoading,
   lockSendPrompt,
 }: Readonly<PromptInputProps>) {
+  const { t } = useTranslation();
   const formRef = useRef<HTMLFormElement>(null);
   const [promptInput, setPromptInput] = useState<string>("");
 
@@ -49,7 +51,7 @@ export default function PromptInput({
           value={promptInput}
           onKeyDown={onKeyDown}
           onChange={handleInputChange}
-          placeholder="Type your message here..."
+          placeholder={t("chatbot.promptInput.placeholder")}
           className="flex-grow rounded-2xl border-0 shadow-none focus-visible:ring-0"
         />
         <Button
