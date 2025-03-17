@@ -1,0 +1,5 @@
+dist
+docs/openapi.json
+node_modules
+src/api
+src/components/ui

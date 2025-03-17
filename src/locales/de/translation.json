@@ -1,45 +1,43 @@
 {
-    "login": {
-        "title": "Login",
-        "button": "Weiterleitung zum OIDC Provider",
-        "loggedInButton": "Bereits angemeldet. Weiter zur Anwendung"
-    },    
-    "loading": {
-        "title": "Lade die Anwendung..."
-    },
-    "chatbot": {
-        "sidebar" : {
-            "title": "Vergangene Chats",
-            "recent7days": "Letzte 7 Tage",
-            "recent30days": "Letzte 30 Tage",
-            "recentYear": "Jahr",
-            "noSessions": "Keine Sessions vorhanden",
-            "selectError": "Fehler beim Auswählen der Session mit ID:",
-            "anonymousModeActive": "Es werden keine Chatverläufe angezeigt, da der anonyme Modus aktiv ist.",
-            "modelSelectionInstruction": "Wähle ein Modell aus..."
-        },
-        "errorLoadHistory": "Fehler beim Laden der Chatverlauf",
-        "errorGeneratePrompt": "Generieren einer Antwort fehlgeschlagen. Bitte versuchen Sie es erneut.",
-        "promptInput": {
-            "placeholder": "Schreibe eine Nachricht...",
-            "send": "Senden"
-        },
-        "deleteSessionSuccessful": "Die Session wurde erfolgreich gelöscht",
-        "errorModelNotAvailable": "Das ausgewählte Modell ist nicht mehr verfügbar",
-        "newSession": "Erzeuge neue Session",
-        "newSessionCreate": "Neue Sitzung erstellt",
-        "noSessionLabel": "Keine Session Label verfügbar",
-        "chat": {
-            "newChat" : {
-                "title": "Wie kann ich dir helfen?",
-                "subtitle": "Chatte mit deinen Daten",
-                "text": "Willkommen bei unserem innovativen Chatbot! Mit unserer Anwendung kannst du direkt mit deinen Daten interagieren, Antworten auf komplexe Fragen erhalten und relevante Informationen schnell und einfach finden. Nutze die Power der KI, um Wissen effizienter zu nutzen – jederzeit und überall."
-            }
-        }
-
-    },
+  "login": {
+    "title": "Login",
+    "button": "Weiterleitung zum OIDC Provider",
+    "loggedInButton": "Bereits angemeldet. Weiter zur Anwendung"
+  },
+  "loading": {
+    "title": "Lade die Anwendung..."
+  },
+  "chatbot": {
     "sidebar": {
-        "logout": "Abmelden"
+      "title": "Vergangene Chats",
+      "recent7days": "Letzte 7 Tage",
+      "recent30days": "Letzte 30 Tage",
+      "recentYear": "Jahr",
+      "noSessions": "Keine Sessions vorhanden",
+      "selectError": "Fehler beim Auswählen der Session mit ID:",
+      "anonymousModeActive": "Es werden keine Chatverläufe angezeigt, da der anonyme Modus aktiv ist.",
+      "modelSelectionInstruction": "Wähle ein Modell aus..."
+    },
+    "errorLoadHistory": "Fehler beim Laden der Chatverlauf",
+    "errorGeneratePrompt": "Generieren einer Antwort fehlgeschlagen. Bitte versuchen Sie es erneut.",
+    "promptInput": {
+      "placeholder": "Schreibe eine Nachricht...",
+      "send": "Senden"
+    },
+    "deleteSessionSuccessful": "Die Session wurde erfolgreich gelöscht",
+    "errorModelNotAvailable": "Das ausgewählte Modell ist nicht mehr verfügbar",
+    "newSession": "Erzeuge neue Session",
+    "newSessionCreate": "Neue Sitzung erstellt",
+    "noSessionLabel": "Keine Session Label verfügbar",
+    "chat": {
+      "newChat": {
+        "title": "Wie kann ich dir helfen?",
+        "subtitle": "Chatte mit deinen Daten",
+        "text": "Willkommen bei unserem innovativen Chatbot! Mit unserer Anwendung kannst du direkt mit deinen Daten interagieren, Antworten auf komplexe Fragen erhalten und relevante Informationen schnell und einfach finden. Nutze die Power der KI, um Wissen effizienter zu nutzen – jederzeit und überall."
+      }
     }
-    
+  },
+  "sidebar": {
+    "logout": "Abmelden"
+  }
 }

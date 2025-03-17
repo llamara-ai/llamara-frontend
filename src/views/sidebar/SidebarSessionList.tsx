@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import { ChevronRight, type LucideIcon } from "lucide-react"
+import { ChevronRight, type LucideIcon } from "lucide-react";
 
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible"
+} from "@/components/ui/collapsible";
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -17,38 +17,43 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
   useSidebar,
-} from "@/components/ui/sidebar"
-
+} from "@/components/ui/sidebar";
 
 export interface SingleNavItem {
-  title: string
-  uid: string
+  title: string;
+  uid: string;
 }
 export interface NavMainGroup {
-  title: string
-  icon?: LucideIcon
-  isActive?: boolean
-  items?: SingleNavItem[]
+  title: string;
+  icon?: LucideIcon;
+  isActive?: boolean;
+  items?: SingleNavItem[];
 }
 
 export interface NavMainProps {
-  title: string
-  items: NavMainGroup[]
-  setOnClick: (uid: string, label: string) => void
+  title: string;
+  items: NavMainGroup[];
+  setOnClick: (uid: string, label: string) => void;
 }
 
-export function SidebarSessionList({title, items, setOnClick}: Readonly<NavMainProps>) {
+export function SidebarSessionList({
+  title,
+  items,
+  setOnClick,
+}: Readonly<NavMainProps>) {
   const { open } = useSidebar();
 
   return (
     <SidebarGroup>
       <SidebarGroupLabel>{title}</SidebarGroupLabel>
-      <SidebarMenu className={`top-0 left-0 transition-opacity duration-300 ${open ? 'opacity-100' : 'opacity-0'}`}>
+      <SidebarMenu
+        className={`top-0 left-0 transition-opacity duration-300 ${open ? "opacity-100" : "opacity-0"}`}
+      >
         {items.map((item) => (
           <Collapsible
             key={item.title}
             asChild
-            defaultOpen={item.isActive? item.isActive : true}
+            defaultOpen={item.isActive ? item.isActive : true}
             className="group/collapsible"
           >
             <SidebarMenuItem>
@@ -64,7 +69,12 @@ export function SidebarSessionList({title, items, setOnClick}: Readonly<NavMainP
                   {item.items?.map((subItem) => (
                     <SidebarMenuSubItem key={subItem.uid + item.title}>
                       <SidebarMenuSubButton asChild>
-                        <button className="w-full" onClick={() => setOnClick(subItem.uid, subItem.title)}>
+                        <button
+                          className="w-full"
+                          onClick={() => {
+                            setOnClick(subItem.uid, subItem.title);
+                          }}
+                        >
                           <span>{subItem.title}</span>
                         </button>
                       </SidebarMenuSubButton>
@@ -77,5 +87,5 @@ export function SidebarSessionList({title, items, setOnClick}: Readonly<NavMainP
         ))}
       </SidebarMenu>
     </SidebarGroup>
-  )
+  );
 }

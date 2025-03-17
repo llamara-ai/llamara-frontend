@@ -7,12 +7,7 @@ import {
 import { ChatInput } from "@/components/ui/chat/chat-input";
 import { ChatMessageList } from "@/components/ui/chat/chat-message-list";
 import { Button } from "@/components/ui/button";
-import {
-  CopyIcon,
-  CornerDownLeft,
-  RefreshCcw,
-  Volume2,
-} from "lucide-react";
+import { CopyIcon, CornerDownLeft, RefreshCcw, Volume2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -36,15 +31,20 @@ const ChatAiIcons = [
 ];
 
 interface ChatProps {
-  messages: ChatMessageRecord[]
-  handleSubmit: (prompt: string) => Promise<void>
-  isLoading: boolean,
-  isGenerating: boolean,
-  lockSendPrompt: boolean
+  messages: ChatMessageRecord[];
+  handleSubmit: (prompt: string) => Promise<void>;
+  isLoading: boolean;
+  isGenerating: boolean;
+  lockSendPrompt: boolean;
 }
 
-
-export default function Chat({ messages, handleSubmit, isLoading, isGenerating, lockSendPrompt }: Readonly<ChatProps>) {
+export default function Chat({
+  messages,
+  handleSubmit,
+  isLoading,
+  isGenerating,
+  lockSendPrompt,
+}: Readonly<ChatProps>) {
   const { t } = useTranslation();
 
   const [promptInput, setPromptInput] = useState<string>("");
@@ -69,7 +69,7 @@ export default function Chat({ messages, handleSubmit, isLoading, isGenerating, 
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       if (isGenerating || isLoading || !promptInput || lockSendPrompt) return;
-      onSubmit(e as unknown as React.FormEvent<HTMLFormElement>);
+      void onSubmit(e as unknown as React.FormEvent<HTMLFormElement>);
     }
   };
 
@@ -89,13 +89,13 @@ export default function Chat({ messages, handleSubmit, isLoading, isGenerating, 
 
     if (action === "Copy") {
       const message = messages[messageIndex];
-      if (message && message.type === "AI" && message.text) {
-        navigator.clipboard.writeText(message.text);
+      if (message.type === "AI" && message.text) {
+        await navigator.clipboard.writeText(message.text);
       }
     }
   };
 
-  return ( 
+  return (
     <div className="flex flex-col h-full mx-5 items-center justify-center ">
       <div className="flex-1 overflow-y-auto py-6 flex-grow flex items-center justify-center w-5/6">
         <ChatMessageList>
@@ -103,65 +103,73 @@ export default function Chat({ messages, handleSubmit, isLoading, isGenerating, 
           {messages.length === 0 && (
             <div className="w-full max-w-[70%] mx-auto my-auto bg-background shadow-sm border rounded-lg p-8 flex flex-col gap-4 text-center ">
               <h1 className="font-bold">{t("chatbot.chat.newChat.title")}</h1>
-              <p className="text-muted-foreground text-sm">{t("chatbot.chat.newChat.text")}</p>
+              <p className="text-muted-foreground text-sm">
+                {t("chatbot.chat.newChat.text")}
+              </p>
             </div>
           )}
 
           {/* Messages */}
-          {messages?.map((message: ChatMessageRecord, index) => (
-              <ChatBubble
-                key={message.timestamp? message.timestamp : index}
-                variant={message.type == "USER" ? "sent" : "received"}
-              >
-                <ChatBubbleAvatar
-                  src=""
-                  fallback={message.type == "USER" ? "👨🏽" : "🤖"}
-                />
-                <ChatBubbleMessage>
-                  {message.text?.toString()
-                    .split("```")
-                    .map((part: string, index: number) => {
-                      if (index % 2 === 0) {
-                        return (
-                          <Markdown key={`${message.timestamp}-${index}`} remarkPlugins={[remarkGfm]}>
-                            {part}
-                          </Markdown>
-                        );
-                      } else {
-                        return (
-                          <pre className="whitespace-pre-wrap pt-2" key={`${message.timestamp}-${index}`}>
-                            <CodeDisplayBlock code={part} lang="" />
-                          </pre>
-                        );
-                      }
-                    })}
+          {messages.map((message: ChatMessageRecord, index) => (
+            <ChatBubble
+              key={message.timestamp ? message.timestamp : index}
+              variant={message.type == "USER" ? "sent" : "received"}
+            >
+              <ChatBubbleAvatar
+                src=""
+                fallback={message.type == "USER" ? "👨🏽" : "🤖"}
+              />
+              <ChatBubbleMessage>
+                {message.text
+                  ?.toString()
+                  .split("```")
+                  .map((part: string, index: number) => {
+                    if (index % 2 === 0) {
+                      return (
+                        <Markdown
+                          key={`${message.timestamp}-${index}`}
+                          remarkPlugins={[remarkGfm]}
+                        >
+                          {part}
+                        </Markdown>
+                      );
+                    } else {
+                      return (
+                        <pre
+                          className="whitespace-pre-wrap pt-2"
+                          key={`${message.timestamp}-${index}`}
+                        >
+                          <CodeDisplayBlock code={part} lang="" />
+                        </pre>
+                      );
+                    }
+                  })}
 
-                  {message.type === "AI" &&
-                    messages.length - 1 === index && (
-                      <div className="flex items-center mt-1.5 gap-1">
-                        {!isGenerating && (
-                          <>
-                            {ChatAiIcons.map((icon, iconIndex) => {
-                              const Icon = icon.icon;
-                              return (
-                                <ChatBubbleAction
-                                  variant="outline"
-                                  className="size-5"
-                                  key={`${icon.label}-${iconIndex}`}
-                                  icon={<Icon className="size-3" />}
-                                  onClick={() =>
-                                    handleActionClick(icon.label, index)
-                                  }
-                                />
-                              );
-                            })}
-                          </>
-                        )}
-                      </div>
+                {message.type === "AI" && messages.length - 1 === index && (
+                  <div className="flex items-center mt-1.5 gap-1">
+                    {!isGenerating && (
+                      <>
+                        {ChatAiIcons.map((icon, iconIndex) => {
+                          const Icon = icon.icon;
+                          return (
+                            <ChatBubbleAction
+                              variant="outline"
+                              className="size-5"
+                              key={`${icon.label}-${iconIndex.toString()}`}
+                              icon={<Icon className="size-3" />}
+                              onClick={() =>
+                                void handleActionClick(icon.label, index)
+                              }
+                            />
+                          );
+                        })}
+                      </>
                     )}
-                </ChatBubbleMessage>
-              </ChatBubble>
-            ))}
+                  </div>
+                )}
+              </ChatBubbleMessage>
+            </ChatBubble>
+          ))}
 
           {/* Loading */}
           {isGenerating && (
@@ -177,6 +185,7 @@ export default function Chat({ messages, handleSubmit, isLoading, isGenerating, 
       <div className="w-5/6 p-4 sticky bottom-3 left-0 right-0 bg-transparent ">
         <form
           ref={formRef}
+          // eslint-disable-next-line @typescript-eslint/no-misused-promises
           onSubmit={onSubmit}
           className="relative rounded-2xl border bg-background focus-within:ring-1 focus-within:ring-ring"
         >
@@ -203,5 +212,3 @@ export default function Chat({ messages, handleSubmit, isLoading, isGenerating, 
     </div>
   );
 }
-
-

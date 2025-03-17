@@ -1,20 +1,24 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import Routes from './Routes';
-import {init as initLanguage} from "@/locales/Languages";
-import { Toaster } from './components/ui/toaster';
-import { ThemeProvider } from './components/theme-provider';
-import CacheProvider from './services/CacheService';
-import LoadingView from './views/loading/Loading';
-import { AuthProvider } from 'react-oauth2-code-pkce';
-import { LoadingProvider } from './services/LoadingService'
-import LoadingOverlay from './components/loading-overlay';
-import { AppContextProvider, useInitAppContext, useAppContext } from '@/services/AppContextService.tsx'
-import { UserContextProvider } from '@/services/UserContextService.tsx'
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "./index.css";
+import Routes from "./Routes";
+import { init as initLanguage } from "@/locales/Languages";
+import { Toaster } from "./components/ui/toaster";
+import { ThemeProvider } from "./components/theme-provider";
+import CacheProvider from "./services/CacheService";
+import LoadingView from "./views/loading/Loading";
+import { AuthProvider } from "react-oauth2-code-pkce";
+import { LoadingProvider } from "./services/LoadingService";
+import LoadingOverlay from "./components/loading-overlay";
+import {
+  AppContextProvider,
+  useInitAppContext,
+  useAppContext,
+} from "@/services/AppContextService.tsx";
+import { UserContextProvider } from "@/services/UserContextService.tsx";
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-createRoot(document.getElementById('root')!).render(
+createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <AppContextProvider>
       <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
@@ -27,8 +31,8 @@ createRoot(document.getElementById('root')!).render(
         </CacheProvider>
       </ThemeProvider>
     </AppContextProvider>
-  </StrictMode>
-)
+  </StrictMode>,
+);
 
 function App() {
   initLanguage();
@@ -38,13 +42,13 @@ function App() {
 
   // Wait for app context to be ready
   if (!ready) {
-      return <LoadingView/>;
+    return <LoadingView />;
   }
 
   return (
     <AuthProvider authConfig={authConfig}>
       <UserContextProvider>
-        <Routes/>
+        <Routes />
       </UserContextProvider>
     </AuthProvider>
   );

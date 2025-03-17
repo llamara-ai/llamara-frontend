@@ -1,31 +1,29 @@
 // @ts-check
+import tseslint from "typescript-eslint";
+import react from "eslint-plugin-react";
+import prettierlint from "eslint-config-prettier";
 
-import eslint from '@eslint/js';
-import tseslint from 'typescript-eslint';
-
-const files = ['src/**/*.tsx', 'src/**/*.ts'];
-
-export default [
+export default tseslint.config(
+  tseslint.configs.strictTypeChecked,
+  tseslint.configs.stylisticTypeChecked,
   {
-    ...eslint.configs.recommended,
-    files
+    languageOptions: {
+      parserOptions: {
+        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+    settings: { react: { version: "19.0" } },
+    plugins: {
+      react,
+    },
+    rules: {
+      ...react.configs.recommended.rules,
+      ...react.configs["jsx-runtime"].rules,
+      ...prettierlint.rules,
+      "@typescript-eslint/restrict-template-expressions": "warn",
+      "@typescript-eslint/restrict-plus-operands": "warn",
+      "@typescript-eslint/use-unknown-in-catch-callback-variable": "off",
+    },
   },
-  ...tseslint.configs.recommended.map(conf => ({
-    ...conf,
-    files
-  })),
-  ...tseslint.configs.strict.map(conf => ({
-    ...conf,
-    files
-  })),
-  ...tseslint.configs.stylistic.map(conf => ({
-    ...conf,
-    files
-  })),
-  {
-    ignores: [
-      'src/api/**',
-      'src/components/ui/**',
-    ]
-  },
-]
+);

@@ -11,14 +11,16 @@ interface ButtonCodeblockProps {
   lang: string;
 }
 
-export default function CodeDisplayBlock({ code }: Readonly<ButtonCodeblockProps>) {
+export default function CodeDisplayBlock({
+  code,
+}: Readonly<ButtonCodeblockProps>) {
   const [isCopied, setIsCopied] = React.useState(false);
   const { toast } = useToast();
 
   //const { theme } = useTheme();
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(code);
+    void navigator.clipboard.writeText(code);
     setIsCopied(true);
     toast({
       title: "Code copied to clipboard!",

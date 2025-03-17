@@ -1,5 +1,5 @@
-import React from 'react';
-import { useLoading } from '@/services/LoadingService';
+import React from "react";
+import { useLoading } from "@/services/LoadingService";
 
 const LoadingOverlay: React.FC = () => {
   const { loading } = useLoading();

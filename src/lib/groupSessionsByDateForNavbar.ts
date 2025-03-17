@@ -1,10 +1,14 @@
-import { Session } from '@/api';
-import { NavMainGroup, SingleNavItem } from '@/views/sidebar/SidebarSessionList';
-import { subDays, isAfter, parseISO, format } from 'date-fns';
-import { useTranslation } from 'react-i18next';
+import { Session } from "@/api";
+import {
+  NavMainGroup,
+  SingleNavItem,
+} from "@/views/sidebar/SidebarSessionList";
+import { subDays, isAfter, parseISO, format } from "date-fns";
+import { useTranslation } from "react-i18next";
 
-
-export function groupSessionsByDateForNavbar(sessions: Session[]): NavMainGroup[] {
+export function groupSessionsByDateForNavbar(
+  sessions: Session[],
+): NavMainGroup[] {
   const { t } = useTranslation();
   const now = new Date();
   const last7Days = subDays(now, 7);
@@ -17,14 +21,13 @@ export function groupSessionsByDateForNavbar(sessions: Session[]): NavMainGroup[
   groups[last7DaysLabel] = [];
   groups[last30DaysLabel] = [];
 
-
-  sessions.forEach(session => {
+  sessions.forEach((session) => {
     if (session.createdAt) {
       const createdAt = parseISO(session.createdAt);
-      const sessionItem : SingleNavItem = {
+      const sessionItem: SingleNavItem = {
         title: session.label ?? formatDate(session.createdAt),
-        uid: session.id ?? ''
-      }
+        uid: session.id ?? "",
+      };
       if (isAfter(createdAt, last7Days)) {
         groups[last7DaysLabel].push(sessionItem);
       } else if (isAfter(createdAt, last30Days)) {
@@ -32,42 +35,42 @@ export function groupSessionsByDateForNavbar(sessions: Session[]): NavMainGroup[
       } else {
         const year = createdAt.getFullYear().toString();
         const name = t("chatbot.sidebar.recentYear") + " " + year;
-        if (!groups[name]) {
-          groups[name] = [];
-        }
         groups[name].push(sessionItem);
       }
     }
   });
 
   if (groups[last7DaysLabel].length === 0) {
-    groups[last7DaysLabel] = [{ title: t("chatbot.sidebar.noSessions"), uid: '' }];
+    groups[last7DaysLabel] = [
+      { title: t("chatbot.sidebar.noSessions"), uid: "" },
+    ];
   }
   if (groups[last30DaysLabel].length === 0) {
-    groups[last30DaysLabel] = [{ title: t("chatbot.sidebar.noSessions"), uid: '' }];
+    groups[last30DaysLabel] = [
+      { title: t("chatbot.sidebar.noSessions"), uid: "" },
+    ];
   }
-
 
   const groupedSessions: NavMainGroup[] = [];
 
   Object.entries(groups)
-    .sort(([a], [b]) => { // Sort by year, with the newest year first
-      const yearA = parseInt(a.split(' ').pop() ?? '0', 10);
-      const yearB = parseInt(b.split(' ').pop() ?? '0', 10);
+    .sort(([a], [b]) => {
+      // Sort by year, with the newest year first
+      const yearA = parseInt(a.split(" ").pop() ?? "0", 10);
+      const yearB = parseInt(b.split(" ").pop() ?? "0", 10);
       return yearB - yearA;
     })
     .forEach(([title, items]) => {
       groupedSessions.push({
         title,
-        items
+        items,
       });
     });
 
   return groupedSessions;
 }
 
-
 export function formatDate(dateString: string): string {
   const date = new Date(dateString);
-  return format(date, 'dd.MM.yyyy HH:mm');
+  return format(date, "dd.MM.yyyy HH:mm");
 }

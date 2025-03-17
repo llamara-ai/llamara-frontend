@@ -9,60 +9,71 @@ import Sidebar from "../sidebar/Sidebar";
 import { useReadSelectedModel } from "@/hooks/useLocalStorage";
 import { useLocation, useNavigate } from "react-router-dom";
 
-
 export default function Chatbot() {
   const { toast } = useToast();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
 
-
-  const chatModelUIDRef = useRef<string | null>(useReadSelectedModel()?.uid ?? null); // Load selected model from local storage
+  const chatModelUIDRef = useRef<string | null>(
+    useReadSelectedModel()?.uid ?? null,
+  ); // Load selected model from local storage
   const [inputLock, setInputLock] = useState<boolean>(false);
 
-
-  const {chatMessages, loading, loadingResponse, handlePromptAndMessages, updateSessionId} = useChatMessages({
-      chatModelUID: chatModelUIDRef.current
+  const {
+    chatMessages,
+    loading,
+    loadingResponse,
+    handlePromptAndMessages,
+    updateSessionId,
+  } = useChatMessages({
+    chatModelUID: chatModelUIDRef.current,
   });
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
-    const sessionId = queryParams.get('session');
-    updateSessionId(null); // Reset session id
-    updateSessionId(sessionId);
+    const sessionId = queryParams.get("session");
+    void updateSessionId(null); // Reset session id
+    void updateSessionId(sessionId);
   }, [location]);
 
   const onSubmit = async (prompt: string) => {
     await handlePromptAndMessages(prompt);
-  }
-
+  };
 
   const onClickNewSession = async () => {
     setInputLock(true);
-    navigate('/', { replace: true }); // Remove session id from URL
+    await navigate("/", { replace: true }); // Remove session id from URL
     await updateSessionId(null);
     setInputLock(false);
     toast({
-      variant: "default", 
-      title: t("chatbot.newSessionCreate")
+      variant: "default",
+      title: t("chatbot.newSessionCreate"),
     });
-  }
+  };
 
-  return ( 
-    <Sidebar sideBarContent={<SidebarContent onSelectedModel={(modelUid) => chatModelUIDRef.current = modelUid}/>}>
+  return (
+    <Sidebar
+      sideBarContent={
+        <SidebarContent
+          onSelectedModel={(modelUid) => (chatModelUIDRef.current = modelUid)}
+        />
+      }
+    >
       <div className="h-full flex flex-col">
         <div className="sticky top-0 z-50 ">
-          <ChatbotHeader onClickNewSession={onClickNewSession}/>
+          <ChatbotHeader onClickNewSession={() => void onClickNewSession()} />
         </div>
         <div className="mx-6 h-full">
-          <Chat messages={chatMessages}
-                handleSubmit={onSubmit}
-                isLoading={loading}
-                isGenerating={loadingResponse}
-                lockSendPrompt={inputLock}
+          <Chat
+            messages={chatMessages}
+            handleSubmit={onSubmit}
+            isLoading={loading}
+            isGenerating={loadingResponse}
+            lockSendPrompt={inputLock}
           />
         </div>
       </div>
     </Sidebar>
-  )
+  );
 }

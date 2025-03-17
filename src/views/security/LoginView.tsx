@@ -1,16 +1,16 @@
-import { useTranslation } from 'react-i18next'
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { AuthContext, type IAuthContext } from 'react-oauth2-code-pkce'
-import { useContext } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useLogo } from '@/hooks/useLogo';
-import { useUserContext } from '@/services/UserContextService.tsx'
+import { useTranslation } from "react-i18next";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { AuthContext, type IAuthContext } from "react-oauth2-code-pkce";
+import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { useLogo } from "@/hooks/useLogo";
+import { useUserContext } from "@/services/UserContextService.tsx";
 
 export default function LoginView() {
   const { t } = useTranslation();
   const logoSrc = useLogo();
-  const navigate = useNavigate();  
+  const navigate = useNavigate();
   const { logIn }: IAuthContext = useContext(AuthContext);
   const { user } = useUserContext();
 
@@ -25,18 +25,22 @@ export default function LoginView() {
             height="100%"
             className="mb-6"
           />
-          {
-            user?.anonymous === false ?
-              <Button className="w-full" onClick={() => navigate("/")} >
-                {t("login.loggedInButton")}
-              </Button> :
-              <Button className="w-full" onClick={() => logIn()}>
-                {t("login.button")}
-              </Button>
-          }
-          
+          {user?.anonymous === false ? (
+            <Button className="w-full" onClick={() => void navigate("/")}>
+              {t("login.loggedInButton")}
+            </Button>
+          ) : (
+            <Button
+              className="w-full"
+              onClick={() => {
+                logIn();
+              }}
+            >
+              {t("login.button")}
+            </Button>
+          )}
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
