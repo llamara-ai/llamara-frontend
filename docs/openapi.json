@@ -1,0 +1,759 @@
+{
+  "openapi" : "3.1.0",
+  "components" : {
+    "schemas" : {
+      "ChatMessageRecord" : {
+        "type" : "object",
+        "properties" : {
+          "type" : {
+            "$ref" : "#/components/schemas/ChatMessageType"
+          },
+          "text" : {
+            "type" : "string"
+          },
+          "timestamp" : {
+            "$ref" : "#/components/schemas/Instant"
+          }
+        }
+      },
+      "ChatMessageType" : {
+        "type" : "string",
+        "enum" : [ "SYSTEM", "USER", "AI", "TOOL_EXECUTION_RESULT" ]
+      },
+      "ChatModelContainer" : {
+        "type" : "object",
+        "properties" : {
+          "uid" : {
+            "type" : "string"
+          },
+          "label" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          }
+        }
+      },
+      "IngestionStatus" : {
+        "type" : "string",
+        "enum" : [ "PENDING", "SUCCEEDED", "FAILED" ]
+      },
+      "Instant" : {
+        "type" : "string",
+        "format" : "date-time",
+        "examples" : [ "2022-03-10T16:15:50Z" ]
+      },
+      "Knowledge" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "type" : {
+            "$ref" : "#/components/schemas/KnowledgeType"
+          },
+          "checksum" : {
+            "type" : "string"
+          },
+          "ingestionStatus" : {
+            "$ref" : "#/components/schemas/IngestionStatus"
+          },
+          "createdAt" : {
+            "$ref" : "#/components/schemas/Instant"
+          },
+          "lastUpdatedAt" : {
+            "$ref" : "#/components/schemas/Instant"
+          },
+          "source" : {
+            "type" : "string",
+            "format" : "uri"
+          },
+          "contentType" : {
+            "type" : "string"
+          },
+          "permissions" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/Permission"
+            }
+          },
+          "label" : {
+            "type" : "string"
+          },
+          "tags" : {
+            "type" : "array",
+            "uniqueItems" : true,
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      },
+      "KnowledgeType" : {
+        "type" : "string",
+        "enum" : [ "FILE", "WEBLINK" ]
+      },
+      "Permission" : {
+        "type" : "string",
+        "enum" : [ "OWNER", "READWRITE", "READONLY", "NONE" ]
+      },
+      "Session" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "createdAt" : {
+            "$ref" : "#/components/schemas/Instant"
+          },
+          "label" : {
+            "type" : "string"
+          }
+        }
+      },
+      "UUID" : {
+        "type" : "string",
+        "format" : "uuid",
+        "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+      },
+      "UserInfoDTO" : {
+        "type" : "object",
+        "properties" : {
+          "username" : {
+            "type" : "string"
+          },
+          "roles" : {
+            "type" : "array",
+            "uniqueItems" : true,
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "anonymous" : {
+            "type" : "boolean"
+          },
+          "name" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
+    "securitySchemes" : {
+      "SecurityScheme" : {
+        "type" : "openIdConnect",
+        "openIdConnectUrl" : "http://localhost:8180/realms/llamara/.well-known/openid-configuration",
+        "description" : "Authentication"
+      }
+    }
+  },
+  "paths" : {
+    "/rest/chat/models" : {
+      "get" : {
+        "summary" : "Get the available chat models.",
+        "operationId" : "getModels",
+        "responses" : {
+          "400" : {
+            "description" : "Bad Request, usually returned when an operation is requested before the user has logged in."
+          },
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/ChatModelContainer"
+                  }
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Not Authorized"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "tags" : [ "Chat Resource" ],
+        "security" : [ {
+          "SecurityScheme" : [ "admin", "user", "anonymous_user" ]
+        } ]
+      }
+    },
+    "/rest/chat/prompt" : {
+      "post" : {
+        "summary" : "Send a prompt to the given chat model.",
+        "operationId" : "prompt",
+        "parameters" : [ {
+          "description" : "ID of the session to use",
+          "name" : "sessionId",
+          "required" : true,
+          "in" : "query",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "UID of the chat model to use",
+          "name" : "uid",
+          "required" : true,
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "text/plain" : {
+              "schema" : {
+                "type" : "string"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "400" : {
+            "description" : "Bad Request, usually returned when an operation is requested before the user has logged in."
+          },
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "text/plain" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "No chat model or no session with given ID found."
+          },
+          "401" : {
+            "description" : "Not Authorized"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "tags" : [ "Chat Resource" ],
+        "security" : [ {
+          "SecurityScheme" : [ "admin", "user", "anonymous_user" ]
+        } ]
+      }
+    },
+    "/rest/chat/prompt/stream" : {
+      "post" : {
+        "summary" : "Send a prompt to the given chat model.",
+        "operationId" : "sendPromptStreamResponse",
+        "parameters" : [ {
+          "description" : "ID of the session to use",
+          "name" : "sessionId",
+          "required" : true,
+          "in" : "query",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "UID of the chat model to use",
+          "name" : "uid",
+          "required" : true,
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "text/plain" : {
+              "schema" : {
+                "type" : "string"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "400" : {
+            "description" : "Bad Request, usually returned when an operation is requested before the user has logged in."
+          },
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "text/event-stream" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "No chat model or no session with given ID found."
+          },
+          "401" : {
+            "description" : "Not Authorized"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "tags" : [ "Chat Resource" ],
+        "security" : [ {
+          "SecurityScheme" : [ "admin", "user", "anonymous_user" ]
+        } ]
+      }
+    },
+    "/rest/chat/sessions" : {
+      "get" : {
+        "summary" : "Get all chat sessions.",
+        "operationId" : "getSessions",
+        "responses" : {
+          "400" : {
+            "description" : "Bad Request, usually returned when an operation is requested before the user has logged in."
+          },
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/Session"
+                  }
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Not Authorized"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "tags" : [ "Chat Resource" ],
+        "security" : [ {
+          "SecurityScheme" : [ "admin", "user", "anonymous_user" ]
+        } ]
+      }
+    },
+    "/rest/chat/sessions/create" : {
+      "put" : {
+        "summary" : "Create a new chat session and get its ID.",
+        "operationId" : "createSession",
+        "responses" : {
+          "400" : {
+            "description" : "Bad Request, usually returned when an operation is requested before the user has logged in."
+          },
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Session"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Not Authorized"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "tags" : [ "Chat Resource" ],
+        "security" : [ {
+          "SecurityScheme" : [ "admin", "user", "anonymous_user" ]
+        } ]
+      }
+    },
+    "/rest/chat/sessions/{sessionId}" : {
+      "delete" : {
+        "summary" : "Delete a chat session.",
+        "operationId" : "deleteSession",
+        "parameters" : [ {
+          "name" : "sessionId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "responses" : {
+          "400" : {
+            "description" : "Bad Request, usually returned when an operation is requested before the user has logged in."
+          },
+          "200" : {
+            "description" : "OK"
+          },
+          "404" : {
+            "description" : "No session with the given ID found."
+          },
+          "401" : {
+            "description" : "Not Authorized"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "tags" : [ "Chat Resource" ],
+        "security" : [ {
+          "SecurityScheme" : [ "admin", "user", "anonymous_user" ]
+        } ]
+      }
+    },
+    "/rest/chat/sessions/{sessionId}/history" : {
+      "get" : {
+        "summary" : "Get the chat history for the given session id.",
+        "operationId" : "getHistory",
+        "parameters" : [ {
+          "description" : "UID of the chat history to get",
+          "name" : "sessionId",
+          "required" : true,
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "responses" : {
+          "400" : {
+            "description" : "Bad Request, usually returned when an operation is requested before the user has logged in."
+          },
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/ChatMessageRecord"
+                  }
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "No session with the given ID found."
+          },
+          "401" : {
+            "description" : "Not Authorized"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "tags" : [ "Chat Resource" ],
+        "security" : [ {
+          "SecurityScheme" : [ "admin", "user", "anonymous_user" ]
+        } ]
+      }
+    },
+    "/rest/knowledge" : {
+      "get" : {
+        "summary" : "Get all knowledge.",
+        "operationId" : "getAllKnowledge",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/Knowledge"
+                  }
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Not Authorized"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "tags" : [ "Knowledge Resource" ],
+        "security" : [ {
+          "SecurityScheme" : [ "admin", "user", "anonymous_user" ]
+        } ]
+      }
+    },
+    "/rest/knowledge/add/file" : {
+      "put" : {
+        "summary" : "Add a set of files to the knowledge.",
+        "description" : "If a file is empty, it is skipped.",
+        "operationId" : "addFileSource",
+        "requestBody" : {
+          "content" : {
+            "multipart/form-data" : {
+              "schema" : {
+                "type" : "object",
+                "properties" : {
+                  "files" : {
+                    "type" : "array",
+                    "items" : {
+                      "type" : "string",
+                      "format" : "binary"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "OK. Returns the ids of the added knowledge.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/UUID"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "File upload is invalid."
+          },
+          "401" : {
+            "description" : "Not Authorized"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "tags" : [ "Knowledge Resource" ],
+        "security" : [ {
+          "SecurityScheme" : [ "admin", "user" ]
+        } ]
+      }
+    },
+    "/rest/knowledge/update/{id}/file" : {
+      "put" : {
+        "summary" : "Update the file source of a single knowledge identified by it ID.",
+        "description" : "If the file is empty, it is skipped.",
+        "operationId" : "updateFileSource",
+        "parameters" : [ {
+          "description" : "UID of the knowledge to update",
+          "name" : "id",
+          "required" : true,
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "multipart/form-data" : {
+              "schema" : {
+                "type" : "object",
+                "properties" : {
+                  "file" : {
+                    "type" : "string",
+                    "format" : "binary"
+                  }
+                }
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK."
+          },
+          "400" : {
+            "description" : "File upload is invalid."
+          },
+          "404" : {
+            "description" : "No knowledge with the given id found."
+          },
+          "401" : {
+            "description" : "Not Authorized"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "tags" : [ "Knowledge Resource" ],
+        "security" : [ {
+          "SecurityScheme" : [ "admin", "user" ]
+        } ]
+      }
+    },
+    "/rest/knowledge/{id}" : {
+      "get" : {
+        "summary" : "Get a single knowledge.",
+        "operationId" : "getKnowledge",
+        "parameters" : [ {
+          "description" : "UID of the knowledge to get",
+          "name" : "id",
+          "required" : true,
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Knowledge"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "No knowledge with the given id found."
+          },
+          "401" : {
+            "description" : "Not Authorized"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "tags" : [ "Knowledge Resource" ],
+        "security" : [ {
+          "SecurityScheme" : [ "admin", "user", "anonymous_user" ]
+        } ]
+      },
+      "delete" : {
+        "summary" : "Delete a single knowledge.",
+        "operationId" : "deleteKnowledge",
+        "parameters" : [ {
+          "description" : "UID of the knowledge to delete",
+          "name" : "id",
+          "required" : true,
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "404" : {
+            "description" : "No knowledge with the given id found."
+          },
+          "401" : {
+            "description" : "Not Authorized"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "tags" : [ "Knowledge Resource" ],
+        "security" : [ {
+          "SecurityScheme" : [ "admin", "user" ]
+        } ]
+      }
+    },
+    "/rest/knowledge/{id}/file" : {
+      "get" : {
+        "summary" : "Get the source file of a single knowledge.",
+        "operationId" : "getKnowledgeFile",
+        "parameters" : [ {
+          "description" : "UID of the knowledge to get the source file of",
+          "name" : "id",
+          "required" : true,
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/octet-stream" : { }
+            }
+          },
+          "404" : {
+            "description" : "No knowledge with the given id found."
+          },
+          "401" : {
+            "description" : "Not Authorized"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "tags" : [ "Knowledge Resource" ],
+        "security" : [ {
+          "SecurityScheme" : [ "admin", "user", "anonymous_user" ]
+        } ]
+      }
+    },
+    "/rest/user" : {
+      "get" : {
+        "summary" : "Login and get the user information based on the OIDC token.",
+        "operationId" : "login",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UserInfoDTO"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Not Authorized"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "tags" : [ "User Resource" ],
+        "security" : [ {
+          "SecurityScheme" : [ "admin", "user", "anonymous_user" ]
+        } ]
+      },
+      "delete" : {
+        "summary" : "Delete all data for the user.",
+        "operationId" : "deleteUserData",
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request. Returned when an operation is requested before the user is logged in."
+          },
+          "401" : {
+            "description" : "Not Authorized"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "tags" : [ "User Resource" ],
+        "security" : [ {
+          "SecurityScheme" : [ "admin", "user" ]
+        } ]
+      }
+    }
+  },
+  "info" : {
+    "title" : "LLAMARA API",
+    "version" : "0.4.0-SNAPSHOT"
+  },
+  "servers" : [ {
+    "url" : "http://localhost:8080",
+    "description" : "Auto generated value"
+  }, {
+    "url" : "http://0.0.0.0:8080",
+    "description" : "Auto generated value"
+  } ]
+}
