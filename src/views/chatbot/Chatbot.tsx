@@ -83,6 +83,9 @@ export default function Chatbot() {
           />
         </div>
       </div>
+      <small className="block mt-2 text-xs text-muted-foreground text-center w-full pb-2">
+        {t("footer.hint")}
+      </small>
       <Footer />
     </Sidebar>
   );

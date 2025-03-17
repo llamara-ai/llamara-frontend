@@ -48,6 +48,7 @@
   },
   "footer": {
     "imprint": "Impressum",
-    "privacyPolicy": "Datenschutz"
+    "privacyPolicy": "Datenschutz",
+    "hint": "LLMs können Fehler machen. Überprüfen Sie wichtige Informationen."
   }
 }

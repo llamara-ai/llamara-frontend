@@ -112,7 +112,7 @@ export default function Chat({
     <div className="flex flex-col h-full mx-5 items-center justify-center ">
       <div
         className="flex-1 overflow-y-auto flex-grow flex items-center justify-center w-5/6"
-        style={{ maxHeight: "calc(100vh - 225px)" }}
+        style={{ maxHeight: "calc(100vh - 250px)" }}
         ref={messagesRef}
       >
         <ChatMessageList>
@@ -214,7 +214,7 @@ export default function Chat({
             <ChatBubble variant="received">
               <ChatBubbleAvatar
                 className="bg-secondary flex justify-center items-center"
-                ImageClassName="invert size-7"
+                ImageClassName={`size-7 ${theme === "dark" ? "invert" : ""}`}
                 src={getLogoFromModelProvider(currentSelectedModelProvider)}
                 fallback={"AI"}
               />
