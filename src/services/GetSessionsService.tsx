@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { getSessions, Session } from "@/api";
 import { useCache } from "@/services/CacheService";
 import { useToast } from "@/hooks/use-toast";
+import { default as useRefState } from "react-usestateref";
 
 export interface UseGetSessionsApiResponse {
   sessions: Session[];
@@ -19,7 +20,7 @@ export default function GetSessionsProvider({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const { toast } = useToast();
-  const [sessions, setSessions] = useState<Session[]>([]);
+  const [sessions, setSessions, sessionsRef] = useRefState<Session[]>([]);
   const [error, setError] = useState<string | null>(null);
   const { getCache, setCache } = useCache<Session[]>();
   const [loading, setLoading] = useState<boolean>(false);
@@ -61,18 +62,14 @@ export default function GetSessionsProvider({
   // Append a session locally, so we don't have to fetch the sessions again
   const appendSessionLocal = (session: Session | null) => {
     if (!session?.id) return;
-    setSessions([...sessions, session]);
-    const cachedSessions = getCache("sessions");
-    if (cachedSessions) {
-      setSessions([...cachedSessions, session]);
-    }
+    setSessions([...sessionsRef.current, session]);
     setAnimateInSession(session);
   };
 
   // Update the label of a session locally, so we don't have to fetch the sessions again
   const updateSessionLabelLocal = (sessionId: string, newLabel: string) => {
     setSessions(
-      sessions.map((session) => {
+      sessionsRef.current.map((session) => {
         if (session.id === sessionId) {
           return { ...session, label: newLabel };
         }
@@ -83,7 +80,9 @@ export default function GetSessionsProvider({
 
   // Delete a session locally, so we don't have to fetch the sessions again
   const deleteSessionLocal = (sessionId: string) => {
-    setSessions(sessions.filter((session) => session.id !== sessionId));
+    setSessions(
+      sessionsRef.current.filter((session) => session.id !== sessionId),
+    );
   };
 
   const value = useMemo(

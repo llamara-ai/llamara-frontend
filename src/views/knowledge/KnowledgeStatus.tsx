@@ -2,10 +2,14 @@ import { Knowledge } from "@/api";
 import { CheckCircle2, CircleAlert, CircleMinus, CircleX } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
+interface KnowledgeStatusProps {
+  knowledge: Readonly<Knowledge | undefined>;
+}
+
 // Styles the ingestion status
-export default function KnowledgeStatus(
-  knowledge: Readonly<Knowledge | undefined>,
-) {
+export default function KnowledgeStatus({
+  knowledge,
+}: Readonly<KnowledgeStatusProps>) {
   const { t } = useTranslation();
 
   const commonClasses = "inline-flex items-center rounded-full h-8 w-28";

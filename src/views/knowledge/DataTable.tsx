@@ -156,7 +156,9 @@ export default function DataTable({ columns, data }: Readonly<DataTableProps>) {
         </div>
       </div>
 
-      <div className="pt-2">{DataTablePagination(table)}</div>
+      <div className="pt-2">
+        <DataTablePagination<Knowledge> table={table} />
+      </div>
     </>
   );
 }

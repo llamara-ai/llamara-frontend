@@ -3,9 +3,13 @@ import { useUserContext } from "@/services/UserContextService";
 import { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 
-export default function KnowledgePermissions(
-  knowledge: Readonly<Knowledge | undefined>,
-) {
+interface KnowledgePermissionsProps {
+  knowledge: Readonly<Knowledge | undefined>;
+}
+
+export default function KnowledgePermissions({
+  knowledge,
+}: Readonly<KnowledgePermissionsProps>) {
   const { t } = useTranslation();
   const { user } = useUserContext();
 

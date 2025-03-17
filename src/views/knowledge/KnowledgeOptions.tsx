@@ -50,7 +50,7 @@ export default function KnowledgeOptions({
   async function handleFileDelete() {
     if (!knowledge.id) return;
     await handleDeleteKnowledge(knowledge.id);
-    await deleteLocalKnowledge(knowledge);
+    deleteLocalKnowledge(knowledge);
   }
 
   async function handleRetryIngestion() {

@@ -26,7 +26,7 @@ export default function useFileStatus(): FileStatusResponse {
         }
       }
     }
-    await addLocalKnowledge(addedKnowledge);
+    addLocalKnowledge(addedKnowledge);
     startInterval();
   };
 
@@ -45,7 +45,7 @@ export default function useFileStatus(): FileStatusResponse {
         );
       }
     }
-    await updateLocalKnowledge(knowledgeList);
+    updateLocalKnowledge(knowledgeList);
   };
 
   useEffect(() => {

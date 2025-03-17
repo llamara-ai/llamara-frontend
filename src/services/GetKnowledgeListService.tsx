@@ -2,14 +2,13 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { getAllKnowledge, Knowledge } from "@/api";
 import { useCache } from "@/services/CacheService";
 import { useToast } from "@/hooks/use-toast";
+import { default as useRefState } from "react-usestateref";
 
 interface UseGetAllKnowledgeApiResponse {
   allKnowledge: Knowledge[];
-  updateLocalKnowledge: (
-    newKnowledgeArray: Knowledge[] | null,
-  ) => Promise<void>;
-  deleteLocalKnowledge: (knowledge: Knowledge) => Promise<void>;
-  addLocalKnowledge: (knowledgeArray: Knowledge[]) => Promise<void>;
+  updateLocalKnowledge: (newKnowledgeArray: Knowledge[] | null) => void;
+  deleteLocalKnowledge: (knowledge: Knowledge) => void;
+  addLocalKnowledge: (knowledgeArray: Knowledge[]) => void;
   error: string | null;
 }
 
@@ -23,7 +22,9 @@ export default function GetKnowledgeListProvider({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const { toast } = useToast();
-  const [allKnowledge, setAllKnowledge] = useState<Knowledge[]>([]);
+  const [allKnowledge, setAllKnowledge, allKnowledgeRef] = useRefState<
+    Knowledge[]
+  >([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const { getCache, setCache } = useCache<Knowledge[]>();
@@ -66,50 +67,39 @@ export default function GetKnowledgeListProvider({
   };
 
   // delete Knowledge in local state
-  const deleteLocalKnowledge = async (knowledge: Knowledge) => {
-    //Refetch all knowledge if not available
-    if (allKnowledge.length === 0) {
-      await fetchAllKnowledge();
-    }
-
-    const updatedKnowledge = allKnowledge.filter((k) => k.id !== knowledge.id);
+  const deleteLocalKnowledge = (knowledge: Knowledge) => {
+    const updatedKnowledge = allKnowledgeRef.current.filter(
+      (k) => k.id !== knowledge.id,
+    );
     setAllKnowledge(updatedKnowledge);
     setCache("allKnowledge", updatedKnowledge, 120);
   };
 
   // add multiple knowledge to local state
-  const addLocalKnowledge = async (knowledgeArray: Knowledge[]) => {
-    //Refetch all knowledge if not available
-    if (allKnowledge.length === 0) {
-      await fetchAllKnowledge();
-    }
+  const addLocalKnowledge = (knowledgeArray: Knowledge[]) => {
     const knowledgeToAdd: Knowledge[] = [];
 
     for (const knowledge of knowledgeArray) {
       // Check if knowledge already exists, if yes then update it
-      const existingKnowledge = allKnowledge.find((k) => k.id === knowledge.id);
+      const existingKnowledge = allKnowledgeRef.current.find(
+        (k) => k.id === knowledge.id,
+      );
       if (existingKnowledge) {
-        await updateLocalKnowledge([knowledge]);
+        updateLocalKnowledge([knowledge]);
       } else {
         knowledgeToAdd.push(knowledge);
       }
     }
-    const updatedKnowledge = allKnowledge.concat(knowledgeToAdd);
+    const updatedKnowledge = allKnowledgeRef.current.concat(knowledgeToAdd);
     setAllKnowledge(updatedKnowledge);
     setCache("allKnowledge", updatedKnowledge, 120);
   };
 
   // update Knowledge in local state
-  const updateLocalKnowledge = async (
-    newKnowledgeArray: Knowledge[] | null,
-  ) => {
+  const updateLocalKnowledge = (newKnowledgeArray: Knowledge[] | null) => {
     if (!newKnowledgeArray) return;
 
-    //Refetch all knowledge if not available
-    if (allKnowledge.length === 0) {
-      await fetchAllKnowledge();
-    }
-    let filteredKnowledges = allKnowledge;
+    let filteredKnowledges = allKnowledgeRef.current;
     for (const newKnowledge of newKnowledgeArray) {
       filteredKnowledges = filteredKnowledges.filter(
         (k) => k.id !== newKnowledge.id,

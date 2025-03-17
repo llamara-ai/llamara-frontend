@@ -84,7 +84,11 @@ export default function useKnowledgePermissionApi({
           updatedPermissions[username] = newPermission;
         } catch (error) {
           handleError(error, `Failed to set permission for ${username}`);
-          updatedPermissions[username] = currentPermission;
+
+          // Revert change permission if user exists
+          if (updatedPermissions.hasOwnProperty(username)) {
+            updatedPermissions[username] = currentPermission;
+          }
         }
       } else {
         updatedPermissions[username] = currentPermission;
@@ -101,7 +105,7 @@ export default function useKnowledgePermissionApi({
     );
 
     // Update local knowledge with the new permissions
-    await updateLocalKnowledge([
+    updateLocalKnowledge([
       { ...knowledge, permissions: Object.fromEntries(sortedPermissions) },
     ]);
   };

@@ -16,9 +16,13 @@ import {
 } from "@/components/ui/select";
 import { useTranslation } from "react-i18next";
 
-export function DataTablePagination<Knowledge>(
-  table: Readonly<Table<Knowledge>>,
-) {
+interface DataTablePaginationProps<T> {
+  table: Readonly<Table<T>>;
+}
+
+export function DataTablePagination<T>({
+  table,
+}: Readonly<DataTablePaginationProps<T>>) {
   const { t } = useTranslation();
   return (
     <div className="flex items-center justify-center px-2">

@@ -1,13 +1,12 @@
-import { ColumnDef } from "@tanstack/react-table";
-import { Knowledge } from "@/api";
-import { ArrowUpDown, ChevronRight, ChevronDown } from "lucide-react";
+import type { ColumnDef } from "@tanstack/react-table";
+import type { Knowledge } from "@/api";
+import { ArrowUp, ArrowDown, ChevronRight, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import KnowledgeOptions from "./KnowledgeOptions";
 import KnowledgeStatus from "./KnowledgeStatus";
 import { useTranslation } from "react-i18next";
 import KnowledgePermissions from "./KnowledgePermissions";
 
-//Defines the columns of the data table.
 export default function Columns(
   onClickFile: (knowledge: Knowledge) => void,
   onClickTagEdit: (knowledgeId: string | null) => void,
@@ -16,7 +15,6 @@ export default function Columns(
   const { t } = useTranslation();
 
   return [
-    // Left most column
     {
       id: "collapseable",
       cell: ({ row }) => {
@@ -43,7 +41,11 @@ export default function Columns(
             }}
           >
             {t("knowledgePage.table.label")}
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            {column.getIsSorted() === "asc" ? (
+              <ArrowUp className="ml-2 h-4 w-4" />
+            ) : (
+              <ArrowDown className="ml-2 h-4 w-4" />
+            )}
           </Button>
         );
       },
@@ -65,57 +67,73 @@ export default function Columns(
       accessorKey: "permissions",
       header: ({ column }) => {
         return (
-          <div className="w-auto">
-            <Button
-              variant="ghost"
-              onClick={() => {
-                column.toggleSorting(column.getIsSorted() === "asc", true);
-              }}
-            >
-              {t("knowledgePage.table.permission.label")}
-              <ArrowUpDown className="ml-2 h-4 w-4" />
-            </Button>
-          </div>
+          <Button
+            variant="ghost"
+            onClick={() => {
+              column.toggleSorting(column.getIsSorted() === "asc");
+            }}
+          >
+            {t("knowledgePage.table.permission.label")}
+            {column.getIsSorted() === "asc" ? (
+              <ArrowUp className="ml-2 h-4 w-4" />
+            ) : (
+              <ArrowDown className="ml-2 h-4 w-4" />
+            )}
+          </Button>
         );
       },
       cell: ({ row }) => {
         const knowledge = row.original;
-        return KnowledgePermissions(knowledge);
+        return <KnowledgePermissions knowledge={knowledge} />;
+      },
+      sortingFn: (rowA, rowB) => {
+        const a = rowA.original.permissions;
+        const b = rowB.original.permissions;
+        return (typeof a === "string" ? a : "").localeCompare(
+          typeof b === "string" ? b : "",
+        );
       },
     },
     {
       accessorKey: "ingestionStatus",
       header: ({ column }) => {
         return (
-          <div className="w-auto">
-            <Button
-              variant="ghost"
-              onClick={() => {
-                column.toggleSorting(column.getIsSorted() === "asc", true);
-              }}
-            >
-              {t("knowledgePage.table.status.label")}
-              <ArrowUpDown className="ml-2 h-4 w-4" />
-            </Button>
-          </div>
+          <Button
+            variant="ghost"
+            onClick={() => {
+              column.toggleSorting(column.getIsSorted() === "asc");
+            }}
+          >
+            {t("knowledgePage.table.status.label")}
+            {column.getIsSorted() === "asc" ? (
+              <ArrowUp className="ml-2 h-4 w-4" />
+            ) : (
+              <ArrowDown className="ml-2 h-4 w-4" />
+            )}
+          </Button>
         );
       },
       cell: ({ row }) => {
         const knowledge = row.original;
-        return KnowledgeStatus(knowledge);
+        return <KnowledgeStatus knowledge={knowledge} />;
+      },
+      sortingFn: (rowA, rowB) => {
+        const a = rowA.original.ingestionStatus;
+        const b = rowB.original.ingestionStatus;
+        return (a ?? "").localeCompare(b ?? "");
       },
     },
-
     {
-      //DropDown Menu Column
       id: "actions",
       cell: ({ row }) => {
         const knowledge = row.original;
-        return KnowledgeOptions({
-          knowledge,
-          onClickTagEdit,
-          onClickPermissionEdit,
-        });
+        return (
+          <KnowledgeOptions
+            knowledge={knowledge}
+            onClickTagEdit={onClickTagEdit}
+            onClickPermissionEdit={onClickPermissionEdit}
+          />
+        );
       },
     },
   ];

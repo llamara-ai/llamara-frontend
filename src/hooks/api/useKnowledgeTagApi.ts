@@ -61,7 +61,7 @@ export default function useKnowledgeTagApi({
     const newTags = tags.concat(cleanedTags);
 
     // Update the knowledge object with the new tags
-    await updateLocalKnowledge([{ ...knowledge, tags: newTags }]);
+    updateLocalKnowledge([{ ...knowledge, tags: newTags }]);
   };
 
   const removeTags = async (newTags: string[]) => {
@@ -96,7 +96,7 @@ export default function useKnowledgeTagApi({
     }
 
     // Update the knowledge object with the new tags
-    await updateLocalKnowledge([{ ...knowledge, tags: newTags }]);
+    updateLocalKnowledge([{ ...knowledge, tags: newTags }]);
   };
 
   return { updateKnowledgeTags, error };
