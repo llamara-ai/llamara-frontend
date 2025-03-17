@@ -1,11 +1,10 @@
 import { useState } from "react";
 import { setSessionLabel as setSessionLabelApiCall, Session } from "@/api";
 import { useToast } from "../use-toast";
-import { UseGetSessionsApiResponse } from "./useGetSessionsApi";
 
 interface UseSetSessionLabelApiProps {
   sessionId: string;
-  useSessionsApiInstance: UseGetSessionsApiResponse;
+  updateSessionLabelLocal: (sessionId: string, newLabel: string) => void;
 }
 
 interface UseSetSessionLabelApiResponse {
@@ -15,12 +14,10 @@ interface UseSetSessionLabelApiResponse {
 
 export default function useSetSessionLabelApi({
   sessionId,
-  useSessionsApiInstance,
+  updateSessionLabelLocal,
 }: UseSetSessionLabelApiProps): UseSetSessionLabelApiResponse {
   const { toast } = useToast();
   const [error, setError] = useState<string | null>(null);
-
-  const { updateSessionLabelLocal } = useSessionsApiInstance;
 
   const setSessionLabel = async (label: string) => {
     try {

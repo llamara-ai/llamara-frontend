@@ -1,49 +1,44 @@
-import { addFileSource, UUID } from "@/api";
+import { addFileSource, Uuid } from "@/api";
 import { useState } from "react";
 import { useToast } from "../use-toast";
 
-interface UseAddFileSourceApiProps {
-  files: (Blob | File)[];
-}
-
 interface UseAddFileSourceApiResponse {
-  fileUUIDs: UUID[];
-  handleAddFileSource: () => Promise<void>;
+  fileUUIDs: Uuid[];
+  handleAddFileSource: (files: (Blob | File)[]) => Promise<string[] | null>;
   error: string | null;
 }
 
-export default function useAddFileSourceApi({
-  files,
-}: UseAddFileSourceApiProps): UseAddFileSourceApiResponse {
-  const [fileUUIDs, setFileUUIDs] = useState<UUID[]>([]);
+export default function useAddFileSourceApi(): UseAddFileSourceApiResponse {
+  const [fileUUIDs, setFileUUIDs] = useState<Uuid[]>([]);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
-  // eslint-disable-next-line @typescript-eslint/require-await
-  const handleAddFileSource = async () => {
+  const handleAddFileSource = async (files: (Blob | File)[]) => {
     const options = {
       body: {
         files: files,
       },
     };
-
-    addFileSource(options)
-      .then((response) => {
-        if (response.data) {
-          setError(null);
-          setFileUUIDs(response.data);
-        } else {
-          setFileUUIDs([]);
-        }
-      })
-      .catch((error: Error) => {
+    try {
+      const response = await addFileSource(options);
+      if (response.data) {
+        setError(null);
+        setFileUUIDs(response.data);
+        return response.data;
+      } else {
+        throw new Error("Request was undefined");
+      }
+    } catch (error) {
+      if (error instanceof Error) {
         toast({
           variant: "destructive",
           title: "Failed to add files to the knowledge!",
           description: error.message,
         });
         setError(error.message);
-      });
+      }
+    }
+    return null;
   };
 
   return { fileUUIDs, handleAddFileSource, error };

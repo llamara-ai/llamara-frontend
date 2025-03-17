@@ -7,7 +7,7 @@ import {
   useState,
   useEffect,
 } from "react";
-import { login, UserInfoDTO } from "@/api";
+import { login, UserInfoDto } from "@/api";
 import { toast } from "@/hooks/use-toast.ts";
 import { AuthContext } from "react-oauth2-code-pkce";
 import { createClient } from "@hey-api/client-fetch";
@@ -16,8 +16,8 @@ export interface UserContext {
   ready: boolean;
   setReady: (ready: boolean) => void;
 
-  user: UserInfoDTO | null;
-  setUser: (info: UserInfoDTO | null) => void;
+  user: UserInfoDto | null;
+  setUser: (info: UserInfoDto | null) => void;
 }
 
 const UserContext = createContext<UserContext | undefined>(undefined);
@@ -27,7 +27,7 @@ export const UserContextProvider: FC<{ children: ReactNode }> = ({
 }) => {
   const [ready, setReady] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState<UserInfoDTO | null>(null);
+  const [user, setUser] = useState<UserInfoDto | null>(null);
 
   const value = useMemo(
     () => ({ loading, setLoading, ready, setReady, user, setUser }),

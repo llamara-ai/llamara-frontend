@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { getSessions, Session } from "@/api";
-import { useToast } from "../use-toast";
 import { useCache } from "@/services/CacheService";
+import { useToast } from "@/hooks/use-toast";
 
 export interface UseGetSessionsApiResponse {
   sessions: Session[];
@@ -12,7 +12,11 @@ export interface UseGetSessionsApiResponse {
   error: string | null;
 }
 
-export default function useGetSessionsApi(): UseGetSessionsApiResponse {
+const SessionsContext = createContext<UseGetSessionsApiResponse | null>(null);
+
+export default function GetSessionsProvider({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
   const { toast } = useToast();
   const [sessions, setSessions] = useState<Session[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -81,12 +85,36 @@ export default function useGetSessionsApi(): UseGetSessionsApiResponse {
     setSessions(sessions.filter((session) => session.id !== sessionId));
   };
 
-  return {
-    sessions,
-    appendSessionLocal,
-    updateSessionLabelLocal,
-    deleteSessionLocal,
-    animateInSession,
-    error,
-  };
+  const value = useMemo(
+    () => ({
+      sessions,
+      appendSessionLocal,
+      updateSessionLabelLocal,
+      deleteSessionLocal,
+      animateInSession,
+      error,
+    }),
+    [
+      sessions,
+      appendSessionLocal,
+      updateSessionLabelLocal,
+      deleteSessionLocal,
+      animateInSession,
+      error,
+    ],
+  );
+
+  return (
+    <SessionsContext.Provider value={value}>
+      {children}
+    </SessionsContext.Provider>
+  );
+}
+
+export function useGetSessions() {
+  const context = useContext(SessionsContext);
+  if (!context) {
+    throw new Error("useGetSessions must be used within a SessionsProvider");
+  }
+  return context;
 }

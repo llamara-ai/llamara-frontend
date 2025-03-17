@@ -20,14 +20,15 @@ export default function useGetHistoryApi(): UseGetHistoryApiResponse {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const { getCache, setCache } = useCache<ChatMessageRecord[]>();
+  const [lastSessionId, setLastSessionId] = useState<string | null>(null);
 
   const fetchHistory = async ({
     sessionId,
   }: FetchHistoryProps): Promise<ChatMessageRecord[]> => {
-    const cachedHistory = getCache(
-      sessionId ? "history" + sessionId : "history",
-    );
-    if (cachedHistory) {
+    const cachedHistory = getCache("history");
+    // Check if the session id is the same as the last one
+    // if not equal refetch data
+    if (cachedHistory && sessionId === lastSessionId) {
       return cachedHistory;
     }
     if (!loading && sessionId !== "" && sessionId !== null) {
@@ -44,6 +45,7 @@ export default function useGetHistoryApi(): UseGetHistoryApiResponse {
           setError(null);
           setCache("history" + sessionId, response.data, 10);
           setLoading(false);
+          setLastSessionId(sessionId);
           return response.data;
         } else {
           toast({

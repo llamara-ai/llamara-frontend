@@ -13,6 +13,18 @@ export default defineConfig(({ mode }) => {
         "@": path.resolve(__dirname, "./src"),
       },
     },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            pdfjs: ["pdfjs-dist"],
+          },
+        },
+      },
+    },
+    optimizeDeps: {
+      include: ["pdfjs-dist"],
+    },
     server: {
       proxy: {
         "/rest": {

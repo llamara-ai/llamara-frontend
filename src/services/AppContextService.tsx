@@ -6,16 +6,18 @@ import {
   useState,
   useMemo,
 } from "react";
-import { configuration, SecurityInfoDTO } from "@/api";
+import { configuration, SecurityInfoDto } from "@/api";
 import { TAuthConfig } from "react-oauth2-code-pkce";
 import { toast } from "@/hooks/use-toast.ts";
+import { pdfjs } from "react-pdf";
 
 export interface AppContext {
   ready: boolean;
   setReady: (ready: boolean) => void;
-
-  securityConfig: SecurityInfoDTO;
-  setSecurityConfig: (security: SecurityInfoDTO) => void;
+  pdfWorkerReady: boolean;
+  setPdfWorkerReady: (ready: boolean) => void;
+  securityConfig: SecurityInfoDto;
+  setSecurityConfig: (security: SecurityInfoDto) => void;
   authConfig: TAuthConfig;
   setAuthConfig: (authConfig: TAuthConfig) => void;
   imprintUrl: string | null;
@@ -30,10 +32,11 @@ export const AppContextProvider: FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [ready, setReady] = useState(false);
-  const [securityConfig, setSecurityConfig] = useState({} as SecurityInfoDTO);
+  const [securityConfig, setSecurityConfig] = useState({} as SecurityInfoDto);
   const [authConfig, setAuthConfig] = useState({} as TAuthConfig);
   const [imprintUrl, setImprintUrl] = useState<string | null>(null);
   const [privacyPolicyUrl, setPrivacyPolicyUrl] = useState<string | null>(null);
+  const [pdfWorkerReady, setPdfWorkerReady] = useState(false);
 
   const value = useMemo(
     () => ({
@@ -47,6 +50,8 @@ export const AppContextProvider: FC<{ children: ReactNode }> = ({
       setImprintUrl,
       privacyPolicyUrl,
       setPrivacyPolicyUrl,
+      pdfWorkerReady,
+      setPdfWorkerReady,
     }),
     [
       ready,
@@ -59,6 +64,8 @@ export const AppContextProvider: FC<{ children: ReactNode }> = ({
       setImprintUrl,
       privacyPolicyUrl,
       setPrivacyPolicyUrl,
+      pdfWorkerReady,
+      setPdfWorkerReady,
     ],
   );
 
@@ -81,11 +88,29 @@ export function useInitAppContext() {
     setAuthConfig,
     setImprintUrl,
     setPrivacyPolicyUrl,
+    setPdfWorkerReady,
+    pdfWorkerReady,
   } = useAppContext();
 
-  if (ready) {
+  if (ready && pdfWorkerReady) {
     return;
   }
+
+  fetch("/pdf.worker.mjs")
+    .then((response) => response.text())
+    .then((workerCode) => {
+      const blob = new Blob([workerCode], { type: "application/javascript" });
+      const workerUrl = URL.createObjectURL(blob);
+      pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
+      setPdfWorkerReady(true);
+    })
+    .catch((error: Error) => {
+      toast({
+        variant: "destructive",
+        title: "Failed to get pdf worker script",
+        description: error.message,
+      });
+    });
 
   configuration()
     .then((response) => {

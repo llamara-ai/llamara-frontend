@@ -2,7 +2,7 @@ import { Session } from "@/api";
 import {
   SidebarSessionsGroup,
   SessionSidebarItem,
-} from "@/views/sidebar/SidebarSessionList";
+} from "@/views/overlays/sidebar/SidebarSessionList";
 import { subDays, isAfter, parseISO, format } from "date-fns";
 
 interface Item {

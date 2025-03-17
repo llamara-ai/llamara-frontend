@@ -1,5 +1,5 @@
 import { ChatModelContainer } from "@/api";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 const selectedModelKey = "selectedModel";
 
@@ -9,14 +9,13 @@ function useWriteDataToLocalStorage(key: string, value: string) {
   }, [key, value]);
 }
 
-function useReadDataFromLocalStorage(key: string) {
+function readDataFromLocalStorage(key: string) {
   //return null if key is not found
-  const [value] = useState(localStorage.getItem(key));
-  return value;
+  return localStorage.getItem(key);
 }
 
-export function useReadSelectedModel(): ChatModelContainer | null {
-  const chatModelString = useReadDataFromLocalStorage(selectedModelKey);
+export function readSelectedModel(): ChatModelContainer | null {
+  const chatModelString = readDataFromLocalStorage(selectedModelKey);
   if (chatModelString && chatModelString !== "") {
     return JSON.parse(chatModelString); // eslint-disable-line @typescript-eslint/no-unsafe-return
   }

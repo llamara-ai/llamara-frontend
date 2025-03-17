@@ -24,7 +24,7 @@
       },
       "ChatMessageType" : {
         "type" : "string",
-        "enum" : [ "SYSTEM", "USER", "AI", "TOOL_EXECUTION_RESULT" ]
+        "enum" : [ "SYSTEM", "USER", "AI", "TOOL_EXECUTION_RESULT", "CUSTOM" ]
       },
       "ChatModelContainer" : {
         "type" : "object",
@@ -46,6 +46,20 @@
       "ChatModelProvider" : {
         "type" : "string",
         "enum" : [ "AZURE", "OLLAMA", "OPENAI" ]
+      },
+      "ChatResponseDTO" : {
+        "type" : "object",
+        "properties" : {
+          "response" : {
+            "type" : "string"
+          },
+          "sources" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/SourceRecord"
+            }
+          }
+        }
       },
       "InfoDTO" : {
         "type" : "object",
@@ -169,6 +183,17 @@
             "$ref" : "#/components/schemas/Instant"
           },
           "label" : {
+            "type" : "string"
+          }
+        }
+      },
+      "SourceRecord" : {
+        "type" : "object",
+        "properties" : {
+          "knowledgeId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "content" : {
             "type" : "string"
           }
         }
@@ -300,9 +325,9 @@
           "200" : {
             "description" : "OK",
             "content" : {
-              "text/plain" : {
+              "application/json" : {
                 "schema" : {
-                  "type" : "string"
+                  "$ref" : "#/components/schemas/ChatResponseDTO"
                 }
               }
             }
@@ -358,7 +383,7 @@
       }
     },
     "/rest/chat/sessions/create" : {
-      "put" : {
+      "post" : {
         "summary" : "Create a new chat session and get its ID.",
         "operationId" : "createSession",
         "responses" : {
@@ -469,6 +494,42 @@
         } ]
       }
     },
+    "/rest/chat/sessions/{sessionId}/keep-alive" : {
+      "put" : {
+        "summary" : "Keeps alive an anonymous session identified by its ID.",
+        "operationId" : "keepAliveAnonymousSession",
+        "parameters" : [ {
+          "description" : "UID of the session to keep alive",
+          "name" : "sessionId",
+          "required" : true,
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "responses" : {
+          "400" : {
+            "description" : "Bad Request, usually returned when an operation is requested before the user has logged in."
+          },
+          "200" : {
+            "description" : "OK"
+          },
+          "404" : {
+            "description" : "No session with the given ID found."
+          },
+          "401" : {
+            "description" : "Not Authorized"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "tags" : [ "Chat Resource" ],
+        "security" : [ {
+          "SecurityScheme" : [ "anonymous_user" ]
+        } ]
+      }
+    },
     "/rest/chat/sessions/{sessionId}/label" : {
       "put" : {
         "summary" : "Set the label of a session identified by its ID.",
@@ -545,7 +606,7 @@
       }
     },
     "/rest/knowledge/add/file" : {
-      "put" : {
+      "post" : {
         "summary" : "Add a set of files to the knowledge.",
         "description" : "If a file is empty, it is skipped.",
         "operationId" : "addFileSource",
@@ -584,6 +645,39 @@
           },
           "400" : {
             "description" : "File upload is invalid."
+          },
+          "401" : {
+            "description" : "Not Authorized"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "tags" : [ "Knowledge Resource" ],
+        "security" : [ {
+          "SecurityScheme" : [ "admin", "user" ]
+        } ]
+      }
+    },
+    "/rest/knowledge/retry/{id}/ingestion" : {
+      "put" : {
+        "summary" : "Retry the failed ingestion of a single knowledge identified by it ID.",
+        "operationId" : "retryFailedIngestion",
+        "parameters" : [ {
+          "description" : "UID of the knowledge to retry the ingestion for",
+          "name" : "id",
+          "required" : true,
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK."
+          },
+          "404" : {
+            "description" : "No knowledge with the given id found."
           },
           "401" : {
             "description" : "Not Authorized"
@@ -799,6 +893,100 @@
         } ]
       }
     },
+    "/rest/knowledge/{id}/permission/{username}" : {
+      "put" : {
+        "summary" : "Set a user's permission for a single knowledge identified by its ID.",
+        "operationId" : "setKnowledgePermission",
+        "parameters" : [ {
+          "description" : "UID of the knowledge set permission for",
+          "name" : "id",
+          "required" : true,
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "name of user to set permission for",
+          "name" : "username",
+          "required" : true,
+          "in" : "path",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "description" : "permission to set",
+          "content" : {
+            "text/plain" : {
+              "schema" : {
+                "enum" : [ "READWRITE", "READONLY" ]
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Illegal permission modification"
+          },
+          "404" : {
+            "description" : "No knowledge with the given id found or no user with the given username found."
+          },
+          "401" : {
+            "description" : "Not Authorized"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "tags" : [ "Knowledge Resource" ],
+        "security" : [ {
+          "SecurityScheme" : [ "admin", "user" ]
+        } ]
+      },
+      "delete" : {
+        "summary" : "Remove a user's permissions from a single knowledge identified by its ID.",
+        "operationId" : "removeKnowledgePermission",
+        "parameters" : [ {
+          "description" : "UID of the knowledge to remove the permission from",
+          "name" : "id",
+          "required" : true,
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "name of user to remove permission for",
+          "name" : "username",
+          "required" : true,
+          "in" : "path",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "404" : {
+            "description" : "No knowledge with the given id found or no user with the given username found."
+          },
+          "401" : {
+            "description" : "Not Authorized"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "tags" : [ "Knowledge Resource" ],
+        "security" : [ {
+          "SecurityScheme" : [ "admin", "user" ]
+        } ]
+      }
+    },
     "/rest/knowledge/{id}/tag" : {
       "delete" : {
         "summary" : "Remove a tag from a single knowledge identified by its ID.",
@@ -932,7 +1120,16 @@
   },
   "info" : {
     "title" : "LLAMARA API",
-    "version" : "0.5.0-SNAPSHOT"
+    "version" : "0.6.0",
+    "description" : "The official REST API for LLAMARA - the Large Language Assistant for Model Augmented Retrieval and Analysis - an LLM-based assistant for information retrieval from a provided knowledge base.",
+    "contact" : {
+      "name" : "LLAMARA GitHub Organization",
+      "url" : "https://github.com/llamara-ai"
+    },
+    "license" : {
+      "name" : "Apache 2.0",
+      "url" : "https://www.apache.org/licenses/LICENSE-2.0.html"
+    }
   },
   "servers" : [ {
     "url" : "http://localhost:8080",

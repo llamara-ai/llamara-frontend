@@ -8,7 +8,7 @@ export type ChatMessageRecord = {
     modelName?: string;
 };
 
-export type ChatMessageType = 'SYSTEM' | 'USER' | 'AI' | 'TOOL_EXECUTION_RESULT';
+export type ChatMessageType = 'SYSTEM' | 'USER' | 'AI' | 'TOOL_EXECUTION_RESULT' | 'CUSTOM';
 
 export type ChatModelContainer = {
     uid?: string;
@@ -19,9 +19,14 @@ export type ChatModelContainer = {
 
 export type ChatModelProvider = 'AZURE' | 'OLLAMA' | 'OPENAI';
 
-export type InfoDTO = {
-    security?: SecurityInfoDTO;
-    oidc?: OidcInfoDTO;
+export type ChatResponseDto = {
+    response?: string;
+    sources?: Array<SourceRecord>;
+};
+
+export type InfoDto = {
+    security?: SecurityInfoDto;
+    oidc?: OidcInfoDto;
     imprintLink?: string;
     privacyPolicyLink?: string;
 };
@@ -31,7 +36,7 @@ export type IngestionStatus = 'PENDING' | 'SUCCEEDED' | 'FAILED';
 export type Instant = string;
 
 export type Knowledge = {
-    id?: UUID;
+    id?: Uuid;
     type?: KnowledgeType;
     checksum?: string;
     ingestionStatus?: IngestionStatus;
@@ -43,12 +48,12 @@ export type Knowledge = {
         [key: string]: Permission;
     };
     label?: string;
-    tags?: Array<(string)>;
+    tags?: Array<string>;
 };
 
 export type KnowledgeType = 'FILE' | 'WEBLINK';
 
-export type OidcInfoDTO = {
+export type OidcInfoDto = {
     authServerUrl?: string;
     clientId?: string;
     authorizationPath?: string;
@@ -58,89 +63,304 @@ export type OidcInfoDTO = {
 
 export type Permission = 'OWNER' | 'READWRITE' | 'READONLY' | 'NONE';
 
-export type SecurityInfoDTO = {
+export type SecurityInfoDto = {
     anonymousUserEnabled?: boolean;
     anonymousUserSessionTimeout?: number;
 };
 
 export type Session = {
-    id?: UUID;
+    id?: Uuid;
     createdAt?: Instant;
     label?: string;
 };
 
-export type UserInfoDTO = {
+export type SourceRecord = {
+    knowledgeId?: Uuid;
+    content?: string;
+};
+
+export type Uuid = string;
+
+export type UserInfoDto = {
     username?: string;
-    roles?: Array<(string)>;
+    roles?: Array<string>;
     anonymous?: boolean;
     name?: string;
 };
 
-export type UUID = string;
+export type ConfigurationData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/rest';
+};
 
-export type ConfigurationResponse = (InfoDTO);
+export type ConfigurationResponses = {
+    /**
+     * OK
+     */
+    200: InfoDto;
+};
 
-export type ConfigurationError = unknown;
+export type ConfigurationResponse = ConfigurationResponses[keyof ConfigurationResponses];
 
-export type GetModelsResponse = (Array<ChatModelContainer>);
+export type GetModelsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/rest/chat/models';
+};
 
-export type GetModelsError = (unknown);
+export type GetModelsErrors = {
+    /**
+     * Bad Request, usually returned when an operation is requested before the user has logged in.
+     */
+    400: unknown;
+    /**
+     * Not Authorized
+     */
+    401: unknown;
+    /**
+     * Not Allowed
+     */
+    403: unknown;
+};
+
+export type GetModelsResponses = {
+    /**
+     * OK
+     */
+    200: Array<ChatModelContainer>;
+};
+
+export type GetModelsResponse = GetModelsResponses[keyof GetModelsResponses];
 
 export type PromptData = {
     body: string;
+    path?: never;
     query: {
         /**
          * ID of the session to use
          */
-        sessionId: UUID;
+        sessionId: Uuid;
         /**
          * UID of the chat model to use
          */
         uid: string;
     };
+    url: '/rest/chat/prompt';
 };
 
-export type PromptResponse = (string);
+export type PromptErrors = {
+    /**
+     * Bad Request, usually returned when an operation is requested before the user has logged in.
+     */
+    400: unknown;
+    /**
+     * Not Authorized
+     */
+    401: unknown;
+    /**
+     * Not Allowed
+     */
+    403: unknown;
+    /**
+     * No chat model or no session with given ID found.
+     */
+    404: unknown;
+};
 
-export type PromptError = (unknown);
+export type PromptResponses = {
+    /**
+     * OK
+     */
+    200: ChatResponseDto;
+};
 
-export type GetSessionsResponse = (Array<Session>);
+export type PromptResponse = PromptResponses[keyof PromptResponses];
 
-export type GetSessionsError = (unknown);
+export type GetSessionsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/rest/chat/sessions';
+};
 
-export type CreateSessionResponse = (Session);
+export type GetSessionsErrors = {
+    /**
+     * Bad Request, usually returned when an operation is requested before the user has logged in.
+     */
+    400: unknown;
+    /**
+     * Not Authorized
+     */
+    401: unknown;
+    /**
+     * Not Allowed
+     */
+    403: unknown;
+};
 
-export type CreateSessionError = (unknown);
+export type GetSessionsResponses = {
+    /**
+     * OK
+     */
+    200: Array<Session>;
+};
+
+export type GetSessionsResponse = GetSessionsResponses[keyof GetSessionsResponses];
+
+export type CreateSessionData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/rest/chat/sessions/create';
+};
+
+export type CreateSessionErrors = {
+    /**
+     * Bad Request, usually returned when an operation is requested before the user has logged in.
+     */
+    400: unknown;
+    /**
+     * Not Authorized
+     */
+    401: unknown;
+    /**
+     * Not Allowed
+     */
+    403: unknown;
+};
+
+export type CreateSessionResponses = {
+    /**
+     * Created
+     */
+    201: Session;
+};
+
+export type CreateSessionResponse = CreateSessionResponses[keyof CreateSessionResponses];
 
 export type DeleteSessionData = {
+    body?: never;
     path: {
-        sessionId: UUID;
+        sessionId: Uuid;
     };
+    query?: never;
+    url: '/rest/chat/sessions/{sessionId}';
 };
 
-export type DeleteSessionResponse = (unknown);
+export type DeleteSessionErrors = {
+    /**
+     * Bad Request, usually returned when an operation is requested before the user has logged in.
+     */
+    400: unknown;
+    /**
+     * Not Authorized
+     */
+    401: unknown;
+    /**
+     * Not Allowed
+     */
+    403: unknown;
+    /**
+     * No session with the given ID found.
+     */
+    404: unknown;
+};
 
-export type DeleteSessionError = (unknown);
+export type DeleteSessionResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
 
 export type GetHistoryData = {
+    body?: never;
     path: {
         /**
          * UID of the chat history to get
          */
-        sessionId: UUID;
+        sessionId: Uuid;
     };
+    query?: never;
+    url: '/rest/chat/sessions/{sessionId}/history';
 };
 
-export type GetHistoryResponse = (Array<ChatMessageRecord>);
+export type GetHistoryErrors = {
+    /**
+     * Bad Request, usually returned when an operation is requested before the user has logged in.
+     */
+    400: unknown;
+    /**
+     * Not Authorized
+     */
+    401: unknown;
+    /**
+     * Not Allowed
+     */
+    403: unknown;
+    /**
+     * No session with the given ID found.
+     */
+    404: unknown;
+};
 
-export type GetHistoryError = (unknown);
+export type GetHistoryResponses = {
+    /**
+     * OK
+     */
+    200: Array<ChatMessageRecord>;
+};
+
+export type GetHistoryResponse = GetHistoryResponses[keyof GetHistoryResponses];
+
+export type KeepAliveAnonymousSessionData = {
+    body?: never;
+    path: {
+        /**
+         * UID of the session to keep alive
+         */
+        sessionId: Uuid;
+    };
+    query?: never;
+    url: '/rest/chat/sessions/{sessionId}/keep-alive';
+};
+
+export type KeepAliveAnonymousSessionErrors = {
+    /**
+     * Bad Request, usually returned when an operation is requested before the user has logged in.
+     */
+    400: unknown;
+    /**
+     * Not Authorized
+     */
+    401: unknown;
+    /**
+     * Not Allowed
+     */
+    403: unknown;
+    /**
+     * No session with the given ID found.
+     */
+    404: unknown;
+};
+
+export type KeepAliveAnonymousSessionResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
 
 export type SetSessionLabelData = {
+    body?: never;
     path: {
         /**
          * UID of the session to set the label for
          */
-        sessionId: UUID;
+        sessionId: Uuid;
     };
     query: {
         /**
@@ -148,87 +368,282 @@ export type SetSessionLabelData = {
          */
         label: string;
     };
+    url: '/rest/chat/sessions/{sessionId}/label';
 };
 
-export type SetSessionLabelResponse = (unknown);
+export type SetSessionLabelErrors = {
+    /**
+     * Bad Request, usually returned when an operation is requested before the user has logged in.
+     */
+    400: unknown;
+    /**
+     * Not Authorized
+     */
+    401: unknown;
+    /**
+     * Not Allowed
+     */
+    403: unknown;
+    /**
+     * No session with the given ID found.
+     */
+    404: unknown;
+};
 
-export type SetSessionLabelError = (unknown);
+export type SetSessionLabelResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
 
-export type GetAllKnowledgeResponse = (Array<Knowledge>);
+export type GetAllKnowledgeData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/rest/knowledge';
+};
 
-export type GetAllKnowledgeError = (unknown);
+export type GetAllKnowledgeErrors = {
+    /**
+     * Not Authorized
+     */
+    401: unknown;
+    /**
+     * Not Allowed
+     */
+    403: unknown;
+};
+
+export type GetAllKnowledgeResponses = {
+    /**
+     * OK
+     */
+    200: Array<Knowledge>;
+};
+
+export type GetAllKnowledgeResponse = GetAllKnowledgeResponses[keyof GetAllKnowledgeResponses];
 
 export type AddFileSourceData = {
     body: {
-        files?: Array<((Blob | File))>;
+        files?: Array<Blob | File>;
     };
+    path?: never;
+    query?: never;
+    url: '/rest/knowledge/add/file';
 };
 
-export type AddFileSourceResponse = (Array<UUID>);
+export type AddFileSourceErrors = {
+    /**
+     * File upload is invalid.
+     */
+    400: unknown;
+    /**
+     * Not Authorized
+     */
+    401: unknown;
+    /**
+     * Not Allowed
+     */
+    403: unknown;
+};
 
-export type AddFileSourceError = (unknown);
+export type AddFileSourceResponses = {
+    /**
+     * OK. Returns the ids of the added knowledge.
+     */
+    201: Array<Uuid>;
+};
+
+export type AddFileSourceResponse = AddFileSourceResponses[keyof AddFileSourceResponses];
+
+export type RetryFailedIngestionData = {
+    body?: never;
+    path: {
+        /**
+         * UID of the knowledge to retry the ingestion for
+         */
+        id: Uuid;
+    };
+    query?: never;
+    url: '/rest/knowledge/retry/{id}/ingestion';
+};
+
+export type RetryFailedIngestionErrors = {
+    /**
+     * Not Authorized
+     */
+    401: unknown;
+    /**
+     * Not Allowed
+     */
+    403: unknown;
+    /**
+     * No knowledge with the given id found.
+     */
+    404: unknown;
+};
+
+export type RetryFailedIngestionResponses = {
+    /**
+     * OK.
+     */
+    200: unknown;
+};
 
 export type UpdateFileSourceData = {
     body: {
-        file?: (Blob | File);
+        file?: Blob | File;
     };
     path: {
         /**
          * UID of the knowledge to update
          */
-        id: UUID;
+        id: Uuid;
     };
+    query?: never;
+    url: '/rest/knowledge/update/{id}/file';
 };
 
-export type UpdateFileSourceResponse = (unknown);
-
-export type UpdateFileSourceError = (unknown);
-
-export type GetKnowledgeData = {
-    path: {
-        /**
-         * UID of the knowledge to get
-         */
-        id: UUID;
-    };
+export type UpdateFileSourceErrors = {
+    /**
+     * File upload is invalid.
+     */
+    400: unknown;
+    /**
+     * Not Authorized
+     */
+    401: unknown;
+    /**
+     * Not Allowed
+     */
+    403: unknown;
+    /**
+     * No knowledge with the given id found.
+     */
+    404: unknown;
 };
 
-export type GetKnowledgeResponse = (Knowledge);
-
-export type GetKnowledgeError = (unknown);
+export type UpdateFileSourceResponses = {
+    /**
+     * OK.
+     */
+    200: unknown;
+};
 
 export type DeleteKnowledgeData = {
+    body?: never;
     path: {
         /**
          * UID of the knowledge to delete
          */
-        id: UUID;
+        id: Uuid;
     };
+    query?: never;
+    url: '/rest/knowledge/{id}';
 };
 
-export type DeleteKnowledgeResponse = (unknown);
+export type DeleteKnowledgeErrors = {
+    /**
+     * Not Authorized
+     */
+    401: unknown;
+    /**
+     * Not Allowed
+     */
+    403: unknown;
+    /**
+     * No knowledge with the given id found.
+     */
+    404: unknown;
+};
 
-export type DeleteKnowledgeError = (unknown);
+export type DeleteKnowledgeResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type GetKnowledgeData = {
+    body?: never;
+    path: {
+        /**
+         * UID of the knowledge to get
+         */
+        id: Uuid;
+    };
+    query?: never;
+    url: '/rest/knowledge/{id}';
+};
+
+export type GetKnowledgeErrors = {
+    /**
+     * Not Authorized
+     */
+    401: unknown;
+    /**
+     * Not Allowed
+     */
+    403: unknown;
+    /**
+     * No knowledge with the given id found.
+     */
+    404: unknown;
+};
+
+export type GetKnowledgeResponses = {
+    /**
+     * OK
+     */
+    200: Knowledge;
+};
+
+export type GetKnowledgeResponse = GetKnowledgeResponses[keyof GetKnowledgeResponses];
 
 export type GetKnowledgeFileData = {
+    body?: never;
     path: {
         /**
          * UID of the knowledge to get the source file of
          */
-        id: UUID;
+        id: Uuid;
     };
+    query?: never;
+    url: '/rest/knowledge/{id}/file';
 };
 
-export type GetKnowledgeFileResponse = (unknown);
+export type GetKnowledgeFileErrors = {
+    /**
+     * Not Authorized
+     */
+    401: unknown;
+    /**
+     * Not Allowed
+     */
+    403: unknown;
+    /**
+     * No knowledge with the given id found.
+     */
+    404: unknown;
+};
 
-export type GetKnowledgeFileError = (unknown);
+export type GetKnowledgeFileResponses = {
+    /**
+     * OK
+     */
+    200: Blob | File;
+};
+
+export type GetKnowledgeFileResponse = GetKnowledgeFileResponses[keyof GetKnowledgeFileResponses];
 
 export type SetKnowledgeLabelData = {
+    body?: never;
     path: {
         /**
          * UID of the knowledge to set the label for
          */
-        id: UUID;
+        id: Uuid;
     };
     query: {
         /**
@@ -236,18 +651,121 @@ export type SetKnowledgeLabelData = {
          */
         label: string;
     };
+    url: '/rest/knowledge/{id}/label';
 };
 
-export type SetKnowledgeLabelResponse = (unknown);
+export type SetKnowledgeLabelErrors = {
+    /**
+     * Not Authorized
+     */
+    401: unknown;
+    /**
+     * Not Allowed
+     */
+    403: unknown;
+    /**
+     * No knowledge with the given id found.
+     */
+    404: unknown;
+};
 
-export type SetKnowledgeLabelError = (unknown);
+export type SetKnowledgeLabelResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type RemoveKnowledgePermissionData = {
+    body?: never;
+    path: {
+        /**
+         * UID of the knowledge to remove the permission from
+         */
+        id: Uuid;
+        /**
+         * name of user to remove permission for
+         */
+        username: string;
+    };
+    query?: never;
+    url: '/rest/knowledge/{id}/permission/{username}';
+};
+
+export type RemoveKnowledgePermissionErrors = {
+    /**
+     * Not Authorized
+     */
+    401: unknown;
+    /**
+     * Not Allowed
+     */
+    403: unknown;
+    /**
+     * No knowledge with the given id found or no user with the given username found.
+     */
+    404: unknown;
+};
+
+export type RemoveKnowledgePermissionResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type SetKnowledgePermissionData = {
+    /**
+     * permission to set
+     */
+    body: 'READWRITE' | 'READONLY';
+    path: {
+        /**
+         * UID of the knowledge set permission for
+         */
+        id: Uuid;
+        /**
+         * name of user to set permission for
+         */
+        username: string;
+    };
+    query?: never;
+    url: '/rest/knowledge/{id}/permission/{username}';
+};
+
+export type SetKnowledgePermissionErrors = {
+    /**
+     * Illegal permission modification
+     */
+    400: unknown;
+    /**
+     * Not Authorized
+     */
+    401: unknown;
+    /**
+     * Not Allowed
+     */
+    403: unknown;
+    /**
+     * No knowledge with the given id found or no user with the given username found.
+     */
+    404: unknown;
+};
+
+export type SetKnowledgePermissionResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
 
 export type RemoveKnowledgeTagData = {
+    body?: never;
     path: {
         /**
          * UID of the knowledge to which the tag should be removed
          */
-        id: UUID;
+        id: Uuid;
     };
     query: {
         /**
@@ -255,18 +773,38 @@ export type RemoveKnowledgeTagData = {
          */
         tag: string;
     };
+    url: '/rest/knowledge/{id}/tag';
 };
 
-export type RemoveKnowledgeTagResponse = (unknown);
+export type RemoveKnowledgeTagErrors = {
+    /**
+     * Not Authorized
+     */
+    401: unknown;
+    /**
+     * Not Allowed
+     */
+    403: unknown;
+    /**
+     * No knowledge with the given id found.
+     */
+    404: unknown;
+};
 
-export type RemoveKnowledgeTagError = (unknown);
+export type RemoveKnowledgeTagResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
 
 export type AddKnowledgeTagData = {
+    body?: never;
     path: {
         /**
          * UID of the knowledge to which the tag should be added
          */
-        id: UUID;
+        id: Uuid;
     };
     query: {
         /**
@@ -274,16 +812,83 @@ export type AddKnowledgeTagData = {
          */
         tag: string;
     };
+    url: '/rest/knowledge/{id}/tag';
 };
 
-export type AddKnowledgeTagResponse = (unknown);
+export type AddKnowledgeTagErrors = {
+    /**
+     * Not Authorized
+     */
+    401: unknown;
+    /**
+     * Not Allowed
+     */
+    403: unknown;
+    /**
+     * No knowledge with the given id found.
+     */
+    404: unknown;
+};
 
-export type AddKnowledgeTagError = (unknown);
+export type AddKnowledgeTagResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
 
-export type LoginResponse = (UserInfoDTO);
+export type DeleteUserDataData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/rest/user';
+};
 
-export type LoginError = (unknown);
+export type DeleteUserDataErrors = {
+    /**
+     * Bad Request. Returned when an operation is requested before the user is logged in.
+     */
+    400: unknown;
+    /**
+     * Not Authorized
+     */
+    401: unknown;
+    /**
+     * Not Allowed
+     */
+    403: unknown;
+};
 
-export type DeleteUserDataResponse = (unknown);
+export type DeleteUserDataResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
 
-export type DeleteUserDataError = (unknown);
+export type LoginData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/rest/user';
+};
+
+export type LoginErrors = {
+    /**
+     * Not Authorized
+     */
+    401: unknown;
+    /**
+     * Not Allowed
+     */
+    403: unknown;
+};
+
+export type LoginResponses = {
+    /**
+     * OK
+     */
+    200: UserInfoDto;
+};
+
+export type LoginResponse = LoginResponses[keyof LoginResponses];

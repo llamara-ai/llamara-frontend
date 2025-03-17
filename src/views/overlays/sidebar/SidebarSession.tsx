@@ -21,32 +21,31 @@ import {
 } from "@/components/ui/tooltip";
 import useDeleteSessionApi from "@/hooks/api/useDeleteSessionApi";
 import { SessionSidebarItem } from "./SidebarSessionList";
-import { UseGetSessionsApiResponse } from "@/hooks/api/useGetSessionsApi";
+import { useGetSessions } from "@/services/GetSessionsService";
 
 interface SessionProps {
   subItem: SessionSidebarItem;
   setOnClick: (uid: string, label: string) => void;
   highlightSession: boolean;
-  useSessionsApiInstance: UseGetSessionsApiResponse;
 }
 
 export function SidebarSession({
   subItem,
   setOnClick,
   highlightSession,
-  useSessionsApiInstance,
 }: Readonly<SessionProps>) {
   const { t } = useTranslation();
+  const { animateInSession, deleteSessionLocal, updateSessionLabelLocal } =
+    useGetSessions();
+
   const { setSessionLabel } = useSetSessionLabelApi({
     sessionId: subItem.uid,
-    useSessionsApiInstance,
+    updateSessionLabelLocal,
   });
   const { handleDeleteSession } = useDeleteSessionApi({
     sessionId: subItem.uid,
-    useSessionsApiInstance,
+    deleteSessionLocal,
   });
-
-  const { animateInSession } = useSessionsApiInstance;
 
   const [hover, setHover] = useState<boolean>(false); // indicates if the mouse is hovering over the session
   const [open, setOpen] = useState<boolean>(false); // indicates if the dropdown menu is open

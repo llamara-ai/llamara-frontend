@@ -26,12 +26,12 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useTheme } from "./theme-provider";
-import { UserInfoDTO } from "@/api";
+import { UserInfoDto } from "@/api";
 import { useTranslation } from "react-i18next";
 import { getInitials } from "@/lib/getInitials";
 
 interface SidebarUserProps {
-  user: UserInfoDTO;
+  user: UserInfoDto;
   loggedIn: boolean;
   login: () => void;
   logout: () => void;

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { prompt } from "@/api";
+import { ChatResponseDto, prompt } from "@/api";
 import { useToast } from "../use-toast";
 
 interface UsePromptApiProps {
@@ -9,7 +9,7 @@ interface UsePromptApiProps {
 }
 
 interface UsePromptApiResult {
-  response: string;
+  response: ChatResponseDto | null;
   loading: boolean;
   error: string | null;
 }
@@ -20,7 +20,7 @@ export default function usePromptApi({
   inputPrompt,
 }: UsePromptApiProps): UsePromptApiResult {
   const { toast } = useToast();
-  const [response, setResponse] = useState<string>("");
+  const [response, setResponse] = useState<ChatResponseDto | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,9 +28,6 @@ export default function usePromptApi({
     if (inputPrompt !== "" && sessionID !== null && chatModelUID !== null) {
       const options = {
         body: inputPrompt,
-        // TODO: Remove the following body serializer work-around once https://github.com/hey-api/openapi-ts/pull/1589 is merged and published
-        // eslint-disable-next-line
-        bodySerializer: (str: any) => str,
         query: {
           sessionId: sessionID,
           uid: chatModelUID,
@@ -40,6 +37,7 @@ export default function usePromptApi({
         },
       };
       setLoading(true);
+      setResponse(null);
       prompt(options)
         .then((responseObject) => {
           const data = responseObject.data;

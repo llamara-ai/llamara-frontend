@@ -3,14 +3,14 @@ import { ReactNode, useContext } from "react";
 import { AuthContext } from "react-oauth2-code-pkce";
 import { useUserContext } from "@/services/UserContextService.tsx";
 import { useNavigate } from "react-router-dom";
+import SidebarContent from "./SidebarContent";
+import RedirectButton from "./RedirectButton";
 
 interface SidebarProps {
-  sideBarContent: ReactNode;
   children: ReactNode;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
-  sideBarContent,
   children,
 }: Readonly<SidebarProps>) => {
   const navigate = useNavigate();
@@ -34,7 +34,8 @@ const Sidebar: React.FC<SidebarProps> = ({
         console.log("Logging out");
         logOut();
       }}
-      sideBarContent={sideBarContent}
+      sideBarContent={<SidebarContent />}
+      footerChildren={<RedirectButton />}
     >
       {children}
     </SidebarTemplate>

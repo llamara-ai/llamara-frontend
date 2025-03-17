@@ -17,7 +17,6 @@ import {
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { SidebarSession } from "./SidebarSession";
-import { UseGetSessionsApiResponse } from "@/hooks/api/useGetSessionsApi";
 
 export interface SessionSidebarItem {
   title: string;
@@ -35,14 +34,12 @@ export interface SidebarSessionsGroup {
 export interface SidebarSessionListProps {
   title: string;
   items: SidebarSessionsGroup[];
-  useSessionsApiInstance: UseGetSessionsApiResponse;
   setOnClick: (uid: string, label: string) => void;
 }
 
 export function SidebarSessionList({
   title,
   items,
-  useSessionsApiInstance,
   setOnClick,
 }: Readonly<SidebarSessionListProps>) {
   const { open } = useSidebar();
@@ -54,12 +51,7 @@ export function SidebarSessionList({
         className={`top-0 left-0 transition-opacity duration-300 ${open ? "opacity-100" : "opacity-0"}`}
       >
         {items.map((item) => (
-          <SessionGroup
-            item={item}
-            key={item.title}
-            setOnClick={setOnClick}
-            useSessionsApiInstance={useSessionsApiInstance}
-          />
+          <SessionGroup item={item} key={item.title} setOnClick={setOnClick} />
         ))}
       </SidebarMenu>
     </SidebarGroup>
@@ -68,15 +60,10 @@ export function SidebarSessionList({
 
 interface SessionGroupProps {
   item: SidebarSessionsGroup;
-  useSessionsApiInstance: UseGetSessionsApiResponse;
   setOnClick: (uid: string, label: string) => void;
 }
 
-const SessionGroup = ({
-  item,
-  useSessionsApiInstance,
-  setOnClick,
-}: SessionGroupProps) => {
+const SessionGroup = ({ item, setOnClick }: SessionGroupProps) => {
   const [selectedSessionId, setSelectedSessionId] = useState<string | null>(
     null,
   );
@@ -98,7 +85,7 @@ const SessionGroup = ({
     <Collapsible
       key={item.title}
       asChild
-      defaultOpen={item.isActive ? item.isActive : true}
+      defaultOpen={item.isActive ?? true}
       className="group/collapsible"
     >
       <SidebarMenuItem>
@@ -120,7 +107,6 @@ const SessionGroup = ({
                 }}
                 key={subItem.uid + subItem.title}
                 highlightSession={selectedSessionId === subItem.uid}
-                useSessionsApiInstance={useSessionsApiInstance}
               />
             ))}
           </SidebarMenuSub>

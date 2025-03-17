@@ -2,23 +2,17 @@ import { useState } from "react";
 import { deleteKnowledge } from "@/api";
 import { useToast } from "../use-toast";
 
-interface UseDeleteKnowledgeApiProps {
-  uuid: string;
-}
-
 interface UseDeleteKnowledgeApiResponse {
-  handleDeleteKnowledge: () => Promise<void>;
+  handleDeleteKnowledge: (uuid: string) => Promise<void>;
   error: string | null;
 }
 
-export default function useDeleteKnowledgeApi({
-  uuid,
-}: UseDeleteKnowledgeApiProps): UseDeleteKnowledgeApiResponse {
+export default function useDeleteKnowledgeApi(): UseDeleteKnowledgeApiResponse {
   const { toast } = useToast();
   const [error, setError] = useState<string | null>(null);
 
   // eslint-disable-next-line @typescript-eslint/require-await
-  const handleDeleteKnowledge = async () => {
+  const handleDeleteKnowledge = async (uuid: string) => {
     const options = {
       path: {
         id: uuid,

@@ -1,4 +1,5 @@
 {
+  "pdfLocalCode": "de_DE ",
   "login": {
     "title": "Login",
     "button": "Weiterleitung zum OIDC Provider",
@@ -35,7 +36,23 @@
         "subtitle": "Chatte mit deinen Daten",
         "text": "Willkommen bei unserem innovativen Chatbot! Mit unserer Anwendung kannst du direkt mit deinen Daten interagieren, Antworten auf komplexe Fragen erhalten und relevante Informationen schnell und einfach finden. Nutze die Power der KI, um Wissen effizienter zu nutzen – jederzeit und überall."
       },
-      "copyMessage": "Nachricht in die Zwischenablage kopiert!"
+      "copyMessage": "Nachricht in die Zwischenablage kopiert!",
+      "source": {
+        "loading": "Quelle wird geladen...",
+        "docTypeUnknown": "unbekannt",
+        "download": {
+          "failedTitle": "Download fehlgeschlagen",
+          "failedDescription": "Die Datei konnte nicht heruntergeladen werden.",
+          "startedTitle": "Download gestartet",
+          "startedDescription": "Der Download wurde gestartet."
+        },
+        "error": {
+          "generic": "Es ist ein Fehler aufgetreten."
+        }
+      }
+    },
+    "pdf": {
+      "closeButton": "Schließen"
     }
   },
   "sidebar": {
@@ -44,6 +61,34 @@
     "session": {
       "buttonEditLabel": "Label bearbeiten",
       "buttonDelete": "Session löschen"
+    },
+    "knowledge": "Wissen",
+    "chatbot": "Chatbot"
+  },
+  "knowledgePage": {
+    "table": {
+      "label": "Name",
+      "status": {
+        "label": "Status",
+        "succeeded": "Erfolgreich",
+        "failed": "Fehlgeschlagen",
+        "unknown": "Unbekannt",
+        "pending": "Läuft"
+      }
+    },
+    "options": {
+      "delete": "Löschen",
+      "update": "Datei Aktualisieren",
+      "actions": "Aktionen"
+    },
+    "uploadFileDialog": {
+      "upload": "Datei Hochladen",
+      "selectfile": "Datei auswählen",
+      "error": "Fehler beim Hochladen der Datei",
+      "success": "Datei erfolgreich hochgeladen",
+      "selectFile": "Datei auswählen",
+      "selectFiles": "Dateien auswählen",
+      "fileSelected": "{{count}} Datei(en) ausgewählt"
     }
   },
   "footer": {

@@ -1,0 +1,82 @@
+import { ColumnDef } from "@tanstack/react-table";
+import { Knowledge } from "@/api";
+import { ArrowUpDown, ChevronRight, ChevronDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import KnowledgeOptions from "./KnowledgeOptions";
+import KnowledgeStatus from "./KnowledgeStatus";
+import { useTranslation } from "react-i18next";
+
+// This type is used to define the shape of our data.
+// You can use a Zod schema here if you want.
+
+export default function Columns(): ColumnDef<Knowledge>[] {
+  const { t } = useTranslation();
+
+  return [
+    // Left most column
+
+    {
+      id: "collapseable",
+      cell: ({ row }) => {
+        return row.getCanExpand() ? (
+          <Button
+            onClick={row.getToggleExpandedHandler()}
+            className="bg-secondary text-primary hover:text-secondary"
+          >
+            {row.getIsExpanded() ? <ChevronDown /> : <ChevronRight />}
+          </Button>
+        ) : (
+          ""
+        );
+      },
+    },
+    {
+      accessorKey: "label",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => {
+              column.toggleSorting(column.getIsSorted() === "asc");
+            }}
+          >
+            {t("knowledgePage.table.label")}
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+    },
+
+    {
+      accessorKey: "ingestionStatus",
+      header: ({ column }) => {
+        return (
+          <div className="w-auto">
+            <Button
+              variant="ghost"
+              onClick={() => {
+                column.toggleSorting(column.getIsSorted() === "asc");
+              }}
+            >
+              {t("knowledgePage.table.status.label")}
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
+        );
+      },
+      cell: ({ row }) => {
+        const knowledge = row.original;
+        return KnowledgeStatus(knowledge);
+      },
+    },
+
+    {
+      //DropDown Menu Column
+      id: "actions",
+      cell: ({ row }) => {
+        const knowledge = row.original;
+        return KnowledgeOptions(knowledge);
+      },
+    },
+  ];
+}

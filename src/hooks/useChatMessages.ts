@@ -7,9 +7,9 @@ import { ChatMessageRecord, Session } from "@/api";
 import useGetHistoryApi from "./api/useGetHistoryApi";
 import { useLoading } from "@/services/LoadingService";
 import useAvailableModels from "./api/useGetModelsApi";
+import { readSelectedModel } from "./useLocalStorage";
 
 interface UseAddFileSourceApiProps {
-  chatModelUID: string | null;
   appendSessionLocal: (session: Session | null) => void;
 }
 
@@ -23,7 +23,6 @@ interface UseChatMessagesResponse {
 }
 
 export default function useChatMessages({
-  chatModelUID,
   appendSessionLocal,
 }: UseAddFileSourceApiProps): UseChatMessagesResponse {
   const { setLoading: setLoadingSpinner } = useLoading();
@@ -31,7 +30,9 @@ export default function useChatMessages({
   const { getModelProviderFromUid } = useAvailableModels();
 
   const sessionIDRef = useRef<string | null>(null); // Need to use Ref because useState is async
-  const chatModelUIDRef = useRef<string | null>(chatModelUID);
+  const chatModelUIDRef = useRef<string | null>(
+    readSelectedModel()?.uid ?? null,
+  );
   const [currentChatMessages, setCurrentChatMessages] = useState<
     ChatMessageRecord[]
   >([]);
@@ -93,15 +94,15 @@ export default function useChatMessages({
         sessionIDRef.current = newSession.id;
       }
     }
-
+    chatModelUIDRef.current = readSelectedModel()?.uid ?? null;
     promptInput.current = inputPrompt;
   };
 
   // Update chat messages when response is received
   useEffect(() => {
-    if (!loading && errorPrompt === null && response && response !== "") {
+    if (!loading && errorPrompt === null && response?.response !== undefined) {
       const messageRecord: ChatMessageRecord = {
-        text: response,
+        text: response.response,
         type: "AI",
         modelProvider: getModelProviderFromUid(chatModelUIDRef.current),
         timestamp: new Date().toISOString(),
@@ -120,13 +121,6 @@ export default function useChatMessages({
     // In case you type two times the same prompt. If not reset, it will the state doesn't change so no new prompt is sent
     promptInput.current = "";
   }, [errorPrompt, response]);
-
-  // Update Chat Model UID when it changes
-  useEffect(() => {
-    promptInput.current = ""; // Reset prompt input, need to avoid resend prompt
-    setLoadingResponse(false);
-    chatModelUIDRef.current = chatModelUID;
-  }, [chatModelUID]);
 
   return {
     chatMessages: historyMessages.concat(currentChatMessages),

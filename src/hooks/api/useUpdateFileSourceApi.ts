@@ -2,25 +2,17 @@ import { useState } from "react";
 import { updateFileSource } from "@/api";
 import { useToast } from "../use-toast";
 
-interface UseUpdateFileSourceApiProps {
-  uuid: string;
-  file: Blob | File;
-}
-
 interface UseUpdateFileSourceApiResponse {
-  handleUpdateFileSource: () => Promise<void>;
+  handleUpdateFileSource: (uuid: string, file: Blob | File) => Promise<void>;
   error: string | null;
 }
 
-export default function useUpdateFileSourceApiApi({
-  uuid,
-  file,
-}: UseUpdateFileSourceApiProps): UseUpdateFileSourceApiResponse {
+export default function useUpdateFileSourceApiApi(): UseUpdateFileSourceApiResponse {
   const { toast } = useToast();
   const [error, setError] = useState<string | null>(null);
 
   // eslint-disable-next-line @typescript-eslint/require-await
-  const handleUpdateFileSource = async () => {
+  const handleUpdateFileSource = async (uuid: string, file: Blob | File) => {
     const options = {
       body: {
         file: file,

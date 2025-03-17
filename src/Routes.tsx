@@ -5,12 +5,15 @@ import {
   Routes as RoutesReact,
 } from "react-router-dom";
 import LoginView from "./views/security/LoginView";
-import Upload from "./views/upload/Upload";
+import Knowledge from "./views/knowledge/Knowledge";
 import Chatbot from "./views/chatbot/Chatbot";
 import PrivateRoute from "./PrivateRoute";
 import { useSetApiClientConfig } from "./services/ConfigApiClientService";
 import { useAppContext } from "@/services/AppContextService.tsx";
 import { useSetupUserContext } from "@/services/UserContextService.tsx";
+import { Overlay } from "./views/overlays/Overlay";
+import GetSessionsProvider from "./services/GetSessionsService";
+import GetKnowledgeListProvider from "./services/GetKnowledgeListService";
 
 function Routes() {
   const { securityConfig } = useAppContext();
@@ -23,16 +26,44 @@ function Routes() {
   return (
     <BrowserRouter>
       <RoutesReact>
-        {securityConfig.anonymousUserEnabled ? (
-          <Route path="/" index element={<Chatbot />} />
-        ) : (
-          <Route path="/" element={<PrivateRoute />}>
-            <Route path="/" index element={<Chatbot />} />
-          </Route>
-        )}
+        <Route
+          path="/"
+          element={
+            <PrivateRoute
+              forceRedirect={securityConfig.anonymousUserEnabled === false}
+            />
+          }
+        >
+          <Route
+            path="/"
+            index
+            element={
+              <GetSessionsProvider>
+                <Overlay>
+                  <Chatbot />
+                </Overlay>
+              </GetSessionsProvider>
+            }
+          />
+        </Route>
         <Route path="/login" element={<LoginView />} />
-        <Route path="/upload" element={<PrivateRoute />}>
-          <Route path="/upload" index element={<Upload />} />
+        <Route
+          path="/knowledge"
+          element={<PrivateRoute forceRedirect={true} />}
+        >
+          <Route
+            path="/knowledge"
+            index
+            element={
+              <GetSessionsProvider>
+                <GetKnowledgeListProvider>
+                  <Overlay>
+                    <Knowledge />
+                  </Overlay>
+                </GetKnowledgeListProvider>
+              </GetSessionsProvider>
+            }
+          />
         </Route>
         <Route path="*" element={<Navigate to="/" replace={true} />} />
       </RoutesReact>

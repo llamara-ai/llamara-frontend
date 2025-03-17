@@ -34,7 +34,7 @@ const ChatMessageList = React.forwardRef<HTMLDivElement, ChatMessageListProps>(
             }}
             size="icon"
             variant="outline"
-            className="absolute bottom-2 left-1/2 transform -translate-x-1/2 inline-flex rounded-full shadow-md"
+            className="absolute bottom-2 left-1/2 transform -translate-x-1/2 inline-flex rounded-full shadow-md mb-4"
             aria-label="Scroll to bottom"
           >
             <ArrowDown className="size-4" />

@@ -1,4 +1,5 @@
 {
+  "pdfLocalCode": "en_US ",
   "login": {
     "title": "Login",
     "button": "Redirection to OIDC provider",
@@ -35,7 +36,23 @@
         "subtitle": "Chat with your data",
         "text": "Welcome to our innovative chatbot! With our application, you can interact directly with your data, get answers to complex questions and find relevant information quickly and easily. Harness the power of AI to use knowledge more efficiently - anytime, anywhere."
       },
-      "copyMessage": "Message copied to clipboard!"
+      "copyMessage": "Message copied to clipboard!",
+      "source": {
+        "loading": "Loading source...",
+        "docTypeUnknown": "unknown",
+        "download": {
+          "failedTitle": "Download Failed",
+          "failedDescription": "An error occurred while downloading the file.",
+          "startedTitle": "Download Started",
+          "startedDescription": "The download has started."
+        },
+        "error": {
+          "generic": "An error occurred."
+        }
+      }
+    },
+    "pdf": {
+      "closeButton": "Close"
     }
   },
   "sidebar": {
@@ -44,6 +61,34 @@
     "session": {
       "buttonEditLabel": "Edit label",
       "buttonDelete": "Delete Session"
+    },
+    "knowledge": "Knowledge",
+    "chatbot": "Chatbot"
+  },
+  "knowledgePage": {
+    "table": {
+      "label": "Label",
+      "status": {
+        "label": "Status",
+        "succeeded": "Successful",
+        "failed": "Failed",
+        "pending": "Pending",
+        "unknown": "Unknown"
+      }
+    },
+    "options": {
+      "delete": "Delete",
+      "update": "Update File",
+      "actions": "Actions"
+    },
+    "uploadFileDialog": {
+      "upload": "Upload File",
+      "selectfile": "Select file",
+      "error": "Error uploading file",
+      "success": "File uploaded successfully",
+      "selectFile": "Select file",
+      "selectFiles": "Select files",
+      "fileSelected": "{{count}} file(s) selected"
     }
   },
   "footer": {
