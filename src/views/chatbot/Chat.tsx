@@ -12,6 +12,7 @@ import { useTheme } from "@/components/theme-provider";
 import ChatMessage from "./ChatMessage";
 import PromptInput from "./PromptInput";
 import { readSelectedModel } from "@/hooks/useLocalStorage";
+import { useIsMobile } from "@/hooks/use-mobile.tsx";
 
 interface ChatProps {
   messages: ChatMessageRecord[];
@@ -32,8 +33,10 @@ export default function Chat({
 }: Readonly<ChatProps>) {
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const mobile = useIsMobile();
 
   const messagesRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (messagesRef.current) {
@@ -43,6 +46,13 @@ export default function Chat({
       }
     }
   }, [messagesRef]);
+
+  // autofocus on prompt input when not on mobile
+  useEffect(() => {
+    if (!mobile && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [messages]);
 
   const handleRetryClick = async (messageIndex: number) => {
     try {
@@ -114,6 +124,7 @@ export default function Chat({
 
       {/* Form and Footer fixed at the bottom */}
       <PromptInput
+        ref={inputRef}
         handleSubmit={handleSubmit}
         isGenerating={isGenerating}
         isLoading={isLoading}
