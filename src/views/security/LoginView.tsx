@@ -6,7 +6,6 @@ import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLogo } from "@/hooks/useLogo";
 import { useUserContext } from "@/services/UserContextService.tsx";
-import Footer from "@/views/overlays/Footer.tsx";
 
 export default function LoginView() {
   const { t } = useTranslation();
@@ -44,7 +43,6 @@ export default function LoginView() {
           </CardContent>
         </Card>
       </div>
-      <Footer />
     </div>
   );
 }

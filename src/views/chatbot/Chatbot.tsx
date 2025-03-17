@@ -44,7 +44,7 @@ export default function Chatbot() {
   return (
     <div className="flex h-full mt-0">
       <div
-        className={`flex-1 transition-all duration-300 ${showPdfWithUuid ? "w-1/2" : "w-full"} h-full overflow-auto ${!showPdfWithUuid ? "mx-5" : ""} `}
+        className={`flex-1 transition-all duration-300 ${showPdfWithUuid ? "w-1/2" : "w-full"} h-full overflow-auto`}
       >
         <Chat
           messages={chatMessages}

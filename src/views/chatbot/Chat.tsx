@@ -59,17 +59,21 @@ export default function Chat({
   return (
     <div className="flex flex-col h-full items-center justify-center">
       <div
-        className="flex-1 overflow-y-auto flex-grow flex items-center justify-center w-5/6"
+        className="overflow-y-auto flex flex-grow items-center justify-center w-full md:w-5/6"
         style={{ maxHeight: "calc(100vh - 190px)" }}
         ref={messagesRef}
       >
         <ChatMessageList>
           {/* Initial Message */}
           {messages.length === 0 && (
-            <div className="w-full max-w-[70%] mx-auto my-auto bg-background shadow-sm border rounded-lg p-8 flex flex-col gap-4 text-center">
+            <div className="w-full md:max-w-[70%] mx-auto my-auto bg-background shadow-sm border rounded-lg p-4 md:p-8 flex flex-col gap-4 text-center">
               <h1 className="font-bold">{t("chatbot.chat.newChat.title")}</h1>
               <p className="text-muted-foreground text-sm">
-                {t("chatbot.chat.newChat.text")}
+                {t("chatbot.chat.newChat.text.1")}
+                <br />
+                {t("chatbot.chat.newChat.text.2")}
+                <br />
+                {t("chatbot.chat.newChat.text.3")}
               </p>
             </div>
           )}

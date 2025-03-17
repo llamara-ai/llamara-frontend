@@ -11,7 +11,7 @@
     "errorLoadHistory": "Error loading chat history",
     "errorGeneratePrompt": "Failed to generate a response. Please try again.",
     "promptInput": {
-      "placeholder": "Type your message here...",
+      "placeholder": "Ask me any question",
       "send": "Send"
     },
     "deleteSessionSuccessful": "The session was successfully deleted",
@@ -23,7 +23,11 @@
       "newChat": {
         "title": "How can I help you?",
         "subtitle": "Chat with your data",
-        "text": "Welcome to our innovative chatbot! With our application, you can interact directly with your data, get answers to complex questions and find relevant information quickly and easily. Harness the power of AI to use knowledge more efficiently - anytime, anywhere."
+        "text": {
+          "1": "Welcome to LLAMARA!",
+          "2": "Interact with your data by asking me a question and I will quickly and easily find the relevant information and answer you.",
+          "3": "Harness the power of AI to use your data more efficiently - anytime, anywhere."
+        }
       },
       "copyMessage": "Message copied to clipboard!",
       "source": {
