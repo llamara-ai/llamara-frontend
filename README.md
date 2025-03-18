@@ -7,7 +7,7 @@ as well as possibly serving research findings in an accessible way to the public
 > **NOTE:** This repository contains the LLAMARA frontend only.
 
 LLAMARA Frontend is the official UI for the LLAMARA project.
-It is bundled with LLAMARA Backend in the [LLAMARA Distro](https://github.com/llamara-aio/llamara-distro) builds.
+It is bundled with [LLAMARA Backend](https://github.com/llamara-ai/llamara-backend) in the [LLAMARA Distro](https://github.com/llamara-ai/llamara-distro) builds.
 
 Head over to the [LLAMARA Distro repository](https://github.com/llamara-ai/llamara-distro) to get started with LLAMARA.
 
