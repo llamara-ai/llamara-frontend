@@ -1,6 +1,7 @@
 name: CI Build
 
 on:
+  workflow_call:
   workflow_dispatch:
   push:
     branches: ["main"]
@@ -27,6 +28,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          repository: "llamara-ai/llamara-frontend"
 
       - name: Set up NodeJS
         uses: actions/setup-node@v4
@@ -61,7 +64,7 @@ jobs:
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: dist
+          name: vite-dist
           path: |
             dist
 
@@ -71,3 +74,11 @@ jobs:
           name: vitest-coverage
           path: |
             coverage
+
+      - name: Trigger distro build
+        if: github.repository == 'llamara-ai/llamara-frontend' && github.event_name != 'pull_request' && github.ref_name == 'main'
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.DISTRO_DISPATCH_BUILD_TOKEN }}
+          repository: llamara-ai/llamara-distro
+          event-type: build
