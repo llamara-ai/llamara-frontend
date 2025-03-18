@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { AuthContext, type IAuthContext } from "react-oauth2-code-pkce";
 import { useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { useLogo } from "@/hooks/useLogo";
 import { useUserContext } from "@/services/UserContextService.tsx";
 import Footer from "@/views/overlays/Footer.tsx";

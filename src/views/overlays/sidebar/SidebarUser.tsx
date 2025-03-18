@@ -25,7 +25,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { useTheme } from "../../../components/theme-provider";
+import { useTheme } from "@/components/theme-provider.tsx";
 import { useTranslation } from "react-i18next";
 import { getInitials } from "@/lib/getInitials";
 import useDeleteAllUserData from "@/hooks/api/useDeleteAllUserData";
@@ -34,7 +34,7 @@ import { useContext, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useUserContext } from "@/services/UserContextService";
 import { AuthContext } from "react-oauth2-code-pkce";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { LanguageLabels } from "@/locales/Languages.ts";
 
 export function SidebarUser() {

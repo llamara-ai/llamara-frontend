@@ -15,7 +15,7 @@ import { SidebarSessionsGroup, SidebarSessionList } from "./SidebarSessionList";
 import { SidebarModelSelector as ChatbotSidebarHeader } from "./SidebarModelSelector";
 import { useToast } from "@/hooks/use-toast";
 import { groupSessionsByDateForNavbar } from "@/lib/groupSessionsByDateForNavbar";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { useUserContext } from "@/services/UserContextService";
 import { useGetSessions } from "@/services/GetSessionsService";
 import LoadingAnimation from "@/components/loading-animation";

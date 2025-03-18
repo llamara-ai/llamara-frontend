@@ -11,7 +11,7 @@ import { useCache } from "@/services/CacheService";
 import { useToast } from "@/hooks/use-toast";
 import { default as useRefState } from "react-usestateref";
 import useCurrentPage from "@/hooks/useCurrentPage";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 export interface UseGetSessionsApiResponse {
   sessions: Session[];

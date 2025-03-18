@@ -9,7 +9,7 @@ import useCurrentPage from "@/hooks/useCurrentPage";
 import { useUserContext } from "@/services/UserContextService";
 import { t } from "i18next";
 import { Bot, HardDriveUpload } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 export default function SidebarMainNav() {
   const activePage = useCurrentPage();

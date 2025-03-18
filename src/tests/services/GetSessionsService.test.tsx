@@ -7,7 +7,7 @@ import GetSessionsProvider, {
 import { getSessions } from "@/api";
 import { useCache } from "@/services/CacheService";
 import { useToast } from "@/hooks/use-toast";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter } from "react-router";
 
 // Mock the dependencies
 vi.mock("@/api", () => ({
