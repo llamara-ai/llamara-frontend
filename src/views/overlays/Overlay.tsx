@@ -1,37 +1,33 @@
-import { useTranslation } from "react-i18next";
 import Header from "./Header";
 import Sidebar from "./sidebar/Sidebar";
-import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router";
 import Footer from "./Footer";
 import { useRef } from "react";
 import useElementSize from "@/hooks/useElementSize.ts";
+import { useGetSessions } from "@/services/GetSessionsService";
 
 interface OverlayProps {
   children: React.ReactNode;
 }
 
 export function Overlay({ children }: Readonly<OverlayProps>) {
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  const { t } = useTranslation();
   const headerRef = useRef<HTMLDivElement>(null);
   const footerRef = useRef<HTMLDivElement>(null);
   const headerSize = useElementSize(headerRef);
   const footerSize = useElementSize(footerRef);
+  const { setActiveSessionId } = useGetSessions();
 
-  const onClickNewSession = async () => {
-    await navigate("/", { replace: true }); // Remove session id from URL
-    toast({
-      variant: "default",
-      title: t("chatbot.newSessionCreate"),
-    });
+  const onClickNewSession = () => {
+    setActiveSessionId(null);
   };
 
   return (
     <Sidebar>
       <div ref={headerRef} className="sticky top-0 z-40 ">
-        <Header onClickNewSession={() => void onClickNewSession()} />
+        <Header
+          onClickNewSession={() => {
+            onClickNewSession();
+          }}
+        />
       </div>
       <div
         className="mx-4"

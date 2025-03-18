@@ -15,7 +15,6 @@ import { SidebarSessionsGroup, SidebarSessionList } from "./SidebarSessionList";
 import { SidebarModelSelector as ChatbotSidebarHeader } from "./SidebarModelSelector";
 import { useToast } from "@/hooks/use-toast";
 import { groupSessionsByDateForNavbar } from "@/lib/groupSessionsByDateForNavbar";
-import { useNavigate } from "react-router";
 import { useUserContext } from "@/services/UserContextService";
 import { useGetSessions } from "@/services/GetSessionsService";
 import LoadingAnimation from "@/components/loading-animation";
@@ -101,11 +100,10 @@ const GetSessions = ({
 }) => {
   const { t } = useTranslation();
   const { user } = useUserContext();
-
-  const navigate = useNavigate();
+  const { setActiveSessionId } = useGetSessions();
 
   const onSelectSession = (sessionId: string) => {
-    void navigate(`/?session=${sessionId}`);
+    setActiveSessionId(sessionId);
   };
 
   return (

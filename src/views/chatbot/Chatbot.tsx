@@ -38,13 +38,14 @@ export default function Chatbot() {
     handlePromptAndMessages,
   } = useChatMessages();
 
+  // Set active session id from URL at load time
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const sessionId = queryParams.get("session");
     setPdfKnowledgeId(null);
     setPdfFileName(null);
     setActiveSessionId(sessionId);
-  }, [location]);
+  }, []);
 
   // collapse sidebar if PDF is opened and screen is resized to a smaller size
   useEffect(() => {
