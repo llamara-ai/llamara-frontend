@@ -74,3 +74,11 @@ jobs:
           name: vitest-coverage
           path: |
             coverage
+
+      - name: Trigger distro build
+        if: github.repository == 'llamara-ai/llamara-frontend' && github.event_name != 'pull_request' && github.ref_name == 'main'
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.DISTRO_DISPATCH_BUILD_TOKEN }}
+          repository: llamara-ai/llamara-distro
+          event-type: build
