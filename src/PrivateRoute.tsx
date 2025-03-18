@@ -1,5 +1,5 @@
 import { useContext, useEffect } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router";
 import LoadingView from "./views/loading/Loading";
 import { AuthContext, IAuthContext } from "react-oauth2-code-pkce";
 import { useUserContext } from "@/services/UserContextService.tsx";

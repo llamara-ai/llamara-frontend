@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import Header from "./Header";
 import Sidebar from "./sidebar/Sidebar";
 import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import Footer from "./Footer";
 import { useRef } from "react";
 import useElementSize from "@/hooks/useElementSize.ts";

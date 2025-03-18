@@ -3,7 +3,7 @@ import {
   Navigate,
   Route,
   Routes as RoutesReact,
-} from "react-router-dom";
+} from "react-router";
 import LoginView from "./views/security/LoginView";
 import Knowledge from "./views/knowledge/Knowledge";
 import Chatbot from "./views/chatbot/Chatbot";
