@@ -4,6 +4,6 @@ export function navigateToSession(
   sessionId: string | null,
   navigate: NavigateFunction,
 ) {
-  if (sessionId === null) void navigate("/", { replace: true });
-  else void navigate(`/?session=${sessionId}`, { replace: true });
+  if (sessionId === null) void navigate("/");
+  else void navigate(`/?session=${sessionId}`);
 }

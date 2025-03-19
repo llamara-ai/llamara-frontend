@@ -38,7 +38,7 @@ export default function SidebarMainNav() {
           <SidebarMenuItem>
             <SidebarMenuButton
               onClick={() => {
-                void navigate("/knowledge", { replace: true });
+                void navigate("/knowledge");
               }}
               className={activePage === "knowledge" ? "bg-secondary" : ""}
             >
