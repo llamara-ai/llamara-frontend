@@ -44,10 +44,7 @@ export default function useChatMessages(): UseChatMessagesResponse {
   useEffect(() => {
     const resetChatMessages = async () => {
       // Reset chat messages when sessionID changes
-      if (
-        activeSessionIdRef.current !== previousSessionId.current &&
-        !activeSessionIsNew
-      ) {
+      if (!activeSessionIsNew) {
         setLoadingResponse(false);
         setError(null);
         setCurrentChatMessages([]);

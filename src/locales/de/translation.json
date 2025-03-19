@@ -17,7 +17,6 @@
     "deleteSessionSuccessful": "Die Session wurde erfolgreich gelöscht",
     "errorModelNotAvailable": "Das ausgewählte Modell ist nicht mehr verfügbar",
     "newSession": "Erzeuge neue Session",
-    "newSessionCreate": "Neue Sitzung erstellt",
     "noSessionLabel": "Keine Session Label verfügbar",
     "chat": {
       "newChat": {

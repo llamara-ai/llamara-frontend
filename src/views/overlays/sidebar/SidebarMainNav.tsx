@@ -6,6 +6,8 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import useCurrentPage from "@/hooks/useCurrentPage";
+import { navigateToSession } from "@/lib/navigateToSession";
+import { useGetSessions } from "@/services/GetSessionsService";
 import { useUserContext } from "@/services/UserContextService";
 import { t } from "i18next";
 import { Bot, HardDriveUpload } from "lucide-react";
@@ -16,6 +18,7 @@ export default function SidebarMainNav() {
   const { open } = useSidebar();
   const navigate = useNavigate();
   const { user } = useUserContext();
+  const { activeSessionId } = useGetSessions();
 
   return (
     <SidebarGroup className="pt-4">
@@ -23,7 +26,7 @@ export default function SidebarMainNav() {
         <SidebarMenuItem>
           <SidebarMenuButton
             onClick={() => {
-              void navigate("/");
+              navigateToSession(activeSessionId, navigate);
             }}
             className={activePage === "chatbot" ? "bg-secondary" : ""}
           >

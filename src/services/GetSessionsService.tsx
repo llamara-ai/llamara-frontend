@@ -12,13 +12,18 @@ import { useToast } from "@/hooks/use-toast";
 import { default as useRefState } from "react-usestateref";
 import useCurrentPage from "@/hooks/useCurrentPage";
 import { useNavigate } from "react-router";
+import { navigateToSession } from "@/lib/navigateToSession";
 
 export interface UseGetSessionsApiResponse {
   sessions: Session[];
   activeSessionId: string | null;
   activeSessionIdRef: React.MutableRefObject<string | null>;
   activeSessionIsNew: boolean;
-  setActiveSessionId: (sessionId: string | null, isNew?: boolean) => void;
+  setActiveSessionId: (
+    sessionId: string | null,
+    isNew?: boolean,
+    redirect?: boolean,
+  ) => void;
   appendSessionLocal: (session: Session | null) => void;
   updateSessionLabelLocal: (sessionId: string, newLabel: string) => void;
   deleteSessionLocal: (sessionId: string) => void;
@@ -109,9 +114,17 @@ export default function GetSessionsProvider({
     );
   };
 
-  const setActiveSessionIdFunc = (sessionId: string | null, isNew = false) => {
+  // Set active session id and update URL with the new selected session
+  const setActiveSessionIdFunc = (
+    sessionId: string | null,
+    isNew = false,
+    redirect = true,
+  ) => {
     activeSessionIsNewRef.current = isNew;
     setActiveSessionId(sessionId);
+    if (redirect) {
+      navigateToSession(sessionId, navigate);
+    }
   };
 
   const value = useMemo(
