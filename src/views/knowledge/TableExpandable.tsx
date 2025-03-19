@@ -1,6 +1,6 @@
 import { Knowledge } from "@/api";
 import { formatDate } from "date-fns";
-import { translatePermissions } from "./KnowledgePermissions";
+import { translateUser, translatePermissions } from "./KnowledgePermissions";
 import { t } from "i18next";
 
 interface TableAccordionProps {
@@ -50,7 +50,7 @@ export default function TableAccordion({
           {listOfPermissionKeys().map((key, index) => {
             return (
               <span key={key}>
-                <span className="font-semibold">{key}: </span>
+                <span className="font-semibold">{translateUser(key)}: </span>
                 <span>
                   {knowledge.permissions
                     ? translatePermissions(knowledge.permissions[key])
