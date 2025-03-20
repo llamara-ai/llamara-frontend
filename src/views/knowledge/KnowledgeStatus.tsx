@@ -12,7 +12,6 @@ export default function KnowledgeStatus({
 }: Readonly<KnowledgeStatusProps>) {
   const { t } = useTranslation();
 
-  const commonClasses = "inline-flex items-center rounded-full h-8 w-28";
   const iconClasses = "w-6 h-6 rounded-full mr-2";
 
   const statusConfig = {
@@ -52,7 +51,9 @@ export default function KnowledgeStatus({
     statusConfig[knowledge?.ingestionStatus ?? "undefined"];
 
   return (
-    <div className={`${commonClasses} ${bgColor} ${textColor}`}>
+    <div
+      className={`inline-flex items-center rounded-full h-8 w-fit pr-2 ${bgColor} ${textColor}`}
+    >
       <div className="w-8 flex justify-center ml-1">{icon}</div>
       <span className="font-medium text-sm">{text}</span>
     </div>
