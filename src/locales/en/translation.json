@@ -96,6 +96,7 @@
         "unknown": "Unknown"
       },
       "permission": {
+        "administrator": "Administrator",
         "owner": "Owner",
         "readwrite": "Read/Write",
         "readonly": "Read",
