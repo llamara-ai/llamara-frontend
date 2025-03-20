@@ -65,7 +65,7 @@ describe("CacheProvider", () => {
 
     act(() => {
       // Set cache with 10 seconds TTL (default)
-      result.current.setCache("shortLived", "will expire");
+      result.current.setCache("shortLived", "will expire", 10);
     });
 
     expect(result.current.getCache("shortLived")).toBe("will expire");

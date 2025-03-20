@@ -156,11 +156,7 @@ describe("GetKnowledgeListProvider", () => {
     // Wait for the API call to complete
     await waitFor(() => {
       expect(getAllKnowledge).toHaveBeenCalledTimes(1);
-      expect(mockSetCache).toHaveBeenCalledWith(
-        "allKnowledge",
-        mockKnowledge,
-        120,
-      );
+      expect(mockSetCache).toHaveBeenCalledWith("allKnowledge", mockKnowledge);
       expect(contextValue.allKnowledge).toEqual(mockKnowledge);
     });
   });
@@ -246,7 +242,7 @@ describe("GetKnowledgeListProvider", () => {
     expect(mockSetCache).toHaveBeenCalledWith(
       "allKnowledge",
       expectedKnowledge,
-      120,
+      null,
     );
   });
 
@@ -317,7 +313,7 @@ describe("GetKnowledgeListProvider", () => {
     expect(mockSetCache).toHaveBeenCalledWith(
       "allKnowledge",
       expectedKnowledge,
-      120,
+      null,
     );
   });
 
@@ -442,7 +438,7 @@ describe("GetKnowledgeListProvider", () => {
     expect(mockSetCache).toHaveBeenCalledWith(
       "allKnowledge",
       expectedKnowledge,
-      120,
+      null,
     );
   });
 
