@@ -153,7 +153,7 @@ const PdfToolbar: React.FC<PdfToolbarProps> = ({
         )}
       </div>
 
-      {collapseButtonsBreakpoint > 0 && width > collapseButtonsBreakpoint ? (
+      {width >= collapseButtonsBreakpoint ? (
         <PdfToolbarTools
           onDownload={onDownload}
           onPrint={onPrint}
