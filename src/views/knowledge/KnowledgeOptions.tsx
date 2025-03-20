@@ -25,7 +25,7 @@ import { useGetKnowledgeList } from "@/services/GetKnowledgeListService";
 import useFileStatus from "@/hooks/useFileStatus";
 import useRetryIngestionApi from "@/hooks/api/useRetryIngestionApi";
 import { useUserContext } from "@/services/UserContextService";
-import { USER_ANY } from "./dialog/PermissionDialog";
+import { USER_ANY } from "@/views/knowledge/KnowledgePermissions.tsx";
 
 interface KnowledgeOptionsProps {
   onClickTagEdit: (knowledgeId: string | null) => void;

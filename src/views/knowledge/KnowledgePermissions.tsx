@@ -2,11 +2,12 @@ import { Knowledge, Permission } from "@/api";
 import { useUserContext } from "@/services/UserContextService";
 import { t } from "i18next";
 import { useTranslation } from "react-i18next";
-import { USER_ANY } from "./dialog/PermissionDialog";
 
 interface KnowledgePermissionsProps {
   knowledge: Readonly<Knowledge | undefined>;
 }
+
+export const USER_ANY = "*";
 
 export default function KnowledgePermissions({
   knowledge,
@@ -50,6 +51,10 @@ export function compareWithAnyPermission(
     return "READONLY";
   }
   return "NONE";
+}
+
+export function translateUser(user: string) {
+  return user === USER_ANY ? t("user.any") : user;
 }
 
 export function translatePermissions(permission: Permission) {

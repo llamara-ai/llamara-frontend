@@ -22,7 +22,7 @@ import { useGetKnowledgeList } from "@/services/GetKnowledgeListService";
 import useKnowledgePermissionApi from "@/hooks/api/useKnowledgePermissionApi";
 import { Knowledge } from "@/api";
 import { useUserContext } from "@/services/UserContextService";
-import { compareWithAnyPermission } from "../KnowledgePermissions";
+import { compareWithAnyPermission, USER_ANY } from "../KnowledgePermissions";
 
 export type Permission = "OWNER" | "READWRITE" | "READONLY" | "NONE";
 
@@ -30,8 +30,6 @@ interface PermissionsDialogProps {
   knowledgeId: string | null;
   onClose: () => void;
 }
-
-export const USER_ANY = "*";
 
 export default function PermissionsDialog({
   knowledgeId,
