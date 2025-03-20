@@ -36,6 +36,7 @@ import { useUserContext } from "@/services/UserContextService";
 import { AuthContext } from "react-oauth2-code-pkce";
 import { useNavigate } from "react-router";
 import { LanguageLabels } from "@/locales/Languages.ts";
+import capitalizeFirstLetter from "@/lib/capitalizeFirstLetter";
 
 export function SidebarUser() {
   const { t, i18n } = useTranslation();
@@ -51,8 +52,9 @@ export function SidebarUser() {
 
   const loggedIn = token.length > 0;
 
-  const username = user?.name ?? user?.username ?? t("user.anonymous");
-  const name = user?.name ?? username;
+  // Use user name if available, alternatively use username or default to "Anonymous"
+  const name =
+    user?.name ?? capitalizeFirstLetter(user?.username) ?? t("user.anonymous");
   const userRole = getUserRole(user?.roles);
   const changeLanguageHandler = (lang: string) => {
     void i18n.changeLanguage(lang);
@@ -87,7 +89,7 @@ export function SidebarUser() {
             >
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarFallback className="rounded-lg">
-                  {getInitials(username)}
+                  {getInitials(name)}
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
@@ -108,7 +110,7 @@ export function SidebarUser() {
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarFallback className="rounded-lg">
-                    {getInitials(username)}
+                    {getInitials(name)}
                   </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
