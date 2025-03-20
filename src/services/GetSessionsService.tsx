@@ -65,7 +65,7 @@ export default function GetSessionsProvider({
           setError(null);
           if (response.data) {
             setSessions(response.data);
-            setCache("sessions", response.data, 120);
+            setCache("sessions", response.data);
           } else {
             setSessions([]);
           }

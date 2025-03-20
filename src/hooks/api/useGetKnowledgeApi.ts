@@ -64,7 +64,7 @@ export default function useGetKnowledgeApi({
             setCacheNotFound(cacheNotFoundKey, true, null);
             throw new Error("Knowledge not found");
           } else {
-            setCache(cacheKey, response.data, 120);
+            setCache(cacheKey, response.data);
           }
           setKnowledge(response.data);
         })
