@@ -108,7 +108,7 @@
       "delete": "Löschen",
       "update": "Datei aktualisieren",
       "actions": "Aktionen",
-      "retry": "Erneut ingestion starten",
+      "retry": "Verarbeitung erneut versuchen",
       "editTags": "Tags bearbeiten",
       "editPermissions": "Zugriffsrechte bearbeiten",
       "noPermission": "Keine Berechtigungen"
