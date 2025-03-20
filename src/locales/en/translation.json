@@ -108,7 +108,7 @@
       "delete": "Delete",
       "update": "Update file",
       "actions": "Actions",
-      "retry": "Retry ingestion",
+      "retry": "Retry processing",
       "editTags": "Edit tags",
       "editPermissions": "Edit permissions",
       "noPermission": "No permissions"

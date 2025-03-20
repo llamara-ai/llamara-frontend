@@ -103,6 +103,16 @@ export default function KnowledgeOptions({
 
             <DropdownMenuSeparator />
 
+            {knowledge.ingestionStatus === "FAILED" && (
+              <DropdownMenuItem
+                onClick={() => {
+                  void handleRetryIngestion();
+                }}
+              >
+                <RefreshCw className="mr-2 h-4 w-4" />
+                {t("knowledgePage.options.retry")}
+              </DropdownMenuItem>
+            )}
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
                 <DropdownMenuItem
@@ -134,16 +144,6 @@ export default function KnowledgeOptions({
         ) : (
           <DropdownMenuItem disabled>
             {t("knowledgePage.options.noPermission")}
-          </DropdownMenuItem>
-        )}
-        {knowledge.ingestionStatus === "FAILED" && (
-          <DropdownMenuItem
-            onClick={() => {
-              void handleRetryIngestion();
-            }}
-          >
-            <RefreshCw className="mr-2 h-4 w-4" />
-            {t("knowledgePage.options.retry")}
           </DropdownMenuItem>
         )}
       </DropdownMenuContent>
