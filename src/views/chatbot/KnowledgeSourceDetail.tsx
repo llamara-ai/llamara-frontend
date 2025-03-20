@@ -9,7 +9,10 @@ import { Badge } from "@/components/ui/badge";
 import { HoverCardContent } from "@/components/ui/hover-card";
 import { formatDate } from "@/lib/formatDate";
 import { t } from "i18next";
-import { translatePermissions } from "../knowledge/KnowledgePermissions";
+import {
+  translatePermissions,
+  translateUser,
+} from "../knowledge/KnowledgePermissions";
 import { HoverProps } from "./KnowledgeSource";
 
 interface KnowledgeCardProps {
@@ -55,7 +58,7 @@ export function KnowledgeSourceDetail({
                   {Object.entries(knowledge.permissions).map(([key, value]) => (
                     <li
                       key={key}
-                    >{`${key}: ${translatePermissions(value)}`}</li>
+                    >{`${translateUser(key)}: ${translatePermissions(value)}`}</li>
                   ))}
                 </ul>
               ) : (
