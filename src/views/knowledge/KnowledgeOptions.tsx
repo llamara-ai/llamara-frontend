@@ -40,7 +40,7 @@ export default function KnowledgeOptions({
   knowledge,
 }: Readonly<KnowledgeOptionsProps>) {
   const { t } = useTranslation();
-  const { user } = useUserContext();
+  const { user, role } = useUserContext();
   const { handleDeleteKnowledge } = useDeleteKnowledgeApi();
   const { deleteLocalKnowledge } = useGetKnowledgeList();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -60,12 +60,13 @@ export default function KnowledgeOptions({
     await registerFiles([knowledge.id]);
   }
 
-  const hasUserPermission = () => {
+  const hasUserWritePermissions = () => {
+    if (role === "admin") return true;
     if (!knowledge.permissions) return false;
     if (knowledge.permissions[USER_ANY] === "READWRITE") return true;
     if (!user?.username) return false;
     return (
-      knowledge.permissions[user.username] === "READONLY" ||
+      knowledge.permissions[user.username] === "READWRITE" ||
       knowledge.permissions[user.username] === "OWNER"
     );
   };
@@ -81,7 +82,7 @@ export default function KnowledgeOptions({
         <DropdownMenuLabel>
           {t("knowledgePage.options.actions")}
         </DropdownMenuLabel>
-        {hasUserPermission() ? (
+        {hasUserWritePermissions() ? (
           <>
             <DropdownMenuItem
               onClick={() => {

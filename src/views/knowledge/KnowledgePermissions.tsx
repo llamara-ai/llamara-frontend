@@ -13,7 +13,7 @@ export default function KnowledgePermissions({
   knowledge,
 }: Readonly<KnowledgePermissionsProps>) {
   const { t } = useTranslation();
-  const { user } = useUserContext();
+  const { user, role } = useUserContext();
 
   if (!knowledge?.permissions || !user?.username) {
     return (
@@ -25,9 +25,11 @@ export default function KnowledgePermissions({
 
   return (
     <div className="ml-4">
-      {translatePermissions(
-        compareWithAnyPermission(knowledge.permissions, user.username),
-      )}
+      {role === "admin"
+        ? t("knowledgePage.table.permission.administrator")
+        : translatePermissions(
+            compareWithAnyPermission(knowledge.permissions, user.username),
+          )}
     </div>
   );
 }

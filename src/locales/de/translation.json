@@ -96,6 +96,7 @@
         "pending": "Läuft"
       },
       "permission": {
+        "administrator": "Administrator",
         "owner": "Besitzer",
         "readwrite": "Lesen/Schreiben",
         "readonly": "Lesen",

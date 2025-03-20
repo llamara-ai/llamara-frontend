@@ -18,7 +18,11 @@ export interface UserContext {
 
   user: UserInfoDto | null;
   setUser: (info: UserInfoDto | null) => void;
+  role: UserRole | null;
+  setRole: (role: UserRole | null) => void;
 }
+
+export type UserRole = "admin" | "user";
 
 const UserContext = createContext<UserContext | undefined>(undefined);
 
@@ -28,10 +32,20 @@ export const UserContextProvider: FC<{ children: ReactNode }> = ({
   const [ready, setReady] = useState(false);
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<UserInfoDto | null>(null);
+  const [role, setRole] = useState<UserRole | null>(null);
 
   const value = useMemo(
-    () => ({ loading, setLoading, ready, setReady, user, setUser }),
-    [loading, setLoading, ready, setReady, user, setUser],
+    () => ({
+      loading,
+      setLoading,
+      ready,
+      setReady,
+      user,
+      setUser,
+      role,
+      setRole,
+    }),
+    [loading, setLoading, ready, setReady, user, setUser, role, setRole],
   );
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
@@ -47,7 +61,7 @@ export const useUserContext = () => {
 
 export const useSetupUserContext = () => {
   const { token, loginInProgress } = useContext(AuthContext);
-  const { setReady, setUser } = useUserContext();
+  const { setReady, setUser, setRole } = useUserContext();
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
@@ -81,6 +95,7 @@ export const useSetupUserContext = () => {
           throw new Error("Failed to get user info");
         }
         setUser(response.data);
+        setRole(getUserRole(response.data.roles));
         setReady(true);
         setLoading(false);
       })
@@ -95,3 +110,13 @@ export const useSetupUserContext = () => {
       });
   }, [token, loginInProgress]);
 };
+
+function getUserRole(roles: string[] | undefined): UserRole | null {
+  if (!roles) {
+    return null;
+  }
+  if (roles.includes("admin")) {
+    return "admin";
+  }
+  return "user";
+}

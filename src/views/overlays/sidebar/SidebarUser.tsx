@@ -45,7 +45,7 @@ export function SidebarUser() {
   const [isDeleteUserDialogOpen, setIsDeleteUserDialogOpen] =
     useState<boolean>(false);
   const { toast } = useToast();
-  const { user } = useUserContext();
+  const { user, role } = useUserContext();
   const navigate = useNavigate();
   const { token, logOut } = useContext(AuthContext);
 
@@ -53,7 +53,6 @@ export function SidebarUser() {
 
   const username = user?.name ?? user?.username ?? t("user.anonymous");
   const name = user?.name ?? username;
-  const userRole = getUserRole(user?.roles);
   const changeLanguageHandler = (lang: string) => {
     void i18n.changeLanguage(lang);
   };
@@ -113,9 +112,9 @@ export function SidebarUser() {
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">{name}</span>
-                  {userRole !== null && (
+                  {role !== null && (
                     <span className="truncate text-xs">
-                      {t(`role.${userRole}`)}
+                      {t(`role.${role}`)}
                     </span>
                   )}
                 </div>
@@ -224,13 +223,3 @@ export function SidebarUser() {
     </SidebarMenu>
   );
 }
-
-const getUserRole = (roles: string[] | undefined): string | null => {
-  if (!roles) {
-    return null;
-  }
-  if (roles.includes("admin")) {
-    return "admin";
-  }
-  return "user";
-};
