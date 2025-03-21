@@ -112,7 +112,10 @@ export function KnowledgeSource({
           </span>
         )}
 
-        <KnowledgeSourceDetail hoverProps={hoverProps} />
+        <KnowledgeSourceDetail
+          onOpenFile={() => void handleFileSource()}
+          hoverProps={hoverProps}
+        />
       </HoverCard>
     </div>
   );

@@ -14,12 +14,16 @@ import {
   translateUser,
 } from "../knowledge/KnowledgePermissions";
 import { HoverProps } from "./KnowledgeSource";
+import { FileSymlink } from "lucide-react";
+import { Button } from "@/components/ui/button.tsx";
 
 interface KnowledgeCardProps {
+  onOpenFile: () => void;
   hoverProps: HoverProps;
 }
 
 export function KnowledgeSourceDetail({
+  onOpenFile,
   hoverProps,
 }: Readonly<KnowledgeCardProps>) {
   const knowledge = hoverProps.knowledge;
@@ -30,10 +34,15 @@ export function KnowledgeSourceDetail({
     <HoverCardContent className="w-[500px] p-6 max-h-[450px] items-center justify-center overflow-auto">
       <CardHeader className="p-0 pb-4">
         {knowledge && (
-          <>
-            <CardTitle className="underline">{knowledge.label}</CardTitle>
-            <CardDescription>ID: {knowledge.id}</CardDescription>
-          </>
+          <div className="flex flex-row justify-between">
+            <div>
+              <CardTitle className="underline">{knowledge.label}</CardTitle>
+              <CardDescription>ID: {knowledge.id}</CardDescription>
+            </div>
+            <Button onClick={onOpenFile} className="h-10 w-10">
+              <FileSymlink className="h-8 w-8" />
+            </Button>
+          </div>
         )}
       </CardHeader>
       <CardContent className="grid gap-4 p-0">
