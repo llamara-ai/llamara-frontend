@@ -43,7 +43,7 @@ export default function useGetHistoryApi(): UseGetHistoryApiResponse {
         const response = await getHistory(options);
         if (response.data) {
           setError(null);
-          setCache("history" + sessionId, response.data, 120);
+          setCache("history" + sessionId, response.data);
           setLoading(false);
           setLastSessionId(sessionId);
           return response.data;

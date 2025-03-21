@@ -40,7 +40,7 @@ export default function CacheProvider<T>({
 
   // ttl in seconds
   // ttl = null means cache forever, so no expiry
-  function setCache(key: string, value: T, ttl: number | null = 10) {
+  function setCache(key: string, value: T, ttl: number | null = null) {
     if (ttl === null) {
       map.set(key, {
         expiry: null,

@@ -28,10 +28,10 @@ export default function useAvailableModels(): UseAvailableModelsResponse {
       getModels()
         .then((response) => {
           if (response.data) {
-            setCache("models", response.data, 120);
+            setCache("models", response.data);
             setModels(response.data);
           } else {
-            setCache("models", [], 120);
+            setCache("models", []);
             setModels([]);
           }
         })

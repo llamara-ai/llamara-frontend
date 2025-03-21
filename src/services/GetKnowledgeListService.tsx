@@ -48,7 +48,7 @@ export default function GetKnowledgeListProvider({
         const response = await getAllKnowledge();
         setError(null);
         if (response.data) {
-          setCache("allKnowledge", response.data, 120);
+          setCache("allKnowledge", response.data);
           setAllKnowledge(response.data);
         }
       } catch (error) {
@@ -72,7 +72,7 @@ export default function GetKnowledgeListProvider({
       (k) => k.id !== knowledge.id,
     );
     setAllKnowledge(updatedKnowledge);
-    setCache("allKnowledge", updatedKnowledge, 120);
+    setCache("allKnowledge", updatedKnowledge);
   };
 
   // add multiple knowledge to local state
@@ -92,7 +92,7 @@ export default function GetKnowledgeListProvider({
     }
     const updatedKnowledge = allKnowledgeRef.current.concat(knowledgeToAdd);
     setAllKnowledge(updatedKnowledge);
-    setCache("allKnowledge", updatedKnowledge, 120);
+    setCache("allKnowledge", updatedKnowledge);
   };
 
   // update Knowledge in local state
@@ -107,7 +107,7 @@ export default function GetKnowledgeListProvider({
     }
     const updatedKnowledges = filteredKnowledges.concat(newKnowledgeArray);
     setAllKnowledge(updatedKnowledges);
-    setCache("allKnowledge", updatedKnowledges, 120);
+    setCache("allKnowledge", updatedKnowledges);
   };
 
   const contextValue = useMemo(
