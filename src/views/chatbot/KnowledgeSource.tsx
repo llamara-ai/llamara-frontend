@@ -4,7 +4,9 @@ import useDownloadFile from "@/hooks/useDownloadFile";
 import { Knowledge, RagSourceRecord } from "@/api";
 import { HoverCard, HoverCardTrigger } from "@/components/ui/hover-card";
 import { KnowledgeSourceDetail } from "./KnowledgeSourceDetail";
-import { useState } from "react";
+import React, { useState } from "react";
+import { useIsTouch } from "@/hooks/useIsTouch.ts";
+import { useHandleClickOutside } from "@/hooks/useHandleClickOutside.ts";
 
 interface KnowledgeSourceProps {
   knowledgeId: string | null;
@@ -25,12 +27,17 @@ export function KnowledgeSource({
   openPdf,
 }: Readonly<KnowledgeSourceProps>) {
   const { t } = useTranslation();
-  const { downloadFile } = useDownloadFile();
+  const isTouch = useIsTouch();
+  const [open, setOpen] = useState(false);
+  const ref = useHandleClickOutside<HTMLDivElement>(() => {
+    setOpen(false);
+  });
   const [hoverProps, setHoverProps] = useState<HoverProps>({
     source: null,
     knowledge: null,
   });
 
+  const { downloadFile } = useDownloadFile();
   const { knowledge, error } = useGetKnowledgeApi({ uuid: knowledgeId });
 
   const getDocType = () => {
@@ -57,7 +64,21 @@ export function KnowledgeSource({
     (source) => source.embeddingId === embeddingId,
   );
 
-  const handleHover = () => {
+  const handleClick = () => {
+    if (isTouch) {
+      return;
+    }
+    void handleFileSource();
+  };
+
+  const handleTouch = (event: React.TouchEvent) => {
+    event.preventDefault();
+    handleHover();
+    setOpen(true);
+  };
+
+  const handleHover = (event?: React.MouseEvent) => {
+    event?.preventDefault();
     setHoverProps({
       knowledge: knowledge ?? null,
       source: sourceContent ?? null,
@@ -73,23 +94,29 @@ export function KnowledgeSource({
   }
 
   return (
-    <HoverCard>
-      {knowledge?.label ? (
-        <HoverCardTrigger onMouseEnter={handleHover}>
-          <span
-            onClick={() => void handleFileSource()}
-            className="inline-flex items-center px-2 py-0.5 rounded border text-sm font-medium text-secondary-foreground hover:bg-foreground/20 bg-foreground/5"
-          >
-            {getDocType()} | {knowledge.label}
+    <div ref={ref}>
+      <HoverCard open={isTouch ? open : undefined}>
+        {knowledge?.label ? (
+          <HoverCardTrigger onMouseEnter={handleHover}>
+            <span
+              onClick={handleClick}
+              onTouchStart={handleTouch}
+              className="inline-flex items-center px-2 py-0.5 rounded border text-sm font-medium text-secondary-foreground hover:bg-foreground/20 bg-foreground/5"
+            >
+              {getDocType()} | {knowledge.label}
+            </span>
+          </HoverCardTrigger>
+        ) : (
+          <span className="inline-flex items-center px-2 py-0.5 rounded border text-sm font-medium text-secondary-foreground hover:bg-foreground/20 bg-foreground/5">
+            {getDocType()} | {t("chatbot.chat.source.loading")}
           </span>
-        </HoverCardTrigger>
-      ) : (
-        <span className="inline-flex items-center px-2 py-0.5 rounded border text-sm font-medium text-secondary-foreground hover:bg-foreground/20 bg-foreground/5">
-          {getDocType()} | {t("chatbot.chat.source.loading")}
-        </span>
-      )}
+        )}
 
-      <KnowledgeSourceDetail hoverProps={hoverProps} />
-    </HoverCard>
+        <KnowledgeSourceDetail
+          onOpenFile={() => void handleFileSource()}
+          hoverProps={hoverProps}
+        />
+      </HoverCard>
+    </div>
   );
 }
