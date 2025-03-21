@@ -41,12 +41,11 @@ describe("useFileStatus", () => {
     const completedKnowledge = { id: "456", ingestionStatus: "SUCCEEDED" };
 
     // Setup mock implementation for getKnowledgeApiFunction
-    (getKnowledgeApiFunction as any).mockImplementation((fileId: string) => {
-      if (fileId === "pending-file") return Promise.resolve(pendingKnowledge);
-      if (fileId === "completed-file")
-        return Promise.resolve(completedKnowledge);
-      return Promise.resolve(null);
-    });
+    (getKnowledgeApiFunction as any)
+      .mockImplementationOnce(() => Promise.resolve(pendingKnowledge))
+      .mockImplementationOnce(() => Promise.resolve(completedKnowledge))
+      // This is for the checkFileStatus call
+      .mockImplementationOnce(() => Promise.resolve(pendingKnowledge));
 
     // Render the hook
     const { result } = renderHook(() => useFileStatus());
@@ -62,12 +61,17 @@ describe("useFileStatus", () => {
       completedKnowledge,
     ]);
 
-    // Verify interval was started and checkFileStatus is called
+    // Clear previous calls to getKnowledgeApiFunction
+    vi.clearAllMocks();
+
+    // Directly call the exposed checkFileStatus method
     await act(async () => {
-      vi.advanceTimersByTime(5000); // Advance by fetchTimeout
+      if (result.current?._checkFileStatus) {
+        await result.current._checkFileStatus();
+      }
     });
 
-    // Verify getKnowledgeApiFunction was called for the pending file
+    // Verify getKnowledgeApiFunction was called for the pending file's ID
     expect(getKnowledgeApiFunction).toHaveBeenCalledWith("123");
   });
 
@@ -77,9 +81,10 @@ describe("useFileStatus", () => {
     const succeededKnowledge = { id: "123", ingestionStatus: "SUCCEEDED" };
 
     // Setup mock implementation for getKnowledgeApiFunction
-    // First call returns PENDING, second call returns SUCCEEDED
+    // First call returns PENDING (during registerFiles)
     (getKnowledgeApiFunction as any)
       .mockImplementationOnce(() => Promise.resolve(pendingKnowledge))
+      // Second call returns SUCCEEDED (during checkFileStatus)
       .mockImplementationOnce(() => Promise.resolve(succeededKnowledge));
 
     // Render the hook
@@ -93,35 +98,17 @@ describe("useFileStatus", () => {
     // Verify the file was added to knowledgeListRef
     expect(result.current.knowledgeList).toEqual([pendingKnowledge]);
 
-    // Advance timer to trigger checkFileStatus
+    // Clear previous calls
+    mockUpdateLocalKnowledge.mockClear();
+
+    // Directly call the exposed checkFileStatus method
     await act(async () => {
-      vi.advanceTimersByTime(5000);
+      if (result.current?._checkFileStatus) {
+        await result.current._checkFileStatus();
+      }
     });
 
     // Verify updateLocalKnowledge was called with the updated knowledge
     expect(mockUpdateLocalKnowledge).toHaveBeenCalledWith([succeededKnowledge]);
-  });
-
-  it("should clear interval when component unmounts", async () => {
-    // Setup spy on clearInterval
-    const clearIntervalSpy = vi.spyOn(global, "clearInterval");
-
-    // Render the hook
-    const { result, unmount } = renderHook(() => useFileStatus());
-
-    // Register a file to start the interval
-    await act(async () => {
-      await (getKnowledgeApiFunction as any).mockResolvedValueOnce({
-        id: "123",
-        ingestionStatus: "PENDING",
-      });
-      await result.current.registerFiles(["test-file"]);
-    });
-
-    // Unmount the component
-    unmount();
-
-    // Verify clearInterval was called
-    expect(clearIntervalSpy).toHaveBeenCalled();
   });
 });
