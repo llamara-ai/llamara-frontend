@@ -8,6 +8,8 @@ const fetchTimeout = 5000;
 export interface FileStatusResponse {
   registerFiles: (newFiles: string[]) => Promise<void>;
   knowledgeList: Knowledge[];
+  // Expose for testing only
+  _checkFileStatus?: () => Promise<void>;
 }
 
 export default function useFileStatus(): FileStatusResponse {
@@ -27,7 +29,6 @@ export default function useFileStatus(): FileStatusResponse {
       }
     }
     addLocalKnowledge(addedKnowledge);
-    startInterval();
   };
 
   const checkFileStatus = async () => {
@@ -49,21 +50,25 @@ export default function useFileStatus(): FileStatusResponse {
   };
 
   useEffect(() => {
+    if (knowledgeListRef.current.length > 0) {
+      intervalRef.current = setInterval(() => {
+        checkFileStatus().catch(console.error);
+      }, fetchTimeout);
+    } else if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
-        intervalRef.current = null;
       }
     };
-  }, [knowledgeListRef.current]);
+  }, [knowledgeListRef.current.length]);
 
-  const startInterval = () => {
-    if (!intervalRef.current) {
-      intervalRef.current = setInterval(() => {
-        void checkFileStatus();
-      }, fetchTimeout);
-    }
+  return {
+    registerFiles,
+    knowledgeList: knowledgeListRef.current,
+    _checkFileStatus: checkFileStatus,
   };
-
-  return { registerFiles, knowledgeList: knowledgeListRef.current };
 }
