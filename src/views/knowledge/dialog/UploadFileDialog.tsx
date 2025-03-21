@@ -136,7 +136,12 @@ export default function UploadFileDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={(open) => !open && onClose()}>
+    <Dialog
+      open={open}
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+    >
       <DialogOverlay className="fixed inset-0 z-50 bg-black bg-opacity-30 backdrop-blur-sm" />
       <DialogContent className="fixed left-1/2 top-1/2 z-50 grid w-full max-w-lg transform -translate-x-1/2 -translate-y-1/2 gap-4 border p-6 shadow-lg duration-200 sm:rounded-lg">
         <DialogTitle>

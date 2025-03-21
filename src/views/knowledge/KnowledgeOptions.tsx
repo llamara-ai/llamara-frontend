@@ -130,7 +130,7 @@ export default function KnowledgeOptions({
                 onClose={() => {
                   setIsDialogOpen(false);
                 }}
-                resetSelectedFiles={!isDialogOpen}
+                open={isDialogOpen}
               />
             </Dialog>
             <DropdownMenuItem

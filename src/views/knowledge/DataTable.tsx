@@ -104,7 +104,11 @@ export default function DataTable({
           }}
           className="max-w-sm"
         />
-        <Button onClick={() => setUploadDialogOpen(true)}>
+        <Button
+          onClick={() => {
+            setUploadDialogOpen(true);
+          }}
+        >
           <Upload />
           {t("knowledgePage.table.uploadButton")}
         </Button>
