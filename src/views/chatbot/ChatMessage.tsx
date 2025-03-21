@@ -188,13 +188,13 @@ function KnowledgeSourceRenderer({
 }: Readonly<KnowledgeSourceRendererProps>) {
   const renderContent = (content: string) => {
     // split by source references
-    const parts = content.split(/(\{[^}]*})/g);
+    const parts = content.split(/(\{[^}]*})|(\([^}]*\))/g);
 
     return parts.map((part, index) => {
       // extract knowledge_id and embedding_id from source reference using named RegEx groups
-      // the following RegEx allows optional spaces and optional quotes around keys
+      // the following RegEx allows optional spaces and optional quotes around keys and values, as well as normal brackets instead of {}
       const match =
-        /{ ?"?knowledge_id"?: ?"(?<kid>[a-fA-F0-9-]{36})", ?"?embedding_id"?: ?"(?<eid>[a-fA-F0-9-]{36})" ?}/.exec(
+        /[{(] ?"?knowledge_id"?: ?"?(?<kid>[a-fA-F0-9-]{36})"?, ?"?embedding_id"?: ?"?(?<eid>[a-fA-F0-9-]{36})"? ?[)}]/.exec(
           part,
         );
       if (match?.groups?.kid && match.groups.eid) {
