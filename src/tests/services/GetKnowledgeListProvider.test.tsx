@@ -242,7 +242,6 @@ describe("GetKnowledgeListProvider", () => {
     expect(mockSetCache).toHaveBeenCalledWith(
       "allKnowledge",
       expectedKnowledge,
-      null,
     );
   });
 
@@ -313,7 +312,6 @@ describe("GetKnowledgeListProvider", () => {
     expect(mockSetCache).toHaveBeenCalledWith(
       "allKnowledge",
       expectedKnowledge,
-      null,
     );
   });
 
@@ -438,7 +436,6 @@ describe("GetKnowledgeListProvider", () => {
     expect(mockSetCache).toHaveBeenCalledWith(
       "allKnowledge",
       expectedKnowledge,
-      null,
     );
   });
 
