@@ -87,7 +87,7 @@
     "table": {
       "label": "Label",
       "noData": "No data available",
-      "inputPlaceholder": "Search for files, tags, permissions...",
+      "inputPlaceholder": "Search for files or tags",
       "status": {
         "label": "Status",
         "succeeded": "Successful",
