@@ -22,7 +22,7 @@ export function Overlay({ children }: Readonly<OverlayProps>) {
 
   return (
     <Sidebar>
-      <div ref={headerRef} className="sticky top-0 z-40 ">
+      <div ref={headerRef} className="top-0 z-40 ">
         <Header
           onClickNewSession={() => {
             onClickNewSession();
@@ -30,14 +30,14 @@ export function Overlay({ children }: Readonly<OverlayProps>) {
         />
       </div>
       <div
-        className="mx-4"
+        className="mx-4 overflow-y-auto"
         style={{
           height: `calc(100dvh - ${headerSize.height.toString()}px - ${footerSize.height.toString()}px)`,
         }}
       >
         {children}
       </div>
-      <div ref={footerRef} className="sticky bottom-0 z-40">
+      <div ref={footerRef} className="bottom-0 z-40">
         <Footer />
       </div>
     </Sidebar>

@@ -88,6 +88,7 @@
       "label": "Label",
       "noData": "No data available",
       "inputPlaceholder": "Search for files or tags",
+      "uploadButton": "Upload new file",
       "status": {
         "label": "Status",
         "succeeded": "Successful",

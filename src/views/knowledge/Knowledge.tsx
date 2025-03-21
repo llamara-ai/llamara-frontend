@@ -1,7 +1,5 @@
 import DataTable from "./DataTable";
 import { useState } from "react";
-import { FloatingActionButton } from "@/components/ui/floating-action-button";
-import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import UploadFileDialog from "./dialog/UploadFileDialog";
 import { useGetKnowledgeList } from "@/services/GetKnowledgeListService";
 import Columns from "./Columns";
@@ -18,7 +16,7 @@ import PermissionDialog from "./dialog/PermissionDialog";
 export default function Knowledge() {
   const { allKnowledge } = useGetKnowledgeList();
   const { toast } = useToast();
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [showPdfWithUuid, setShowPdfWithUuid] = useState<string | null>(null);
   const [pdfLoading, setPdfLoading] = useState<string | null>(null);
   const { downloadFile } = useDownloadFile();
@@ -46,8 +44,8 @@ export default function Knowledge() {
   };
 
   return (
-    <div className={`flex h-full mt-0 relative`}>
-      <div className="container mx-auto py-10">
+    <div className="flex relative px-2 pb-8">
+      <div className="container">
         <DataTable
           columns={Columns(
             onClickFile,
@@ -55,24 +53,17 @@ export default function Knowledge() {
             setOpenPermissionDialogKnowledgeId,
           )}
           data={allKnowledge}
+          setUploadDialogOpen={setUploadDialogOpen}
         />
       </div>
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogTrigger asChild>
-          <FloatingActionButton
-            onClick={() => {
-              setIsDialogOpen(true);
-            }}
-          />
-        </DialogTrigger>
-        <UploadFileDialog
-          knowledge={null}
-          onClose={() => {
-            setIsDialogOpen(false);
-          }}
-          resetSelectedFiles={!isDialogOpen}
-        />
-      </Dialog>
+
+      <UploadFileDialog
+        knowledge={null}
+        onClose={() => {
+          setUploadDialogOpen(false);
+        }}
+        open={uploadDialogOpen}
+      />
 
       <TagEditDialog
         knowledgeId={openTagEditDialogKnowledgeId}
