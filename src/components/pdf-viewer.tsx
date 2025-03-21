@@ -36,6 +36,11 @@ interface SearchResult {
   text: string;
 }
 
+function highlightPattern(text: string, query: string): string {
+  const regex = new RegExp(query, "gi"); // 'g' for global, 'i' for case-insensitive
+  return text.replace(regex, (value) => `<mark>${value}</mark>`);
+}
+
 const PdfViewer = ({
   fileUuid,
   label,
@@ -51,6 +56,7 @@ const PdfViewer = ({
   const [fileInfo, setFileInfo] = useState<FileInfo | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [pdfDocument, setPdfDocument] = useState<PDFDocumentProxy | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [currentSearchIndex, setCurrentSearchIndex] = useState<number>(-1);
   const pageRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -148,10 +154,13 @@ const PdfViewer = ({
 
   const handleSearch = async (term: string) => {
     if (!term || !pdfDocument) {
+      setSearchQuery("");
       setSearchResults([]);
       setCurrentSearchIndex(-1);
       return;
     }
+
+    setSearchQuery(term);
 
     const results: SearchResult[] = [];
 
@@ -283,6 +292,11 @@ const PdfViewer = ({
     }
   }, [pageRefs, containerRef]); // Added missing dependencies
 
+  const textRenderer = useCallback(
+    (textItem: TextItem) => highlightPattern(textItem.str, searchQuery),
+    [searchQuery, searchResults, currentSearchIndex],
+  );
+
   useEffect(() => {
     const container = containerRef.current;
     if (container) {
@@ -358,6 +372,7 @@ const PdfViewer = ({
                 className="mb-4"
               >
                 <Page
+                  customTextRenderer={textRenderer}
                   pageNumber={index + 1}
                   scale={scale}
                   rotate={rotation}
