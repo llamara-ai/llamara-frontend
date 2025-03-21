@@ -1,6 +1,12 @@
-import type { ColumnDef } from "@tanstack/react-table";
+import type { Column, ColumnDef } from "@tanstack/react-table";
 import type { Knowledge } from "@/api";
-import { ArrowUp, ArrowDown, ChevronRight, ChevronDown } from "lucide-react";
+import {
+  ArrowUp,
+  ArrowDown,
+  ChevronRight,
+  ChevronDown,
+  ArrowUpDown,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import KnowledgeOptions from "./KnowledgeOptions";
 import KnowledgeStatus from "./KnowledgeStatus";
@@ -32,20 +38,22 @@ export default function Columns(
     },
     {
       accessorKey: "label",
-      header: ({ column }) => {
+      header: ({ column, table }) => {
         return (
           <Button
             variant="ghost"
             onClick={() => {
+              // Clear other column sorting when this column is sorted
+              table.getAllColumns().forEach((col) => {
+                if (col.id !== column.id) {
+                  col.clearSorting();
+                }
+              });
               column.toggleSorting(column.getIsSorted() === "asc");
             }}
           >
             {t("knowledgePage.table.label")}
-            {column.getIsSorted() === "asc" ? (
-              <ArrowUp className="ml-2 h-4 w-4" />
-            ) : (
-              <ArrowDown className="ml-2 h-4 w-4" />
-            )}
+            {SortingButton(column)}
           </Button>
         );
       },
@@ -65,20 +73,22 @@ export default function Columns(
     },
     {
       accessorKey: "permissions",
-      header: ({ column }) => {
+      header: ({ column, table }) => {
         return (
           <Button
             variant="ghost"
             onClick={() => {
+              // Clear other column sorting when this column is sorted
+              table.getAllColumns().forEach((col) => {
+                if (col.id !== column.id) {
+                  col.clearSorting();
+                }
+              });
               column.toggleSorting(column.getIsSorted() === "asc");
             }}
           >
             {t("knowledgePage.table.permission.label")}
-            {column.getIsSorted() === "asc" ? (
-              <ArrowUp className="ml-2 h-4 w-4" />
-            ) : (
-              <ArrowDown className="ml-2 h-4 w-4" />
-            )}
+            {SortingButton(column)}
           </Button>
         );
       },
@@ -96,20 +106,22 @@ export default function Columns(
     },
     {
       accessorKey: "ingestionStatus",
-      header: ({ column }) => {
+      header: ({ column, table }) => {
         return (
           <Button
             variant="ghost"
             onClick={() => {
+              // Clear other column sorting when this column is sorted
+              table.getAllColumns().forEach((col) => {
+                if (col.id !== column.id) {
+                  col.clearSorting();
+                }
+              });
               column.toggleSorting(column.getIsSorted() === "asc");
             }}
           >
             {t("knowledgePage.table.status.label")}
-            {column.getIsSorted() === "asc" ? (
-              <ArrowUp className="ml-2 h-4 w-4" />
-            ) : (
-              <ArrowDown className="ml-2 h-4 w-4" />
-            )}
+            {SortingButton(column)}
           </Button>
         );
       },
@@ -138,3 +150,15 @@ export default function Columns(
     },
   ];
 }
+
+// Show sorting button based on the column sorting state
+// ArrowUpDown if the column is not sorted
+const SortingButton = (column: Column<Knowledge>) => {
+  if (column.getIsSorted() === "asc") {
+    return <ArrowUp className="ml-2 h-4 w-4" />;
+  } else if (column.getIsSorted() === "desc") {
+    return <ArrowDown className="ml-2 h-4 w-4" />;
+  } else {
+    return <ArrowUpDown className="ml-2 h-4 w-4" />;
+  }
+};

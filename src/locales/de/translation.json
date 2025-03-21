@@ -87,7 +87,7 @@
     "table": {
       "label": "Name",
       "noData": "Keine Dateien vorhanden",
-      "inputPlaceholder": "Suche nach Dateien, Tags, Berechtigungen...",
+      "inputPlaceholder": "Suche nach Dateien oder Tags",
       "status": {
         "label": "Status",
         "succeeded": "Erfolgreich",
