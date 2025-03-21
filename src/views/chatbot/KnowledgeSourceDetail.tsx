@@ -27,8 +27,8 @@ export function KnowledgeSourceDetail({
     hoverProps.source?.content ?? "No source content available";
 
   return (
-    <HoverCardContent className="w-3/4 max-h-[450px] items-center justify-center overflow-auto">
-      <CardHeader>
+    <HoverCardContent className="w-[500px] p-6 max-h-[450px] items-center justify-center overflow-auto">
+      <CardHeader className="p-0 pb-4">
         {knowledge && (
           <>
             <CardTitle className="underline">{knowledge.label}</CardTitle>
@@ -36,7 +36,7 @@ export function KnowledgeSourceDetail({
           </>
         )}
       </CardHeader>
-      <CardContent className="grid gap-4">
+      <CardContent className="grid gap-4 p-0">
         {knowledge && (
           <>
             <div className="grid grid-cols-2 gap-2">
@@ -83,7 +83,7 @@ export function KnowledgeSourceDetail({
         )}
         <hr />
       </CardContent>
-      <CardFooter>
+      <CardFooter className="p-0 pt-4">
         <div className="flex flex-col items-start ">
           <h3 className="font-bold mb-2 underline">
             {t("knowledge.sourceContent")}
