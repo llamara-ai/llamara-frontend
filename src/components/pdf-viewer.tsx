@@ -37,9 +37,24 @@ interface SearchResult {
   text: string;
 }
 
-function highlightPattern(text: string, query: string): string {
-  const regex = new RegExp(query, "gi"); // 'g' for global, 'i' for case-insensitive
-  return text.replace(regex, (value) => `<mark>${value}</mark>`);
+/**
+ * Highlights the given text based on the given query.
+ * The query is split up by line breaks and extra whitespace and each segment is highlighted.
+ * This might highlight more than the query itself, but it highlights the full query.
+ *
+ * @param text the text to apply the highlighting to
+ * @param query the query to highlight
+ */
+function highlightSearch(text: string, query: string): string {
+  // split the query by line breaks and extra whitespace
+  const regexes = query
+    .split(/([\r\n]|\s{2,})+/)
+    //.map(s => s.trim())
+    .map((s) => new RegExp(s, "gi")); // 'g' is for global, 'i' is for case-insensitive
+  // highlight the individual query segments
+  return regexes.reduce((acc, regex) => {
+    return acc.replace(regex, (value) => `<mark>${value}</mark>`);
+  }, text);
 }
 
 const PdfViewer = ({
@@ -295,8 +310,8 @@ const PdfViewer = ({
   }, [pageRefs, containerRef]); // Added missing dependencies
 
   const textRenderer = useCallback(
-    (textItem: TextItem) => highlightPattern(textItem.str, searchQuery),
-    [searchQuery, searchResults, currentSearchIndex],
+    (textItem: TextItem) => highlightSearch(textItem.str, searchQuery),
+    [searchQuery],
   );
 
   useEffect(() => {
