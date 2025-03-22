@@ -27,10 +27,13 @@ import { Input } from "@/components/ui/input";
 import type { Knowledge } from "@/api";
 import { t } from "i18next";
 import { DataTablePagination } from "./Pagination";
+import { Button } from "@/components/ui/button";
+import { Upload } from "lucide-react";
 
 interface DataTableProps {
   columns: ColumnDef<Knowledge>[];
   data: Knowledge[];
+  setUploadDialogOpen: (open: boolean) => void;
 }
 
 const globalFilterFn: FilterFn<Knowledge> = (row, _columnId, filterValue) => {
@@ -58,7 +61,11 @@ const globalFilterFn: FilterFn<Knowledge> = (row, _columnId, filterValue) => {
   return visibleMatch || tagMatch || permissionMatch;
 };
 
-export default function DataTable({ columns, data }: Readonly<DataTableProps>) {
+export default function DataTable({
+  columns,
+  data,
+  setUploadDialogOpen,
+}: Readonly<DataTableProps>) {
   const [sorting, setSorting] = useState<SortingState>([
     { id: "label", desc: false },
   ]);
@@ -86,79 +93,84 @@ export default function DataTable({ columns, data }: Readonly<DataTableProps>) {
   });
 
   return (
-    <>
-      <div>
-        {/*Search Bar*/}
-        <div className="flex items-center py-4">
-          <Input
-            placeholder={t("knowledgePage.table.inputPlaceholder")}
-            value={globalFilter}
-            onChange={(event) => {
-              setGlobalFilter(event.target.value);
-            }}
-            className="max-w-sm"
-          />
-        </div>
-
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </TableHead>
-                  ))}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <React.Fragment key={row.id}>
-                    <TableRow>
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
-                          )}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                    {row.getIsExpanded() && (
-                      <TableRow className="bg-secondary hover:bg-secondary">
-                        <TableCell colSpan={columns.length}>
-                          <TableAccordion knowledge={row.original} />
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </React.Fragment>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    {t("knowledgePage.table.noData")}
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
+    <div>
+      {/*Search Bar*/}
+      <div className="flex items-center justify-between py-4">
+        <Input
+          placeholder={t("knowledgePage.table.inputPlaceholder")}
+          value={globalFilter}
+          onChange={(event) => {
+            setGlobalFilter(event.target.value);
+          }}
+          className="max-w-sm"
+        />
+        <Button
+          onClick={() => {
+            setUploadDialogOpen(true);
+          }}
+        >
+          <Upload />
+          {t("knowledgePage.table.uploadButton")}
+        </Button>
       </div>
 
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows.length ? (
+              table.getRowModel().rows.map((row) => (
+                <React.Fragment key={row.id}>
+                  <TableRow>
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                  {row.getIsExpanded() && (
+                    <TableRow className="bg-secondary hover:bg-secondary">
+                      <TableCell colSpan={columns.length}>
+                        <TableAccordion knowledge={row.original} />
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </React.Fragment>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  {t("knowledgePage.table.noData")}
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
       <div className="pt-2">
         <DataTablePagination<Knowledge> table={table} />
       </div>
-    </>
+    </div>
   );
 }

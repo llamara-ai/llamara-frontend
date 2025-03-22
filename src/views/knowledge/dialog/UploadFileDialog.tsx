@@ -1,12 +1,12 @@
 import { Knowledge } from "@/api";
 import { Button } from "@/components/ui/button";
 import {
-  DialogPortal,
   DialogOverlay,
   DialogContent,
   DialogDescription,
   DialogTitle,
   DialogFooter,
+  Dialog,
 } from "@/components/ui/dialog";
 import { Spinner } from "@/components/ui/spinner";
 import useAddFileSourceApi from "@/hooks/api/useAddFileSourceApi";
@@ -22,7 +22,7 @@ import { useToast } from "@/hooks/use-toast";
 interface UploadFileDialogProps {
   knowledge?: Readonly<Knowledge> | null;
   onClose: () => void;
-  resetSelectedFiles: boolean;
+  open: boolean;
 }
 
 type UploadStatus = "idle" | "uploading" | "success" | "error";
@@ -31,7 +31,7 @@ type UploadStatus = "idle" | "uploading" | "success" | "error";
 export default function UploadFileDialog({
   knowledge,
   onClose,
-  resetSelectedFiles,
+  open,
 }: Readonly<UploadFileDialogProps>) {
   const onDrop = useCallback((acceptedFiles: SetStateAction<File[] | null>) => {
     setFiles(acceptedFiles);
@@ -51,10 +51,10 @@ export default function UploadFileDialog({
   const [status, setStatus] = useState<UploadStatus>("idle");
 
   useEffect(() => {
-    if (resetSelectedFiles) {
+    if (!open) {
       setFiles(null);
     }
-  }, [resetSelectedFiles]);
+  }, [open]);
 
   useEffect(() => {
     if (status === "success") {
@@ -136,7 +136,12 @@ export default function UploadFileDialog({
   };
 
   return (
-    <DialogPortal>
+    <Dialog
+      open={open}
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+    >
       <DialogOverlay className="fixed inset-0 z-50 bg-black bg-opacity-30 backdrop-blur-sm" />
       <DialogContent className="fixed left-1/2 top-1/2 z-50 grid w-full max-w-lg transform -translate-x-1/2 -translate-y-1/2 gap-4 border p-6 shadow-lg duration-200 sm:rounded-lg">
         <DialogTitle>
@@ -181,6 +186,6 @@ export default function UploadFileDialog({
           )}
         </DialogFooter>
       </DialogContent>
-    </DialogPortal>
+    </Dialog>
   );
 }
