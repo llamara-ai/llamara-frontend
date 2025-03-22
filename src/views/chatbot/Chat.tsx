@@ -19,7 +19,7 @@ interface ChatProps {
   isLoading: boolean;
   isGenerating: boolean;
   lockSendPrompt: boolean;
-  openPdf: (uuid: string, label: string) => void;
+  openPdf: (uuid: string, label: string, search?: string) => void;
 }
 
 export default function Chat({

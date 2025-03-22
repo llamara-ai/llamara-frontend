@@ -30,7 +30,7 @@ interface ChatMessageProps {
   message: ChatMessageRecord;
   isGenerating: boolean;
   handleRetryClick: () => void;
-  openPdf: (uuid: string, label: string) => void;
+  openPdf: (uuid: string, label: string, search?: string) => void;
   showButtons: boolean;
   className?: string;
 }
@@ -178,7 +178,7 @@ export default function ChatMessage({
 interface KnowledgeSourceRendererProps {
   children: React.ReactNode;
   sources: RagSourceRecord[] | undefined;
-  openPdf: (uuid: string, label: string) => void;
+  openPdf: (uuid: string, label: string, search?: string) => void;
 }
 
 function KnowledgeSourceRenderer({

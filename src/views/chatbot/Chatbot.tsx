@@ -18,6 +18,9 @@ const COLLAPSE_SIDEBAR_BREAKPOINT = 1340;
 export default function Chatbot() {
   const [pdfKnowledgeId, setPdfKnowledgeId] = useState<string | null>(null);
   const [pdfFileName, setPdfFileName] = useState<string | null>(null);
+  const [pdfSearchQuery, setPdfSearchQuery] = useState<string | undefined>(
+    undefined,
+  );
   const [autoCollapsedSidebar, setAutoCollapsedSidebar] = useState(false);
   const { setActiveSessionId } = useGetSessions();
   useKeepAliveSession();
@@ -91,9 +94,10 @@ export default function Chatbot() {
           isLoading={loadingHistory}
           isGenerating={loadingResponse}
           lockSendPrompt={false}
-          openPdf={(uuid: string, label: string) => {
+          openPdf={(uuid: string, label: string, search?: string) => {
             setPdfKnowledgeId(uuid);
             setPdfFileName(label);
+            setPdfSearchQuery(search);
           }}
         />
       </div>
@@ -125,6 +129,7 @@ export default function Chatbot() {
             <PdfViewer
               fileUuid={pdfKnowledgeId}
               label={pdfFileName}
+              initialSearchQuery={pdfSearchQuery}
               collapseToolbarButtonsBreakpoint={open ? 1490 : 1240}
             />
           </div>

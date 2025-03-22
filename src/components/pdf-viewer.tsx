@@ -20,6 +20,7 @@ import { t } from "i18next";
 interface PdfViewerProps {
   fileUuid: string;
   label: string;
+  initialSearchQuery?: string;
   collapseToolbarButtonsBreakpoint?: number;
 }
 
@@ -44,6 +45,7 @@ function highlightPattern(text: string, query: string): string {
 const PdfViewer = ({
   fileUuid,
   label,
+  initialSearchQuery,
   collapseToolbarButtonsBreakpoint,
 }: PdfViewerProps) => {
   const { fileData } = useGetKnowledgeFileApi({ uuid: fileUuid });
@@ -327,6 +329,14 @@ const PdfViewer = ({
       }
     };
   }, [observer]);
+
+  useEffect(() => {
+    if (pdfDocument) {
+      if (initialSearchQuery) {
+        void handleSearch(initialSearchQuery, 150);
+      }
+    }
+  }, [pdfDocument]);
 
   return (
     <div className="w-full h-full flex flex-col bg-transparent">

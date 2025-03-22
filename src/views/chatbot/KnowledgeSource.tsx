@@ -12,7 +12,7 @@ interface KnowledgeSourceProps {
   knowledgeId: string | null;
   embeddingId: string | null;
   sources: RagSourceRecord[] | undefined;
-  openPdf: (uuid: string, label: string) => void;
+  openPdf: (uuid: string, label: string, search?: string) => void;
 }
 
 export interface HoverProps {
@@ -48,21 +48,22 @@ export function KnowledgeSource({
     return t("chatbot.chat.source.docTypeUnknown");
   };
 
+  const sourceContent = sources?.find(
+    (source) => source.embeddingId === embeddingId,
+  );
+
   const handleFileSource = async (): Promise<void> => {
     if (!knowledgeId || error) return;
 
     const docType = knowledge?.label?.split(".").pop()?.toLowerCase();
 
     if (docType === "pdf") {
-      openPdf(knowledgeId, knowledge?.label ?? "document");
+      const source = sourceContent?.content;
+      openPdf(knowledgeId, knowledge?.label ?? "document", source);
       return;
     }
     await downloadFile(knowledgeId, knowledge?.label);
   };
-
-  const sourceContent = sources?.find(
-    (source) => source.embeddingId === embeddingId,
-  );
 
   const handleClick = () => {
     if (isTouch) {
