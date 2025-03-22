@@ -38,6 +38,18 @@ interface SearchResult {
 }
 
 /**
+ * Normalizes text by removing line breaks and extra whitespace.
+ *
+ * @param text the normalized text
+ */
+function normalizeText(text: string): string {
+  return text
+    .replace(/[\r\n]+/g, " ")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
+/**
  * Highlights the given text based on the given query.
  * The query is split up by line breaks and extra whitespace and each segment is highlighted.
  * This might highlight more than the query itself, but it highlights the full query.
@@ -179,6 +191,7 @@ const PdfViewer = ({
 
     setSearchQuery(term);
 
+    term = normalizeText(term).toLowerCase();
     const results: SearchResult[] = [];
 
     for (let pageIndex = 0; pageIndex < pdfDocument.numPages; pageIndex++) {
@@ -190,7 +203,7 @@ const PdfViewer = ({
         .join(" ");
 
       let matchIndex = 0;
-      let index = pageText.toLowerCase().indexOf(term.toLowerCase());
+      let index = normalizeText(pageText).toLowerCase().indexOf(term);
 
       while (index !== -1) {
         results.push({
@@ -198,7 +211,9 @@ const PdfViewer = ({
           matchIndex: matchIndex++,
           text: pageText.substring(index, index + term.length),
         });
-        index = pageText.toLowerCase().indexOf(term.toLowerCase(), index + 1);
+        index = normalizeText(pageText)
+          .toLowerCase()
+          .indexOf(term, index + 1);
       }
     }
 
