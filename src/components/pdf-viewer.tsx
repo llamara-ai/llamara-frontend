@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import type { PDFDocumentProxy } from "pdfjs-dist";
 import printJS from "print-js";
-import type { TextItem } from "pdfjs-dist/types/src/display/api";
+import type { TextItem, PDFPageProxy } from "pdfjs-dist/types/src/display/api";
 import { t } from "i18next";
 
 interface PdfViewerProps {
@@ -194,13 +194,17 @@ const PdfViewer = ({
     term = normalizeText(term).toLowerCase();
     const results: SearchResult[] = [];
 
-    for (let pageIndex = 0; pageIndex < pdfDocument.numPages; pageIndex++) {
-      const page = await pdfDocument.getPage(pageIndex + 1);
+    async function getPageText(page: PDFPageProxy): Promise<string> {
       const textContent = await page.getTextContent();
-      const pageText = textContent.items
+      return textContent.items
         .filter((item): item is TextItem => "str" in item)
         .map((item: TextItem) => item.str)
         .join(" ");
+    }
+
+    for (let pageIndex = 0; pageIndex < pdfDocument.numPages; pageIndex++) {
+      const page = await pdfDocument.getPage(pageIndex - 1);
+      const pageText = await getPageText(page);
 
       let matchIndex = 0;
       let index = normalizeText(pageText).toLowerCase().indexOf(term);
