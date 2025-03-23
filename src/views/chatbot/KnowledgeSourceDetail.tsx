@@ -42,7 +42,7 @@ export function KnowledgeSourceDetail({
                 <CardDescription>
                   {t("chatbot.chat.source.page") +
                     ": " +
-                    hoverProps.source.page}
+                    hoverProps.source.page.toString()}
                 </CardDescription>
               )}
             </div>
