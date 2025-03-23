@@ -452,7 +452,7 @@ const PdfViewer = ({
                 className="mb-4"
               >
                 <Page
-                  customTextRenderer={textRenderer}
+                  customTextRenderer={index + 1 === initialPage || searchResults.map(s => s.pageIndex).includes(index) ? textRenderer : undefined}
                   pageNumber={index + 1}
                   scale={scale}
                   rotate={rotation}
