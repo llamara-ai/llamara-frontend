@@ -20,7 +20,8 @@ import { t } from "i18next";
 interface PdfViewerProps {
   fileUuid: string;
   label: string;
-  initialSearchQuery?: string;
+  initialPage?: number;
+  initialHighlightQuery?: string;
   collapseToolbarButtonsBreakpoint?: number;
 }
 
@@ -72,7 +73,8 @@ function highlightSearch(text: string, query: string): string {
 const PdfViewer = ({
   fileUuid,
   label,
-  initialSearchQuery,
+  initialPage,
+  initialHighlightQuery,
   collapseToolbarButtonsBreakpoint,
 }: PdfViewerProps) => {
   const { fileData } = useGetKnowledgeFileApi({ uuid: fileUuid });
@@ -392,13 +394,19 @@ const PdfViewer = ({
     };
   }, [observer]);
 
-  useEffect(() => {
+  const handleInitialProps = () => {
     if (pdfDocument) {
-      if (initialSearchQuery) {
-        void handleSearch(initialSearchQuery, 150);
+      if (initialPage) {
+        setCurrentPage(initialPage);
+        scrollToPage(initialPage);
+        if (initialHighlightQuery) setSearchQuery(initialHighlightQuery);
       }
     }
-  }, [pdfDocument]);
+  }
+
+  useEffect(() => {
+    handleInitialProps();
+  }, [initialPage, initialHighlightQuery]);
 
   return (
     <div className="w-full h-full flex flex-col bg-transparent">
@@ -461,6 +469,7 @@ const PdfViewer = ({
                   onRenderSuccess={() => {
                     if (index === 0) {
                       setCurrentPage(1);
+                      handleInitialProps();
                     }
                   }}
                 />

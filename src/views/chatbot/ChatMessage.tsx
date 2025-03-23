@@ -25,12 +25,13 @@ import {
 } from "@/components/ui/tooltip";
 import useAvailableModels from "@/hooks/api/useGetModelsApi";
 import { KnowledgeSource } from "./KnowledgeSource";
+import { openPdf } from "@/views/chatbot/Chat.tsx";
 
 interface ChatMessageProps {
   message: ChatMessageRecord;
   isGenerating: boolean;
   handleRetryClick: () => void;
-  openPdf: (uuid: string, label: string, search?: string) => void;
+  openPdf: openPdf;
   showButtons: boolean;
   className?: string;
 }
@@ -178,7 +179,7 @@ export default function ChatMessage({
 interface KnowledgeSourceRendererProps {
   children: React.ReactNode;
   sources: RagSourceRecord[] | undefined;
-  openPdf: (uuid: string, label: string, search?: string) => void;
+  openPdf: openPdf;
 }
 
 function KnowledgeSourceRenderer({

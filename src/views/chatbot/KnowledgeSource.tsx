@@ -7,12 +7,13 @@ import { KnowledgeSourceDetail } from "./KnowledgeSourceDetail";
 import React, { useState } from "react";
 import { useIsTouch } from "@/hooks/useIsTouch.ts";
 import { useHandleClickOutside } from "@/hooks/useHandleClickOutside.ts";
+import { openPdf } from "@/views/chatbot/Chat.tsx";
 
 interface KnowledgeSourceProps {
   knowledgeId: string | null;
   embeddingId: string | null;
   sources: RagSourceRecord[] | undefined;
-  openPdf: (uuid: string, label: string, search?: string) => void;
+  openPdf: openPdf;
 }
 
 export interface HoverProps {
@@ -58,8 +59,7 @@ export function KnowledgeSource({
     const docType = knowledge?.label?.split(".").pop()?.toLowerCase();
 
     if (docType === "pdf") {
-      const source = sourceContent?.content;
-      openPdf(knowledgeId, knowledge?.label ?? "document", source);
+      openPdf(knowledgeId, knowledge?.label ?? "document", sourceContent?.page, sourceContent?.content);
       return;
     }
     await downloadFile(knowledgeId, knowledge?.label);
