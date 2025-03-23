@@ -1,6 +1,5 @@
 import {
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -37,14 +36,9 @@ export function KnowledgeSourceDetail({
         {knowledge && (
           <div className="flex flex-row justify-between">
             <div>
-              <CardTitle className="text-lg">{knowledge.label}</CardTitle>
-              {hoverProps.source?.page && (
-                <CardDescription>
-                  {t("chatbot.chat.source.page") +
-                    ": " +
-                    hoverProps.source.page.toString()}
-                </CardDescription>
-              )}
+              <CardTitle className="font-bold text-lg">
+                {knowledge.label}
+              </CardTitle>
             </div>
             <Button onClick={onOpenFile} className="h-10 w-10">
               <FileSymlink className="h-8 w-8" />
@@ -100,10 +94,17 @@ export function KnowledgeSourceDetail({
         <hr />
       </CardContent>
       <CardFooter className="p-0 pt-4">
-        <div className="flex flex-col items-start ">
-          <h3 className="font-bold mb-2 underline">
-            {t("knowledge.sourceContent")}
-          </h3>
+        <div className="flex flex-col items-start">
+          <div className="flex flex-col mb-2">
+            <h3 className="font-bold leading-tight">
+              {t("knowledge.sourceContent")}
+            </h3>
+            {hoverProps.source?.page && (
+              <p className="text-sm text-muted-foreground">
+                {t("chatbot.chat.source.page") + ": " + hoverProps.source.page}
+              </p>
+            )}
+          </div>
           <p className="text-sm whitespace-pre-wrap">{sourceContent}</p>
         </div>
       </CardFooter>
