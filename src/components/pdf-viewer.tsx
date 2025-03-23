@@ -50,24 +50,81 @@ function normalizeText(text: string): string {
     .trim();
 }
 
+// Cache compiled regexes
+const regexCache = new Map<string, RegExp>();
+
+/**
+ * Replace all non-word characters in the query with a space.
+ * @param {string} query - The input query.
+ * @returns {string} - The cleaned query.
+ */
+function removeNonWordCharacters(query: string): string {
+  return query.replace(/\W+/g, ' ');
+}
+
+/**
+ * Escape all RegEx special characters in the given query.
+ * @param query the query to escape
+ */
+function escapeRegExp(query: string): string {
+  return query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
+ * Generate a RegEx pattern that matches at least three words, or the full query if fewer words exist.
+ * @param query - The already escaped user input to build the RegEx from.
+ */
+function buildPartialMultiWordPattern(query: string): string {
+  const words = query.trim().split(/\s+/);
+
+  if (words.length < 3) {
+    return words.join('.*?');
+  }
+
+  let pattern = '';
+  for (let i = 0; i < 3; i++) {
+    pattern += `(?=.*?${words[i]})`;
+  }
+  return pattern + '.*';
+}
+
 /**
  * Highlights the given text based on the given query.
- * The query is split up by line breaks and extra whitespace and each segment is highlighted.
+ * The query is split up by line breaks, tabs and extra whitespace and each segment is highlighted.
  * This might highlight more than the query itself, but it highlights the full query.
  *
  * @param text the text to apply the highlighting to
  * @param query the query to highlight
  */
 function highlightSearch(text: string, query: string): string {
-  // split the query by line breaks and extra whitespace
-  const regexes = query
-    .split(/([\r\n]|\s{2,})+/)
-    //.map(s => s.trim())
-    .map((s) => new RegExp(s, "gi")); // 'g' is for global, 'i' is for case-insensitive
-  // highlight the individual query segments
-  return regexes.reduce((acc, regex) => {
-    return acc.replace(regex, (value) => `<mark>${value}</mark>`);
-  }, text);
+  if (!query.trim()) return text;
+
+  let regex = regexCache.get(query);
+  // Check if the regex for this query is cached
+  if (!regex) {
+    const segments: string[] = [];
+    const segmentRegex = /(?:[\r\n]|\t|\s{2,})+/;
+
+    // Using a single loop for all operations (split, trim, clean, escape, build pattern)
+    query.split(segmentRegex).forEach(segment => {
+      const trimmed = segment.trim();
+      if (trimmed) {
+        const cleaned = removeNonWordCharacters(trimmed);
+        const escaped = escapeRegExp(cleaned);
+        const pattern = buildPartialMultiWordPattern(escaped);
+        segments.push(pattern);
+      }
+    });
+
+    if (segments.length === 0) return text;
+
+    // Combine segments into a single regex and cache it
+    regex = new RegExp(`(${segments.join('|')})`, 'gi');
+    regexCache.set(query, regex);
+  }
+
+  // Use the cached regex for highlighting
+  return text.replace(regex, (match) => `<mark>${match}</mark>`);
 }
 
 const PdfViewer = ({
