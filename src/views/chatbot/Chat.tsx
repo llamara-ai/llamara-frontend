@@ -13,13 +13,20 @@ import PromptInput from "./PromptInput";
 import { readSelectedModel } from "@/hooks/useLocalStorage";
 import { useIsMobile } from "@/hooks/useMobile";
 
+export type openPdf = (
+  uuid: string,
+  label: string,
+  initialPage?: number,
+  initialHighlightQuery?: string,
+) => void;
+
 interface ChatProps {
   messages: ChatMessageRecord[];
   handleSubmit: (prompt: string) => Promise<void>;
   isLoading: boolean;
   isGenerating: boolean;
   lockSendPrompt: boolean;
-  openPdf: (uuid: string, label: string) => void;
+  openPdf: openPdf;
 }
 
 export default function Chat({

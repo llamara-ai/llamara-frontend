@@ -180,6 +180,10 @@
           "embeddingId" : {
             "$ref" : "#/components/schemas/UUID"
           },
+          "page" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
           "content" : {
             "type" : "string"
           }
@@ -1133,7 +1137,7 @@
   },
   "info" : {
     "title" : "LLAMARA API",
-    "version" : "0.6.1-SNAPSHOT",
+    "version" : "0.7.1-SNAPSHOT",
     "description" : "The official REST API for LLAMARA - the Large Language Assistant for Model Augmented Retrieval and Analysis - an LLM-based assistant for information retrieval from a provided knowledge base.",
     "contact" : {
       "name" : "LLAMARA GitHub Organization",

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import useGetKnowledgeFileApi from "@/hooks/api/useGetKnowledgeFileApi";
 import LoadingAnimation from "./loading-animation";
 import { Document, Page } from "react-pdf";
@@ -14,12 +14,14 @@ import {
 } from "@/components/ui/dialog";
 import type { PDFDocumentProxy } from "pdfjs-dist";
 import printJS from "print-js";
-import type { TextItem } from "pdfjs-dist/types/src/display/api";
+import type { TextItem, PDFPageProxy } from "pdfjs-dist/types/src/display/api";
 import { t } from "i18next";
 
 interface PdfViewerProps {
   fileUuid: string;
   label: string;
+  initialPage?: number;
+  initialHighlightQuery?: string;
   collapseToolbarButtonsBreakpoint?: number;
 }
 
@@ -36,14 +38,100 @@ interface SearchResult {
   text: string;
 }
 
-function highlightPattern(text: string, query: string): string {
-  const regex = new RegExp(query, "gi"); // 'g' for global, 'i' for case-insensitive
-  return text.replace(regex, (value) => `<mark>${value}</mark>`);
+/**
+ * Normalizes text by removing line breaks and extra whitespace.
+ *
+ * @param text the normalized text
+ */
+function normalizeText(text: string): string {
+  return text
+    .replace(/[\r\n]+/g, " ")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
+// Cache compiled regexes
+const regexCache = new Map<string, RegExp>();
+
+/**
+ * Replace all non-word characters in the query with a space.
+ * @param {string} query - The input query.
+ * @returns {string} - The cleaned query.
+ */
+function removeNonWordCharacters(query: string): string {
+  return query.replace(/\W+/g, " ");
+}
+
+/**
+ * Escape all RegEx special characters in the given query.
+ * @param query the query to escape
+ */
+function escapeRegExp(query: string): string {
+  return query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/**
+ * Generate a RegEx pattern that matches at least three words, or the full query if fewer words exist.
+ * @param query - The already escaped user input to build the RegEx from.
+ */
+function buildPartialMultiWordPattern(query: string): string {
+  const words = query.trim().split(/\s+/);
+
+  if (words.length < 3) {
+    return words.join(".*?");
+  }
+
+  let pattern = "";
+  for (let i = 0; i < 3; i++) {
+    pattern += `(?=.*?${words[i]})`;
+  }
+  return pattern + ".*";
+}
+
+/**
+ * Highlights the given text based on the given query.
+ * The query is split up by line breaks, tabs and extra whitespace and each segment is highlighted.
+ * This might highlight more than the query itself, but it highlights the full query.
+ *
+ * @param text the text to apply the highlighting to
+ * @param query the query to highlight
+ */
+function highlightSearch(text: string, query: string): string {
+  if (!query.trim()) return text;
+
+  let regex = regexCache.get(query);
+  // Check if the regex for this query is cached
+  if (!regex) {
+    const segments: string[] = [];
+    const segmentRegex = /(?:[\r\n]|\t|\s{2,})+/;
+
+    // Using a single loop for all operations (split, trim, clean, escape, build pattern)
+    query.split(segmentRegex).forEach((segment) => {
+      const trimmed = segment.trim();
+      if (trimmed) {
+        const cleaned = removeNonWordCharacters(trimmed);
+        const escaped = escapeRegExp(cleaned);
+        const pattern = buildPartialMultiWordPattern(escaped);
+        segments.push(pattern);
+      }
+    });
+
+    if (segments.length === 0) return text;
+
+    // Combine segments into a single regex and cache it
+    regex = new RegExp(`(${segments.join("|")})`, "gi");
+    regexCache.set(query, regex);
+  }
+
+  // Use the cached regex for highlighting
+  return text.replace(regex, (match) => `<mark>${match}</mark>`);
 }
 
 const PdfViewer = ({
   fileUuid,
   label,
+  initialPage,
+  initialHighlightQuery,
   collapseToolbarButtonsBreakpoint,
 }: PdfViewerProps) => {
   const { fileData } = useGetKnowledgeFileApi({ uuid: fileUuid });
@@ -56,6 +144,7 @@ const PdfViewer = ({
   const [fileInfo, setFileInfo] = useState<FileInfo | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [pdfDocument, setPdfDocument] = useState<PDFDocumentProxy | null>(null);
+  const searchCache = useMemo(() => new Map<string, SearchResult[]>(), []);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [currentSearchIndex, setCurrentSearchIndex] = useState<number>(-1);
@@ -152,28 +241,67 @@ const PdfViewer = ({
     }
   };
 
+  const handleSearchResults = (results: SearchResult[], resultIndex = 0) => {
+    setSearchResults(results);
+    if (results.length > 0) {
+      setCurrentSearchIndex(resultIndex);
+      const firstResultPage = results[resultIndex].pageIndex + 1;
+      setCurrentPage(firstResultPage);
+      scrollToPage(firstResultPage);
+    }
+  };
+
+  /**
+   * Handles the search for the given term.
+   * @param term the search term
+   */
   const handleSearch = async (term: string) => {
+    // reset search results
+    setSearchResults([]);
+    setCurrentSearchIndex(-1);
+
+    // return fast if term is empty or pdfDocument is not loaded
     if (!term || !pdfDocument) {
       setSearchQuery("");
-      setSearchResults([]);
-      setCurrentSearchIndex(-1);
       return;
     }
 
+    // perform search
     setSearchQuery(term);
 
-    const results: SearchResult[] = [];
+    const normalizedTerm = normalizeText(term.toLowerCase());
+    const cacheKey = fileUuid + "-" + term;
 
-    for (let pageIndex = 0; pageIndex < pdfDocument.numPages; pageIndex++) {
-      const page = await pdfDocument.getPage(pageIndex + 1);
+    let results = searchCache.get(cacheKey);
+    // Check if results are already cached
+    if (results !== undefined) {
+      handleSearchResults(results);
+
+      return;
+    }
+
+    const getPageText = async (page: PDFPageProxy, pageIndex: number) => {
       const textContent = await page.getTextContent();
       const pageText = textContent.items
         .filter((item): item is TextItem => "str" in item)
         .map((item: TextItem) => item.str)
         .join(" ");
 
+      return { pageText, pageIndex };
+    };
+
+    // Process pages concurrently but preserve order
+    const pagePromises = Array.from({ length: pdfDocument.numPages }, (_, i) =>
+      pdfDocument.getPage(i + 1).then((page) => getPageText(page, i)),
+    );
+    const pagesWithText = await Promise.all(pagePromises);
+
+    results = [];
+
+    pagesWithText.forEach(({ pageText, pageIndex }) => {
+      const normalizedPageText = normalizeText(pageText).toLowerCase();
       let matchIndex = 0;
-      let index = pageText.toLowerCase().indexOf(term.toLowerCase());
+      let index = normalizedPageText.indexOf(normalizedTerm);
 
       while (index !== -1) {
         results.push({
@@ -181,17 +309,14 @@ const PdfViewer = ({
           matchIndex: matchIndex++,
           text: pageText.substring(index, index + term.length),
         });
-        index = pageText.toLowerCase().indexOf(term.toLowerCase(), index + 1);
+        index = normalizedPageText.indexOf(normalizedTerm, index + 1);
       }
-    }
+    });
 
-    setSearchResults(results);
-    if (results.length > 0) {
-      setCurrentSearchIndex(0);
-      const firstResultPage = results[0].pageIndex + 1;
-      setCurrentPage(firstResultPage);
-      scrollToPage(firstResultPage);
-    }
+    // Store the results in cache
+    searchCache.set(cacheKey, results);
+
+    handleSearchResults(results);
   };
 
   const handleNextSearchResult = () => {
@@ -293,8 +418,8 @@ const PdfViewer = ({
   }, [pageRefs, containerRef]); // Added missing dependencies
 
   const textRenderer = useCallback(
-    (textItem: TextItem) => highlightPattern(textItem.str, searchQuery),
-    [searchQuery, searchResults, currentSearchIndex],
+    (textItem: TextItem) => highlightSearch(textItem.str, searchQuery),
+    [searchQuery],
   );
 
   useEffect(() => {
@@ -327,6 +452,20 @@ const PdfViewer = ({
       }
     };
   }, [observer]);
+
+  const handleInitialProps = () => {
+    if (pdfDocument) {
+      if (initialPage) {
+        setCurrentPage(initialPage);
+        scrollToPage(initialPage);
+        if (initialHighlightQuery) setSearchQuery(initialHighlightQuery);
+      }
+    }
+  };
+
+  useEffect(() => {
+    handleInitialProps();
+  }, [initialPage, initialHighlightQuery]);
 
   return (
     <div className="w-full h-full flex flex-col bg-transparent">
@@ -372,7 +511,12 @@ const PdfViewer = ({
                 className="mb-4"
               >
                 <Page
-                  customTextRenderer={textRenderer}
+                  customTextRenderer={
+                    index + 1 === initialPage ||
+                    searchResults.map((s) => s.pageIndex).includes(index)
+                      ? textRenderer
+                      : undefined
+                  }
                   pageNumber={index + 1}
                   scale={scale}
                   rotate={rotation}
@@ -389,6 +533,7 @@ const PdfViewer = ({
                   onRenderSuccess={() => {
                     if (index === 0) {
                       setCurrentPage(1);
+                      handleInitialProps();
                     }
                   }}
                 />

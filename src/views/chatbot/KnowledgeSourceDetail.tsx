@@ -1,6 +1,5 @@
 import {
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -8,7 +7,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { HoverCardContent } from "@/components/ui/hover-card";
 import { formatDate } from "@/lib/formatDate";
-import { t } from "i18next";
 import {
   translatePermissions,
   translateUser,
@@ -16,6 +14,7 @@ import {
 import { HoverProps } from "./KnowledgeSource";
 import { FileSymlink } from "lucide-react";
 import { Button } from "@/components/ui/button.tsx";
+import { useTranslation } from "react-i18next";
 
 interface KnowledgeCardProps {
   onOpenFile: () => void;
@@ -26,6 +25,7 @@ export function KnowledgeSourceDetail({
   onOpenFile,
   hoverProps,
 }: Readonly<KnowledgeCardProps>) {
+  const { t } = useTranslation();
   const knowledge = hoverProps.knowledge;
   const sourceContent =
     hoverProps.source?.content ?? "No source content available";
@@ -36,8 +36,9 @@ export function KnowledgeSourceDetail({
         {knowledge && (
           <div className="flex flex-row justify-between">
             <div>
-              <CardTitle className="underline">{knowledge.label}</CardTitle>
-              <CardDescription>ID: {knowledge.id}</CardDescription>
+              <CardTitle className="font-bold text-lg">
+                {knowledge.label}
+              </CardTitle>
             </div>
             <Button onClick={onOpenFile} className="h-10 w-10">
               <FileSymlink className="h-8 w-8" />
@@ -93,10 +94,17 @@ export function KnowledgeSourceDetail({
         <hr />
       </CardContent>
       <CardFooter className="p-0 pt-4">
-        <div className="flex flex-col items-start ">
-          <h3 className="font-bold mb-2 underline">
-            {t("knowledge.sourceContent")}
-          </h3>
+        <div className="flex flex-col items-start">
+          <div className="flex flex-col mb-2">
+            <h3 className="font-bold leading-tight">
+              {t("knowledge.sourceContent")}
+            </h3>
+            {hoverProps.source?.page && (
+              <p className="text-sm text-muted-foreground">
+                {t("chatbot.chat.source.page") + ": " + hoverProps.source.page}
+              </p>
+            )}
+          </div>
           <p className="text-sm whitespace-pre-wrap">{sourceContent}</p>
         </div>
       </CardFooter>

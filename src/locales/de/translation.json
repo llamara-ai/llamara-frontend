@@ -38,6 +38,7 @@
           "startedTitle": "Download gestartet",
           "startedDescription": "Der Download wurde gestartet."
         },
+        "page": "Seite",
         "error": {
           "generic": "Es ist ein Fehler aufgetreten."
         }
