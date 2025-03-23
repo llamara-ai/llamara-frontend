@@ -59,7 +59,12 @@ export function KnowledgeSource({
     const docType = knowledge?.label?.split(".").pop()?.toLowerCase();
 
     if (docType === "pdf") {
-      openPdf(knowledgeId, knowledge?.label ?? "document", sourceContent?.page, sourceContent?.content);
+      openPdf(
+        knowledgeId,
+        knowledge?.label ?? "document",
+        sourceContent?.page,
+        sourceContent?.content,
+      );
       return;
     }
     await downloadFile(knowledgeId, knowledge?.label);

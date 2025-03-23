@@ -21,7 +21,9 @@ export default function Chatbot() {
   const [initialPdfPage, setInitialPdfPage] = useState<number | undefined>(
     undefined,
   );
-  const [initialPdfHighlightQuery, setInitialPdfHighlightQuery] = useState<string | undefined>(undefined);
+  const [initialPdfHighlightQuery, setInitialPdfHighlightQuery] = useState<
+    string | undefined
+  >(undefined);
   const [autoCollapsedSidebar, setAutoCollapsedSidebar] = useState(false);
   const { setActiveSessionId } = useGetSessions();
   useKeepAliveSession();
@@ -95,7 +97,12 @@ export default function Chatbot() {
           isLoading={loadingHistory}
           isGenerating={loadingResponse}
           lockSendPrompt={false}
-          openPdf={(uuid: string, label: string, initialPage?: number, initialHighlightQuery?: string) => {
+          openPdf={(
+            uuid: string,
+            label: string,
+            initialPage?: number,
+            initialHighlightQuery?: string,
+          ) => {
             setPdfKnowledgeId(uuid);
             setPdfFileName(label);
             setInitialPdfPage(initialPage);

@@ -59,7 +59,7 @@ const regexCache = new Map<string, RegExp>();
  * @returns {string} - The cleaned query.
  */
 function removeNonWordCharacters(query: string): string {
-  return query.replace(/\W+/g, ' ');
+  return query.replace(/\W+/g, " ");
 }
 
 /**
@@ -67,7 +67,7 @@ function removeNonWordCharacters(query: string): string {
  * @param query the query to escape
  */
 function escapeRegExp(query: string): string {
-  return query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 /**
@@ -78,14 +78,14 @@ function buildPartialMultiWordPattern(query: string): string {
   const words = query.trim().split(/\s+/);
 
   if (words.length < 3) {
-    return words.join('.*?');
+    return words.join(".*?");
   }
 
-  let pattern = '';
+  let pattern = "";
   for (let i = 0; i < 3; i++) {
     pattern += `(?=.*?${words[i]})`;
   }
-  return pattern + '.*';
+  return pattern + ".*";
 }
 
 /**
@@ -106,7 +106,7 @@ function highlightSearch(text: string, query: string): string {
     const segmentRegex = /(?:[\r\n]|\t|\s{2,})+/;
 
     // Using a single loop for all operations (split, trim, clean, escape, build pattern)
-    query.split(segmentRegex).forEach(segment => {
+    query.split(segmentRegex).forEach((segment) => {
       const trimmed = segment.trim();
       if (trimmed) {
         const cleaned = removeNonWordCharacters(trimmed);
@@ -119,7 +119,7 @@ function highlightSearch(text: string, query: string): string {
     if (segments.length === 0) return text;
 
     // Combine segments into a single regex and cache it
-    regex = new RegExp(`(${segments.join('|')})`, 'gi');
+    regex = new RegExp(`(${segments.join("|")})`, "gi");
     regexCache.set(query, regex);
   }
 
@@ -249,7 +249,7 @@ const PdfViewer = ({
       setCurrentPage(firstResultPage);
       scrollToPage(firstResultPage);
     }
-  }
+  };
 
   /**
    * Handles the search for the given term.
@@ -291,7 +291,9 @@ const PdfViewer = ({
     };
 
     // Process pages concurrently but preserve order
-    const pagePromises = Array.from({ length: pdfDocument.numPages }, (_, i) => pdfDocument.getPage(i + 1).then(page => getPageText(page, i)));
+    const pagePromises = Array.from({ length: pdfDocument.numPages }, (_, i) =>
+      pdfDocument.getPage(i + 1).then((page) => getPageText(page, i)),
+    );
     const pagesWithText = await Promise.all(pagePromises);
 
     results = [];
@@ -309,7 +311,7 @@ const PdfViewer = ({
         });
         index = normalizedPageText.indexOf(normalizedTerm, index + 1);
       }
-    })
+    });
 
     // Store the results in cache
     searchCache.set(cacheKey, results);
@@ -459,7 +461,7 @@ const PdfViewer = ({
         if (initialHighlightQuery) setSearchQuery(initialHighlightQuery);
       }
     }
-  }
+  };
 
   useEffect(() => {
     handleInitialProps();
@@ -509,7 +511,12 @@ const PdfViewer = ({
                 className="mb-4"
               >
                 <Page
-                  customTextRenderer={(index + 1 === initialPage || searchResults.map(s => s.pageIndex).includes(index)) ? textRenderer : undefined}
+                  customTextRenderer={
+                    index + 1 === initialPage ||
+                    searchResults.map((s) => s.pageIndex).includes(index)
+                      ? textRenderer
+                      : undefined
+                  }
                   pageNumber={index + 1}
                   scale={scale}
                   rotate={rotation}

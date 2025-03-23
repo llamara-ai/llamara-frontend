@@ -13,7 +13,12 @@ import PromptInput from "./PromptInput";
 import { readSelectedModel } from "@/hooks/useLocalStorage";
 import { useIsMobile } from "@/hooks/useMobile";
 
-export type openPdf = (uuid: string, label: string, initialPage?: number, initialHighlightQuery?: string) => void;
+export type openPdf = (
+  uuid: string,
+  label: string,
+  initialPage?: number,
+  initialHighlightQuery?: string,
+) => void;
 
 interface ChatProps {
   messages: ChatMessageRecord[];
