@@ -1,15 +1,16 @@
 import Header from "./Header";
 import Sidebar from "./sidebar/Sidebar";
 import Footer from "./Footer";
-import { useRef } from "react";
+import { CSSProperties, useRef } from "react";
 import useElementSize from "@/hooks/useElementSize.ts";
 import { useGetSessions } from "@/services/GetSessionsService";
 
 interface OverlayProps {
   children: React.ReactNode;
+  contentToTop?: boolean;
 }
 
-export function Overlay({ children }: Readonly<OverlayProps>) {
+export function Overlay({ children, contentToTop }: Readonly<OverlayProps>) {
   const headerRef = useRef<HTMLDivElement>(null);
   const footerRef = useRef<HTMLDivElement>(null);
   const headerSize = useElementSize(headerRef);
@@ -22,7 +23,7 @@ export function Overlay({ children }: Readonly<OverlayProps>) {
 
   return (
     <Sidebar>
-      <div ref={headerRef} className="top-0 z-40 ">
+      <div ref={headerRef} className={`fixed top-0 w-full z-40 ${contentToTop ? "bg-background xl:bg-transparent" : ""}`}>
         <Header
           onClickNewSession={() => {
             onClickNewSession();
@@ -31,9 +32,16 @@ export function Overlay({ children }: Readonly<OverlayProps>) {
       </div>
       <div
         className="mx-4 overflow-y-auto"
-        style={{
-          height: `calc(100dvh - ${headerSize.height.toString()}px - ${footerSize.height.toString()}px)`,
-        }}
+        style={
+          {
+            "--header-height": `${headerSize.height.toString()}px`,
+            "--footer-height": `${footerSize.height.toString()}px`,
+            height: contentToTop
+              ? "calc(100dvh - var(--footer-height))"
+              : "calc(100dvh - var(--header-height) - var(--footer-height))",
+            marginTop: contentToTop ? "0" : "var(--header-height)",
+          } as CSSProperties
+        }
       >
         {children}
       </div>
