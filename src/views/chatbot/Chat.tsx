@@ -130,6 +130,9 @@ export default function Chat({
           isLoading={isLoading}
           lockSendPrompt={lockSendPrompt}
         />
+        <small className="block mt-2 text-xs text-muted-foreground text-center w-full pb-2">
+          {t("footer.hint")}
+        </small>
       </div>
     </div>
   );
