@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import useGetKnowledgeFileApi from "@/hooks/api/useGetKnowledgeFileApi";
 import LoadingAnimation from "./loading-animation";
 import { Document, Page } from "react-pdf";
@@ -85,6 +85,7 @@ const PdfViewer = ({
   const [fileInfo, setFileInfo] = useState<FileInfo | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [pdfDocument, setPdfDocument] = useState<PDFDocumentProxy | null>(null);
+  const searchCache = useMemo(() => new Map<string, SearchResult[]>(), []);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [currentSearchIndex, setCurrentSearchIndex] = useState<number>(-1);
@@ -181,33 +182,65 @@ const PdfViewer = ({
     }
   };
 
+  const handleSearchResults = (results: SearchResult[], resultIndex = 0) => {
+    setSearchResults(results);
+    if (results.length > 0) {
+      setCurrentSearchIndex(resultIndex);
+      const firstResultPage = results[resultIndex].pageIndex + 1;
+      setCurrentPage(firstResultPage);
+      scrollToPage(firstResultPage);
+    }
+  }
+
+  /**
+   * Handles the search for the given term.
+   * @param term the search term
+   */
   const handleSearch = async (term: string) => {
+    // reset search results
+    setSearchResults([]);
+    setCurrentSearchIndex(-1);
+
+    // return fast if term is empty or pdfDocument is not loaded
     if (!term || !pdfDocument) {
       setSearchQuery("");
-      setSearchResults([]);
-      setCurrentSearchIndex(-1);
       return;
     }
 
+    // perform search
     setSearchQuery(term);
 
-    term = normalizeText(term).toLowerCase();
-    const results: SearchResult[] = [];
+    const normalizedTerm = normalizeText(term.toLowerCase());
+    const cacheKey = fileUuid + "-" + term;
 
-    async function getPageText(page: PDFPageProxy): Promise<string> {
+    let results = searchCache.get(cacheKey);
+    // Check if results are already cached
+    if (results !== undefined) {
+      handleSearchResults(results);
+
+      return;
+    }
+
+    const getPageText = async (page: PDFPageProxy, pageIndex: number) => {
       const textContent = await page.getTextContent();
-      return textContent.items
+      const pageText = textContent.items
         .filter((item): item is TextItem => "str" in item)
         .map((item: TextItem) => item.str)
         .join(" ");
-    }
 
-    for (let pageIndex = 0; pageIndex < pdfDocument.numPages; pageIndex++) {
-      const page = await pdfDocument.getPage(pageIndex - 1);
-      const pageText = await getPageText(page);
+      return { pageText, pageIndex };
+    };
 
+    // Process pages concurrently but preserve order
+    const pagePromises = Array.from({ length: pdfDocument.numPages }, (_, i) => pdfDocument.getPage(i + 1).then(page => getPageText(page, i)));
+    const pagesWithText = await Promise.all(pagePromises);
+
+    results = [];
+
+    pagesWithText.forEach(({ pageText, pageIndex }) => {
+      const normalizedPageText = normalizeText(pageText).toLowerCase();
       let matchIndex = 0;
-      let index = normalizeText(pageText).toLowerCase().indexOf(term);
+      let index = normalizedPageText.indexOf(normalizedTerm);
 
       while (index !== -1) {
         results.push({
@@ -215,19 +248,14 @@ const PdfViewer = ({
           matchIndex: matchIndex++,
           text: pageText.substring(index, index + term.length),
         });
-        index = normalizeText(pageText)
-          .toLowerCase()
-          .indexOf(term, index + 1);
+        index = normalizedPageText.indexOf(normalizedTerm, index + 1);
       }
-    }
+    })
 
-    setSearchResults(results);
-    if (results.length > 0) {
-      setCurrentSearchIndex(0);
-      const firstResultPage = results[0].pageIndex + 1;
-      setCurrentPage(firstResultPage);
-      scrollToPage(firstResultPage);
-    }
+    // Store the results in cache
+    searchCache.set(cacheKey, results);
+
+    handleSearchResults(results);
   };
 
   const handleNextSearchResult = () => {
