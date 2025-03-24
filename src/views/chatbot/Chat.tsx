@@ -81,7 +81,12 @@ export default function Chat({
           {messages.length === 0 && (
             <div className="w-full md:max-w-[70%] mx-auto lg:mt-12 bg-background shadow-sm border rounded-lg p-4 lg:p-8 flex flex-col gap-4 text-center">
               <h1 className="font-bold">
-                {user?.name ? t("chatbot.chat.newChat.title-personalized").replace("%s", user.name.split(" ")[0]) : t("chatbot.chat.newChat.title") }
+                {user?.name
+                  ? t("chatbot.chat.newChat.title-personalized").replace(
+                      "%s",
+                      user.name.split(" ")[0],
+                    )
+                  : t("chatbot.chat.newChat.title")}
               </h1>
               <p className="text-muted-foreground text-sm">
                 {t("chatbot.chat.newChat.text.1")}
