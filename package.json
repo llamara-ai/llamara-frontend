@@ -19,7 +19,8 @@
     "test": "vitest run",
     "test:watch": "vitest watch",
     "test:coverage": "vitest run --coverage",
-    "generate:api": "tsx --import tsx ./scripts/apigen.ts"
+    "generate:api": "tsx --import tsx ./scripts/apigen.ts",
+    "generate:pwa-assets": "pwa-assets-generator --preset minimal public/favicon.svg"
   },
   "dependencies": {
     "@hey-api/client-fetch": "^0.7.2",
