@@ -11,7 +11,7 @@ const botIcon = "bot.svg";
 export const getLogoFromModelProvider = (
   provider: ChatModelProvider | undefined,
 ) => {
-   switch (provider) {
+  switch (provider) {
     case "AZURE":
       return directory + azureIcon;
     case "GOOGLE_GEMINI":
