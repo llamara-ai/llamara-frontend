@@ -2,12 +2,18 @@ import { useTranslation } from "react-i18next";
 import useGetKnowledgeApi from "@/hooks/api/useGetKnowledgeApi";
 import useDownloadFile from "@/hooks/useDownloadFile";
 import { Knowledge, RagSourceRecord } from "@/api";
-import { HoverCard, HoverCardTrigger } from "@/components/ui/hover-card";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { KnowledgeSourceDetail } from "./KnowledgeSourceDetail";
 import React, { useState } from "react";
 import { useIsTouch } from "@/hooks/useIsTouch.ts";
 import { useHandleClickOutside } from "@/hooks/useHandleClickOutside.ts";
 import { openPdf } from "@/views/chatbot/Chat.tsx";
+import { useIsMobile } from "@/hooks/useMobile.ts";
+import { Card, CardContent } from "@/components/ui/card.tsx";
 
 interface KnowledgeSourceProps {
   knowledgeId: string | null;
@@ -29,6 +35,7 @@ export function KnowledgeSource({
 }: Readonly<KnowledgeSourceProps>) {
   const { t } = useTranslation();
   const isTouch = useIsTouch();
+  const isMobile = useIsMobile();
   const [open, setOpen] = useState(false);
   const ref = useHandleClickOutside<HTMLDivElement>(() => {
     setOpen(false);
@@ -77,8 +84,7 @@ export function KnowledgeSource({
     void handleFileSource();
   };
 
-  const handleTouch = (event: React.TouchEvent) => {
-    event.preventDefault();
+  const handleTouch = () => {
     handleHover();
     setOpen(true);
   };
@@ -96,6 +102,51 @@ export function KnowledgeSource({
       <span className="inline-flex items-center px-2 py-0.5 rounded border text-sm font-medium bg-foreground/5 text-red-600">
         {"Invalid Source. Cannot render source"}
       </span>
+    );
+  }
+
+  if (isMobile) {
+    return (
+      <div ref={ref}>
+        {knowledge?.label ? (
+          <span
+            onClick={handleTouch}
+            onTouchStart={handleTouch}
+            className="inline-flex items-center px-2 py-0.5 rounded border text-sm font-medium text-secondary-foreground hover:bg-foreground/20 bg-foreground/5"
+          >
+            {getDocType()} | {knowledge.label}
+          </span>
+        ) : (
+          <span className="inline-flex items-center px-2 py-0.5 rounded border text-sm font-medium text-secondary-foreground hover:bg-foreground/20 bg-foreground/5">
+            {getDocType()} | {t("chatbot.chat.source.loading")}
+          </span>
+        )}
+
+        {open && (
+          <>
+            <div
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+              onClick={() => {
+                setOpen(false);
+              }}
+            />
+            <Card className="shadow-lg transition-all duration-300 ease-in-out fixed top-8 bottom-8 left-8 right-8 z-50 overflow-y-scroll">
+              <CardContent className="p-6 items-center justify-center overflow-auto">
+                <KnowledgeSourceDetail
+                  onOpenFile={() => {
+                    setOpen(false);
+                    void handleFileSource();
+                  }}
+                  hoverProps={hoverProps}
+                  onClose={() => {
+                    setOpen(false);
+                  }}
+                />
+              </CardContent>
+            </Card>
+          </>
+        )}
+      </div>
     );
   }
 
@@ -118,10 +169,12 @@ export function KnowledgeSource({
           </span>
         )}
 
-        <KnowledgeSourceDetail
-          onOpenFile={() => void handleFileSource()}
-          hoverProps={hoverProps}
-        />
+        <HoverCardContent className="w-[500px] p-6 max-h-[450px] items-center justify-center overflow-auto">
+          <KnowledgeSourceDetail
+            onOpenFile={() => void handleFileSource()}
+            hoverProps={hoverProps}
+          />
+        </HoverCardContent>
       </HoverCard>
     </div>
   );

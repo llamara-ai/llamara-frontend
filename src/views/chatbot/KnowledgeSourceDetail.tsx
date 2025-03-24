@@ -5,25 +5,26 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { HoverCardContent } from "@/components/ui/hover-card";
 import { formatDate } from "@/lib/formatDate";
 import {
   translatePermissions,
   translateUser,
 } from "../knowledge/KnowledgePermissions";
 import { HoverProps } from "./KnowledgeSource";
-import { FileSymlink } from "lucide-react";
+import { FileSymlink, X } from "lucide-react";
 import { Button } from "@/components/ui/button.tsx";
 import { useTranslation } from "react-i18next";
 
 interface KnowledgeCardProps {
   onOpenFile: () => void;
   hoverProps: HoverProps;
+  onClose?: () => void;
 }
 
 export function KnowledgeSourceDetail({
   onOpenFile,
   hoverProps,
+  onClose,
 }: Readonly<KnowledgeCardProps>) {
   const { t } = useTranslation();
   const knowledge = hoverProps.knowledge;
@@ -31,7 +32,7 @@ export function KnowledgeSourceDetail({
     hoverProps.source?.content ?? "No source content available";
 
   return (
-    <HoverCardContent className="w-[500px] p-6 max-h-[450px] items-center justify-center overflow-auto">
+    <>
       <CardHeader className="p-0 pb-4">
         {knowledge && (
           <div className="flex flex-row justify-between">
@@ -40,9 +41,16 @@ export function KnowledgeSourceDetail({
                 {knowledge.label}
               </CardTitle>
             </div>
-            <Button onClick={onOpenFile} className="h-10 w-10">
-              <FileSymlink className="h-8 w-8" />
-            </Button>
+            <div className="flex flex-row gap-2">
+              <Button onClick={onOpenFile} className="h-10 w-10">
+                <FileSymlink className="h-8 w-8" />
+              </Button>
+              {onClose && (
+                <Button onClick={onClose} className="h-10 w-10">
+                  <X className="h-8 w-8" />
+                </Button>
+              )}
+            </div>
           </div>
         )}
       </CardHeader>
@@ -110,6 +118,6 @@ export function KnowledgeSourceDetail({
           <p className="text-sm whitespace-pre-wrap">{sourceContent}</p>
         </div>
       </CardFooter>
-    </HoverCardContent>
+    </>
   );
 }
