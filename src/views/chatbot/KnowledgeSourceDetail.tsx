@@ -101,7 +101,9 @@ export function KnowledgeSourceDetail({
             </h3>
             {hoverProps.source?.page && (
               <p className="text-sm text-muted-foreground">
-                {t("chatbot.chat.source.page") + ": " + hoverProps.source.page}
+                {t("chatbot.chat.source.page") +
+                  ": " +
+                  hoverProps.source.page.toString()}
               </p>
             )}
           </div>

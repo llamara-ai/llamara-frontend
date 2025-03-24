@@ -23,7 +23,10 @@ export function Overlay({ children, contentToTop }: Readonly<OverlayProps>) {
 
   return (
     <Sidebar>
-      <div ref={headerRef} className={`fixed top-0 w-full z-40 ${contentToTop ? "bg-background xl:bg-transparent" : ""}`}>
+      <div
+        ref={headerRef}
+        className={`fixed top-0 w-full z-40 ${contentToTop ? "bg-background xl:bg-transparent" : ""}`}
+      >
         <Header
           onClickNewSession={() => {
             onClickNewSession();
