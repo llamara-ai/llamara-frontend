@@ -24,7 +24,6 @@ export default defineConfig(({ mode }) => {
           name: "LLAMARA",
           short_name: "LLAMARA",
           description: "LLAMARA - Chat with your data",
-          theme_color: "#ffffff",
           icons: [
             {
               src: "pwa-64x64.png",
