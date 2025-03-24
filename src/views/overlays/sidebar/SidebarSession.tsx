@@ -22,6 +22,7 @@ import {
 import useDeleteSessionApi from "@/hooks/api/useDeleteSessionApi";
 import { SessionSidebarItem } from "./SidebarSessionList";
 import { useGetSessions } from "@/services/GetSessionsService";
+import useStateRef from "react-usestateref";
 
 interface SessionProps {
   subItem: SessionSidebarItem;
@@ -35,8 +36,12 @@ export function SidebarSession({
   highlightSession,
 }: Readonly<SessionProps>) {
   const { t } = useTranslation();
-  const { animateInSession, deleteSessionLocal, updateSessionLabelLocal } =
-    useGetSessions();
+  const {
+    animateInSession,
+    deleteSessionLocal,
+    updateSessionLabelLocal,
+    setActiveSessionId,
+  } = useGetSessions();
 
   const { setSessionLabel } = useSetSessionLabelApi({
     sessionId: subItem.uid,
@@ -51,7 +56,9 @@ export function SidebarSession({
   const [open, setOpen] = useState<boolean>(false); // indicates if the dropdown menu is open
 
   const [editMode, setEditMode] = useState<boolean>(false); // edit mode for the session label, means the user can enter new label
-  const [editedLabel, setEditedLabel] = useState<string>(subItem.title);
+  const [editedLabel, setEditedLabel, editedLabelRef] = useStateRef<string>(
+    subItem.title,
+  );
 
   const [isDeleted, setIsDeleted] = useState<boolean>(false); // show the session as deleted
   const [isDeleting, setIsDeleting] = useState<boolean>(false); // show that the delete animation is in progress
@@ -95,18 +102,19 @@ export function SidebarSession({
   };
 
   const onSubmitLabel = () => {
-    void setSessionLabel(editedLabel);
-    subItem.title = editedLabel;
+    void setSessionLabel(editedLabelRef.current);
+    subItem.title = editedLabelRef.current;
     setOpen(false);
     setEditMode(false);
   };
 
   const onSubmitDelete = () => {
     setIsDeleting(true);
+    setActiveSessionId(null);
     setTimeout(() => {
       void handleDeleteSession();
       setIsDeleted(true);
-    }, 800);
+    }, 400);
   };
 
   return (
@@ -115,7 +123,7 @@ export function SidebarSession({
         {fadeInKeyframes}
         {fadeOutKeyframes}
       </style>
-      <TooltipProvider delayDuration={1000}>
+      <TooltipProvider delayDuration={500}>
         {/* 1 second delay until tooltip is shown */}
         <SidebarMenuSubItem
           style={getStyle(isDeleting, animateInSession?.id === subItem.uid)}
@@ -234,11 +242,11 @@ export function SidebarSession({
 }
 
 const fadeOutStyle = {
-  animation: "fadeOut 0.9s ease-out",
+  animation: "fadeOut 0.4s ease-out",
 };
 
 const fadeInStyle = {
-  animation: "fadeIn 0.8s ease-in-out",
+  animation: "fadeIn 0.4s ease-in-out",
 };
 
 const fadeInKeyframes = `
