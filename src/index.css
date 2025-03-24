@@ -123,3 +123,8 @@
     @apply bg-secondary-foreground;
   }
 }
+
+/* Disable pull to refresh on touch devices */
+html {
+  overscroll-behavior-y: none;
+}
