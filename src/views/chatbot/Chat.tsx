@@ -12,6 +12,7 @@ import ChatMessage from "./ChatMessage";
 import PromptInput from "./PromptInput";
 import { readSelectedModel } from "@/hooks/useLocalStorage";
 import { useIsMobile } from "@/hooks/useMobile";
+import { useUserContext } from "@/services/UserContextService.tsx";
 
 export type openPdf = (
   uuid: string,
@@ -39,6 +40,7 @@ export default function Chat({
 }: Readonly<ChatProps>) {
   const { t } = useTranslation();
   const mobile = useIsMobile();
+  const { user } = useUserContext();
 
   const messagesRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -77,8 +79,10 @@ export default function Chat({
         <ChatMessageList>
           {/* Initial Message */}
           {messages.length === 0 && (
-            <div className="w-full md:max-w-[70%] mx-auto mt-8 bg-background shadow-sm border rounded-lg p-4 md:p-8 flex flex-col gap-4 text-center">
-              <h1 className="font-bold">{t("chatbot.chat.newChat.title")}</h1>
+            <div className="w-full md:max-w-[70%] mx-auto lg:mt-12 bg-background shadow-sm border rounded-lg p-4 lg:p-8 flex flex-col gap-4 text-center">
+              <h1 className="font-bold">
+                {user?.name ? t("chatbot.chat.newChat.title-personalized").replace("%s", user.name.split(" ")[0]) : t("chatbot.chat.newChat.title") }
+              </h1>
               <p className="text-muted-foreground text-sm">
                 {t("chatbot.chat.newChat.text.1")}
                 <br />
