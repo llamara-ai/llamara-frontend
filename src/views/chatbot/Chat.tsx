@@ -11,8 +11,8 @@ import { getLogoFromModelProvider } from "@/lib/getLogoFromModelProvider";
 import ChatMessage from "./ChatMessage";
 import PromptInput from "./PromptInput";
 import { readSelectedModel } from "@/hooks/useLocalStorage";
-import { useIsMobile } from "@/hooks/useMobile";
 import { useUserContext } from "@/services/UserContextService.tsx";
+import { useIsTouch } from "@/hooks/useIsTouch.ts";
 
 export type openPdf = (
   uuid: string,
@@ -39,7 +39,7 @@ export default function Chat({
   lockSendPrompt,
 }: Readonly<ChatProps>) {
   const { t } = useTranslation();
-  const mobile = useIsMobile();
+  const isTouch = useIsTouch();
   const { user } = useUserContext();
 
   const messagesRef = useRef<HTMLDivElement>(null);
@@ -54,9 +54,9 @@ export default function Chat({
     }
   }, [messagesRef]);
 
-  // autofocus on prompt input when not on mobile
+  // autofocus on prompt input when not on touch device
   useEffect(() => {
-    if (!mobile && inputRef.current) {
+    if (!isTouch && inputRef.current) {
       inputRef.current.focus();
     }
   }, [messages]);
