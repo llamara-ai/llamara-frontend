@@ -1,10 +1,10 @@
-import { StrictMode } from "react";
+import { StrictMode, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import Routes from "./Routes";
 import { init as initLanguage } from "@/locales/Languages";
 import { Toaster } from "./components/ui/toaster";
-import { ThemeProvider } from "./components/theme-provider";
+import { ThemeProvider, useTheme } from "./components/theme-provider";
 import CacheProvider from "./services/CacheService";
 import LoadingView from "./views/loading/Loading";
 import { AuthProvider } from "react-oauth2-code-pkce";
@@ -42,6 +42,21 @@ function InitComponent() {
 
 function App() {
   const { ready, authConfig } = useAppContext();
+  const { theme } = useTheme();
+
+  useEffect(() => {
+    const color = theme === "dark" ? "#161618" : "#f5f5f5";
+
+    const metaThemeColor = document.querySelector("meta[name='theme-color']");
+    if (metaThemeColor) {
+      metaThemeColor.setAttribute("content", color);
+    } else {
+      const newMeta = document.createElement("meta");
+      newMeta.setAttribute("name", "theme-color");
+      newMeta.setAttribute("content", color);
+      document.head.appendChild(newMeta);
+    }
+  }, [theme]);
 
   // Wait for app context to be ready
   if (!ready) {
