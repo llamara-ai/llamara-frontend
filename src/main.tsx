@@ -44,6 +44,15 @@ function App() {
   const { ready, authConfig } = useAppContext();
   const { theme } = useTheme();
 
+  // prevent scroll via ontouchmove, e.g. if virtual keyboard is opened
+  document.documentElement.addEventListener(
+    "touchmove",
+    function (e) {
+      e.preventDefault();
+    },
+    { passive: false },
+  );
+
   useEffect(() => {
     const color = theme === "dark" ? "#161618" : "#f5f5f5";
 
