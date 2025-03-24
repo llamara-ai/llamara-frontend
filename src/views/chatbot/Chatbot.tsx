@@ -111,7 +111,12 @@ export default function Chatbot() {
         />
       </div>
       {pdfKnowledgeId && pdfFileName && (
-        <div className="relative w-1/2 shadow-lg transition-all duration-300 ease-in-out">
+        <div
+          className="relative w-1/2 shadow-lg transition-all duration-300 ease-in-out"
+          style={{
+            marginTop: "var(--header-height)",
+          }}
+        >
           <Button
             onClick={() => {
               setPdfKnowledgeId(null);
@@ -133,7 +138,10 @@ export default function Chatbot() {
                 ? "fixed overflow-auto h-full right-0 top-12"
                 : "overflow-auto z-40"
             }
-            style={{ height: "calc(100vh - 104px)" }}
+            style={{
+              height:
+                "calc(100dvh - var(--header-height) - var(--footer-height) - 36px)",
+            }}
           >
             <PdfViewer
               fileUuid={pdfKnowledgeId}
