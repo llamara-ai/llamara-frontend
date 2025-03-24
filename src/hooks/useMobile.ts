@@ -9,11 +9,11 @@ export function useIsMobile() {
   });
 
   const [isMobile, setIsMobile] = useState<boolean>(
-    width < MOBILE_BREAKPOINT || height < MOBILE_BREAKPOINT,
+    Math.min(width, height) < MOBILE_BREAKPOINT,
   );
 
   useEffect(() => {
-    setIsMobile(width < MOBILE_BREAKPOINT || height < MOBILE_BREAKPOINT);
+    setIsMobile(Math.min(width, height) < MOBILE_BREAKPOINT);
   }, [width]);
 
   return isMobile;
