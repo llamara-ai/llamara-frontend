@@ -39,7 +39,7 @@ function Routes() {
             index
             element={
               <GetSessionsProvider>
-                <Overlay>
+                <Overlay contentToTop={true}>
                   <Chatbot />
                 </Overlay>
               </GetSessionsProvider>

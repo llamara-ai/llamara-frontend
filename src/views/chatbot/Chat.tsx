@@ -77,7 +77,7 @@ export default function Chat({
         <ChatMessageList>
           {/* Initial Message */}
           {messages.length === 0 && (
-            <div className="w-full md:max-w-[70%] mx-auto my-auto bg-background shadow-sm border rounded-lg p-4 md:p-8 flex flex-col gap-4 text-center">
+            <div className="w-full md:max-w-[70%] mx-auto mt-8 bg-background shadow-sm border rounded-lg p-4 md:p-8 flex flex-col gap-4 text-center">
               <h1 className="font-bold">{t("chatbot.chat.newChat.title")}</h1>
               <p className="text-muted-foreground text-sm">
                 {t("chatbot.chat.newChat.text.1")}
