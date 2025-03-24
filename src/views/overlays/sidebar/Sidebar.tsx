@@ -1,7 +1,8 @@
 import { ReactNode } from "react";
 import { useUserContext } from "@/services/UserContextService.tsx";
-import SidebarContent from "./SidebarContent";
-import { SidebarUser } from "@/views/overlays/sidebar/SidebarUser";
+import SidebarHeader from "@/views/overlays/sidebar/SidebarHeader";
+import SidebarContent from "@/views/overlays/sidebar/SidebarContent";
+import SidebarUser from "@/views/overlays/sidebar/SidebarUser";
 import {
   Sidebar as RootSidebar,
   SidebarFooter,
@@ -25,8 +26,14 @@ const Sidebar: React.FC<SidebarProps> = ({
   return (
     <>
       <RootSidebar collapsible="icon">
+        <SidebarHeader />
         <SidebarContent />
-        <SidebarFooter>
+        <SidebarFooter
+          style={{
+            marginLeft: "env(safe-area-inset-left, 0)",
+            marginBottom: "env(safe-area-inset-bottom, 0.25rem)",
+          }}
+        >
           <SidebarUser />
         </SidebarFooter>
         <SidebarRail />

@@ -1,19 +1,7 @@
-import {
-  SidebarContent,
-  SidebarGroupLabel,
-  SidebarHeader,
-} from "@/components/ui/sidebar.tsx";
+import { SidebarContent, SidebarGroupLabel } from "@/components/ui/sidebar.tsx";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ChatModelContainer } from "@/api";
-import useGetModelsApi from "@/hooks/api/useGetModelsApi";
-import {
-  readSelectedModel,
-  useWriteSelectedModel,
-} from "@/hooks/useLocalStorage";
 import { SidebarSessionsGroup, SidebarSessionList } from "./SidebarSessionList";
-import { SidebarModelSelector as ChatbotSidebarHeader } from "./SidebarModelSelector";
-import { useToast } from "@/hooks/use-toast";
 import { groupSessionsByDateForNavbar } from "@/lib/groupSessionsByDateForNavbar";
 import { useUserContext } from "@/services/UserContextService";
 import { useGetSessions } from "@/services/GetSessionsService";
@@ -22,37 +10,11 @@ import SidebarMainNav from "./SidebarMainNav.tsx";
 
 const SidebarContentFunc = () => {
   const { t } = useTranslation();
-  const { toast } = useToast();
-  const { models } = useGetModelsApi();
   const { sessions, loading } = useGetSessions();
 
-  const [selectedModel, setSelectedModel] = useState<ChatModelContainer | null>(
-    readSelectedModel(),
-  );
   const [sortedSessions, setSortedSessions] = useState<SidebarSessionsGroup[]>(
     [],
   );
-
-  // Update selected model in local storage
-  useWriteSelectedModel(selectedModel);
-
-  // check once if previous selected model is available
-  // otherwise show notification and reset local storage
-  useEffect(() => {
-    if (
-      selectedModel &&
-      !models.some((model) => model.uid === selectedModel.uid) &&
-      models.length > 0
-    ) {
-      toast({
-        variant: "destructive",
-        title: "The selected model is not available",
-        description:
-          "Previous model is no longer available. Please select a new model.",
-      });
-      setSelectedModel(null);
-    }
-  }, [models]);
 
   useEffect(() => {
     setSortedSessions(
@@ -67,27 +29,23 @@ const SidebarContentFunc = () => {
   }, [sessions, t]);
 
   return (
-    <>
-      <SidebarHeader>
-        <ChatbotSidebarHeader
-          models={models}
-          selectedModel={selectedModel}
-          setActiveModel={setSelectedModel}
+    <SidebarContent
+      className="flex flex-col"
+      style={{
+        marginLeft: "env(safe-area-inset-left, 0)",
+      }}
+    >
+      {loading ? (
+        <LoadingAnimation
+          loadingMessage={t("sidebar.session.loading")}
+          className="bg-transparent"
         />
-      </SidebarHeader>
-      <SidebarContent className="flex flex-col">
-        {loading ? (
-          <LoadingAnimation
-            loadingMessage={t("sidebar.session.loading")}
-            className="bg-transparent"
-          />
-        ) : (
-          <GetSessions sortedSessions={sortedSessions} />
-        )}
+      ) : (
+        <GetSessions sortedSessions={sortedSessions} />
+      )}
 
-        <SidebarMainNav />
-      </SidebarContent>
-    </>
+      <SidebarMainNav />
+    </SidebarContent>
   );
 };
 

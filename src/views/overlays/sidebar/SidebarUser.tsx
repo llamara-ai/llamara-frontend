@@ -37,7 +37,7 @@ import { AuthContext } from "react-oauth2-code-pkce";
 import { useNavigate } from "react-router";
 import { LanguageLabels } from "@/locales/Languages.ts";
 
-export function SidebarUser() {
+const SidebarUser = () => {
   const { t, i18n } = useTranslation();
   const { isMobile } = useSidebar();
   const { rawTheme, setTheme } = useTheme();
@@ -222,4 +222,6 @@ export function SidebarUser() {
       />
     </SidebarMenu>
   );
-}
+};
+
+export default SidebarUser;
