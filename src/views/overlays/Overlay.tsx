@@ -43,6 +43,8 @@ export function Overlay({ children, contentToTop }: Readonly<OverlayProps>) {
               ? "calc(100dvh - var(--footer-height))"
               : "calc(100dvh - var(--header-height) - var(--footer-height))",
             marginTop: contentToTop ? "0" : "var(--header-height)",
+            marginLeft: "env(safe-area-inset-left, 0)",
+            marginRight: "env(safe-area-inset-right, 0)",
           } as CSSProperties
         }
       >
