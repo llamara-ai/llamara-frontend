@@ -50,6 +50,22 @@ export default defineConfig(({ mode }) => {
             },
           ],
         },
+        workbox: {
+          runtimeCaching: [
+            {
+              /* serve cached images immediately without network requests if they are available */
+              urlPattern: ({ request }) => request.destination === "image",
+              handler: "CacheFirst",
+              options: {
+                cacheName: "images",
+                expiration: {
+                  maxEntries: 100,
+                  maxAgeSeconds: 60 * 24 * 60 * 60, // 60 days
+                },
+              },
+            },
+          ],
+        },
       }),
     ],
     resolve: {
