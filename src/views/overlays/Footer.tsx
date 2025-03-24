@@ -6,7 +6,12 @@ export default function Footer() {
   const { t } = useTranslation();
 
   return (
-    <footer className="pb-1 text-center">
+    <footer
+      className="text-center"
+      style={{
+        paddingBottom: "env(safe-area-inset-bottom, 0.25rem)",
+      }}
+    >
       {(imprintUrl ?? privacyPolicyUrl) && (
         <nav className="flex flex-row justify-center gap-4">
           {imprintUrl && (

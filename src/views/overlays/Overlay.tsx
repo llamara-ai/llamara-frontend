@@ -34,7 +34,7 @@ export function Overlay({ children, contentToTop }: Readonly<OverlayProps>) {
         />
       </div>
       <div
-        className="mx-4 overflow-y-auto"
+        className="mx-4 overflow-y-auto overscroll-contain touch-none"
         style={
           {
             "--header-height": `${headerSize.height.toString()}px`,
