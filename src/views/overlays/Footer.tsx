@@ -10,6 +10,8 @@ export default function Footer() {
       className="text-center"
       style={{
         paddingBottom: "env(safe-area-inset-bottom, 0.25rem)",
+        marginLeft: "env(safe-area-inset-left, 0)",
+        marginRight: "env(safe-area-inset-right, 0)",
       }}
     >
       {(imprintUrl ?? privacyPolicyUrl) && (
