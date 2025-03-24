@@ -127,7 +127,7 @@ export default function Chatbot() {
               }
             }}
             variant="ghost"
-            className="fixed top-1.5 right-2 z-50 bg-secondary"
+            className="fixed top-1.5 right-2 z-50 bg-secondary mr-2"
           >
             <p>{t("chatbot.pdf.closeButton")}</p>
             <X className="h-4 w-4" />
