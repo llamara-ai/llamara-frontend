@@ -1,5 +1,6 @@
 import { ChatModelProvider } from "@/api";
 
+const directory = "providers/";
 const azureIcon = "azure.svg";
 const geminiIcon = "gemini.svg";
 const mistralIcon = "mistral.svg";
@@ -12,16 +13,16 @@ export const getLogoFromModelProvider = (
 ) => {
   switch (provider) {
     case "AZURE":
-      return azureIcon;
+      return directory + azureIcon;
     case "GOOGLE_GEMINI":
-      return geminiIcon;
+      return directory + geminiIcon;
     case "MISTRAL":
-      return mistralIcon;
+      return directory + mistralIcon;
     case "OLLAMA":
-      return ollamaIcon;
+      return directory + ollamaIcon;
     case "OPENAI":
-      return openaiIcon;
+      return directory + openaiIcon;
     default:
-      return botIcon;
+      return directory + botIcon;
   }
 };
