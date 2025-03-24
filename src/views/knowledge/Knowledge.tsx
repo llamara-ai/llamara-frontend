@@ -88,7 +88,7 @@ export default function Knowledge() {
               setPdfLoading(null);
             }}
           />
-          <div className="shadow-lg transition-all duration-300 ease-in-out fixed right-0 top-0 h-full w-1/2 z-50">
+          <div className="shadow-lg transition-all duration-300 ease-in-out fixed right-2 top-0 h-full w-1/2 z-50">
             <Button
               onClick={() => {
                 setShowPdfWithUuid(null);
@@ -101,8 +101,8 @@ export default function Knowledge() {
               <X className="h-4 w-4" />
             </Button>
             <div
-              className="overflow-auto h-full pt-12"
-              style={{ height: "100vh" }}
+              className="overflow-auto h-full pt-12 mr-2"
+              style={{ height: "100dvh" }}
             >
               <PdfViewer fileUuid={showPdfWithUuid} label={pdfLoading} />
             </div>
