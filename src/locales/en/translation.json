@@ -21,6 +21,7 @@
     "chat": {
       "newChat": {
         "title": "How can I help you?",
+        "title-personalized": "Hi %s, how can I help you?",
         "subtitle": "Chat with your data",
         "text": {
           "1": "Welcome to LLAMARA!",
