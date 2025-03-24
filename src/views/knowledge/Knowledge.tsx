@@ -44,7 +44,7 @@ export default function Knowledge() {
   };
 
   return (
-    <div className="flex relative px-2 pb-8">
+    <div className="flex relative px-2 pb-8 justify-center">
       <div className="container">
         <DataTable
           columns={Columns(
