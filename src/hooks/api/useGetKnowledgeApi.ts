@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Knowledge, getKnowledge } from "@/api";
+import { KnowledgeRecord, getKnowledge } from "@/api";
 import { useToast } from "../use-toast";
 import { useCache } from "@/services/CacheService";
 
@@ -8,7 +8,7 @@ interface UseGetKnowledgeApiProps {
 }
 
 export interface UseGetKnowledgeApiResponse {
-  knowledge: Knowledge | undefined;
+  knowledge: KnowledgeRecord | undefined;
   error: string | null;
 }
 
@@ -16,10 +16,10 @@ export default function useGetKnowledgeApi({
   uuid,
 }: UseGetKnowledgeApiProps): UseGetKnowledgeApiResponse {
   const { toast } = useToast();
-  const [knowledge, setKnowledge] = useState<Knowledge>();
+  const [knowledge, setKnowledge] = useState<KnowledgeRecord>();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const { getCache, setCache } = useCache<Knowledge | null>();
+  const { getCache, setCache } = useCache<KnowledgeRecord | null>();
   const { getCache: getCacheLoading, setCache: setCacheLoading } =
     useCache<boolean>();
   const { getCache: getCacheNotFound, setCache: setCacheNotFound } =
@@ -97,7 +97,7 @@ export default function useGetKnowledgeApi({
 
 export async function getKnowledgeApiFunction(
   uuid: string,
-): Promise<Knowledge | null> {
+): Promise<KnowledgeRecord | null> {
   const options = {
     path: {
       id: uuid,

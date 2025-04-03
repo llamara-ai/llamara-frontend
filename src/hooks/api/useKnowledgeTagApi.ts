@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { addKnowledgeTag, Knowledge, removeKnowledgeTag } from "@/api";
+import { addKnowledgeTag, KnowledgeRecord, removeKnowledgeTag } from "@/api";
 import { useToast } from "../use-toast";
 import { useGetKnowledgeList } from "@/services/GetKnowledgeListService";
 
 interface UseKnowledgeTagApiProps {
-  knowledge: Knowledge | null;
+  knowledge: KnowledgeRecord | null;
 }
 
 interface UseKnowledgeTagApiResponse {

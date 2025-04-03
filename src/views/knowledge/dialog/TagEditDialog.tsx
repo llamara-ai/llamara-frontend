@@ -11,7 +11,7 @@ import {
   DialogFooter,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Knowledge } from "@/api";
+import { KnowledgeRecord } from "@/api";
 import useKnowledgeTagApi from "@/hooks/api/useKnowledgeTagApi";
 import { t } from "i18next";
 import { useGetKnowledgeList } from "@/services/GetKnowledgeListService";
@@ -25,7 +25,7 @@ export default function TagEditDialog({
   knowledgeId,
   onClose,
 }: Readonly<TagInputModalProps>) {
-  const [knowledge, setKnowledge] = useState<Knowledge | null>(null);
+  const [knowledge, setKnowledge] = useState<KnowledgeRecord | null>(null);
   const [tags, setTags] = useState<string[]>(knowledge?.tags ?? []);
   const [inputValue, setInputValue] = useState("");
   const { updateKnowledgeTags } = useKnowledgeTagApi({ knowledge });

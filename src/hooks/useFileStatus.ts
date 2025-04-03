@@ -1,4 +1,4 @@
-import { Knowledge } from "@/api";
+import { KnowledgeRecord } from "@/api";
 import { useEffect, useRef } from "react";
 import { getKnowledgeApiFunction } from "./api/useGetKnowledgeApi";
 import { useGetKnowledgeList } from "../services/GetKnowledgeListService";
@@ -7,18 +7,18 @@ const fetchTimeout = 5000;
 
 export interface FileStatusResponse {
   registerFiles: (newFiles: string[]) => Promise<void>;
-  knowledgeList: Knowledge[];
+  knowledgeList: KnowledgeRecord[];
   // Expose for testing only
   _checkFileStatus?: () => Promise<void>;
 }
 
 export default function useFileStatus(): FileStatusResponse {
-  const knowledgeListRef = useRef<Knowledge[]>([]);
+  const knowledgeListRef = useRef<KnowledgeRecord[]>([]);
   const { updateLocalKnowledge, addLocalKnowledge } = useGetKnowledgeList();
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const registerFiles = async (newFiles: string[]) => {
-    const addedKnowledge: Knowledge[] = [];
+    const addedKnowledge: KnowledgeRecord[] = [];
     for (const fileId of newFiles) {
       const knowledge = await getKnowledgeApiFunction(fileId);
       if (knowledge) {
@@ -32,7 +32,7 @@ export default function useFileStatus(): FileStatusResponse {
   };
 
   const checkFileStatus = async () => {
-    const knowledgeList: Knowledge[] = [];
+    const knowledgeList: KnowledgeRecord[] = [];
     for (const knowledgeFromList of knowledgeListRef.current) {
       if (!knowledgeFromList.id) return;
       const updatedKnowledge = await getKnowledgeApiFunction(

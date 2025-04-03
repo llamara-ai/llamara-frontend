@@ -1,4 +1,4 @@
-import { Knowledge } from "@/api";
+import { KnowledgeRecord } from "@/api";
 import { Button } from "@/components/ui/button";
 import {
   DialogOverlay,
@@ -20,7 +20,7 @@ import useFileStatus from "@/hooks/useFileStatus";
 import { useToast } from "@/hooks/use-toast";
 
 interface UploadFileDialogProps {
-  knowledge?: Readonly<Knowledge> | null;
+  knowledge?: Readonly<KnowledgeRecord> | null;
   onClose: () => void;
   open: boolean;
 }
