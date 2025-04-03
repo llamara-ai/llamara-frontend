@@ -20,7 +20,7 @@ import {
 import { t } from "i18next";
 import { useGetKnowledgeList } from "@/services/GetKnowledgeListService";
 import useKnowledgePermissionApi from "@/hooks/api/useKnowledgePermissionApi";
-import { Knowledge } from "@/api";
+import { KnowledgeRecord } from "@/api";
 import { useUserContext } from "@/services/UserContextService";
 import { compareWithAnyPermission, USER_ANY } from "../KnowledgePermissions";
 
@@ -39,7 +39,7 @@ export default function PermissionsDialog({
     {},
   );
   const [newUsername, setNewUsername] = useState<string | null>(null);
-  const [knowledge, setKnowledge] = useState<Knowledge | null>(null);
+  const [knowledge, setKnowledge] = useState<KnowledgeRecord | null>(null);
   const [newPermission, setNewPermission] = useState<Permission | "">("");
   const [highestUserPermission, setHighestUserPermission] =
     useState<Permission>("NONE");

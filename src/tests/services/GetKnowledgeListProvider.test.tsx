@@ -3,7 +3,7 @@ import { render, waitFor, act } from "@testing-library/react";
 import GetKnowledgeListProvider, {
   useGetKnowledgeList,
 } from "@/services/GetKnowledgeListService";
-import { getAllKnowledge, Knowledge } from "@/api";
+import { getAllKnowledge, KnowledgeRecord } from "@/api";
 import { useCache } from "@/services/CacheService";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect, useRef, useState } from "react";
@@ -54,7 +54,7 @@ describe("GetKnowledgeListProvider", () => {
   const mockGetCacheLoading = vi.fn();
   const mockSetCacheLoading = vi.fn();
 
-  const mockKnowledge: Knowledge[] = [
+  const mockKnowledge: KnowledgeRecord[] = [
     {
       id: "550e8400-e29b-41d4-a716-446655440000",
       type: "FILE",
@@ -263,7 +263,7 @@ describe("GetKnowledgeListProvider", () => {
     expect(contextValue.allKnowledge).toEqual(mockKnowledge);
 
     // Add new knowledge items
-    const newKnowledge: Knowledge[] = [
+    const newKnowledge: KnowledgeRecord[] = [
       {
         id: "c2d4e6a8-bf9c-44dd-a1a0-8fcd2e765432",
         type: "WEBLINK",
@@ -333,7 +333,7 @@ describe("GetKnowledgeListProvider", () => {
     expect(contextValue.allKnowledge).toEqual(mockKnowledge);
 
     // Update existing knowledge
-    const updatedKnowledge: Knowledge[] = [
+    const updatedKnowledge: KnowledgeRecord[] = [
       {
         id: "123e4567-e89b-12d3-a456-426614174000",
         type: "WEBLINK",

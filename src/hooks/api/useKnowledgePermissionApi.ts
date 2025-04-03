@@ -2,14 +2,14 @@ import { useState } from "react";
 import {
   removeKnowledgePermission,
   setKnowledgePermission,
-  type Knowledge,
+  type KnowledgeRecord,
   type Permission,
 } from "@/api";
 import { useToast } from "@/hooks/use-toast";
 import { useGetKnowledgeList } from "@/services/GetKnowledgeListService";
 
 interface UseKnowledgePermissionApiProps {
-  knowledge: Knowledge | null;
+  knowledge: KnowledgeRecord | null;
 }
 
 interface UseKnowledgePermissionApiResponse {

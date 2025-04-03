@@ -90,14 +90,14 @@
         "format" : "date-time",
         "examples" : [ "2022-03-10T16:15:50Z" ]
       },
-      "Knowledge" : {
+      "KnowledgeRecord" : {
         "type" : "object",
         "properties" : {
-          "id" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
           "type" : {
             "$ref" : "#/components/schemas/KnowledgeType"
+          },
+          "id" : {
+            "$ref" : "#/components/schemas/UUID"
           },
           "checksum" : {
             "type" : "string"
@@ -114,10 +114,6 @@
           },
           "lastUpdatedAt" : {
             "$ref" : "#/components/schemas/Instant"
-          },
-          "source" : {
-            "type" : "string",
-            "format" : "uri"
           },
           "contentType" : {
             "type" : "string"
@@ -137,6 +133,10 @@
             "items" : {
               "type" : "string"
             }
+          },
+          "source" : {
+            "type" : "string",
+            "format" : "uri"
           }
         }
       },
@@ -245,7 +245,7 @@
     "securitySchemes" : {
       "SecurityScheme" : {
         "type" : "openIdConnect",
-        "openIdConnectUrl" : "http://localhost:8180/realms/llamara/.well-known/openid-configuration",
+        "openIdConnectUrl" : "https://sqe-keycloak.k8s.ilt-dmz.iosb.fraunhofer.de/realms/pse-llamara/.well-known/openid-configuration",
         "description" : "Authentication"
       }
     }
@@ -603,7 +603,7 @@
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "$ref" : "#/components/schemas/Knowledge"
+                    "$ref" : "#/components/schemas/KnowledgeRecord"
                   }
                 }
               }
@@ -781,7 +781,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/Knowledge"
+                  "$ref" : "#/components/schemas/KnowledgeRecord"
                 }
               }
             }
@@ -844,6 +844,12 @@
           "in" : "path",
           "schema" : {
             "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "name" : "If-None-Match",
+          "in" : "header",
+          "schema" : {
+            "type" : "string"
           }
         } ],
         "responses" : {
@@ -1137,7 +1143,7 @@
   },
   "info" : {
     "title" : "LLAMARA API",
-    "version" : "0.7.1-SNAPSHOT",
+    "version" : "0.8.1-SNAPSHOT",
     "description" : "The official REST API for LLAMARA - the Large Language Assistant for Model Augmented Retrieval and Analysis - an LLM-based assistant for information retrieval from a provided knowledge base.",
     "contact" : {
       "name" : "LLAMARA GitHub Organization",

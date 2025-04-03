@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import useGetKnowledgeApi from "@/hooks/api/useGetKnowledgeApi";
 import useDownloadFile from "@/hooks/useDownloadFile";
-import { Knowledge, RagSourceRecord } from "@/api";
+import { KnowledgeRecord, RagSourceRecord } from "@/api";
 import {
   HoverCard,
   HoverCardContent,
@@ -24,7 +24,7 @@ interface KnowledgeSourceProps {
 
 export interface HoverProps {
   source: RagSourceRecord | null;
-  knowledge: Knowledge | null;
+  knowledge: KnowledgeRecord | null;
 }
 
 export function KnowledgeSource({

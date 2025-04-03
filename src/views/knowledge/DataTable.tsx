@@ -24,19 +24,23 @@ import {
 
 import TableAccordion from "./TableExpandable";
 import { Input } from "@/components/ui/input";
-import type { Knowledge } from "@/api";
+import type { KnowledgeRecord } from "@/api";
 import { t } from "i18next";
 import { DataTablePagination } from "./Pagination";
 import { Button } from "@/components/ui/button";
 import { Upload } from "lucide-react";
 
 interface DataTableProps {
-  columns: ColumnDef<Knowledge>[];
-  data: Knowledge[];
+  columns: ColumnDef<KnowledgeRecord>[];
+  data: KnowledgeRecord[];
   setUploadDialogOpen: (open: boolean) => void;
 }
 
-const globalFilterFn: FilterFn<Knowledge> = (row, _columnId, filterValue) => {
+const globalFilterFn: FilterFn<KnowledgeRecord> = (
+  row,
+  _columnId,
+  filterValue,
+) => {
   const searchValue: string = String(filterValue).toLowerCase();
   const { tags, permissions, ...otherFields } = row.original;
 
@@ -169,7 +173,7 @@ export default function DataTable({
         </Table>
       </div>
       <div className="pt-2">
-        <DataTablePagination<Knowledge> table={table} />
+        <DataTablePagination<KnowledgeRecord> table={table} />
       </div>
     </div>
   );

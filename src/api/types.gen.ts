@@ -35,21 +35,21 @@ export type IngestionStatus = 'PENDING' | 'SUCCEEDED' | 'FAILED';
 
 export type Instant = string;
 
-export type Knowledge = {
-    id?: Uuid;
+export type KnowledgeRecord = {
     type?: KnowledgeType;
+    id?: Uuid;
     checksum?: string;
     ingestionStatus?: IngestionStatus;
     tokenCount?: number;
     createdAt?: Instant;
     lastUpdatedAt?: Instant;
-    source?: string;
     contentType?: string;
     permissions?: {
         [key: string]: Permission;
     };
     label?: string;
     tags?: Array<string>;
+    source?: string;
 };
 
 export type KnowledgeType = 'FILE' | 'WEBLINK';
@@ -423,7 +423,7 @@ export type GetAllKnowledgeResponses = {
     /**
      * OK
      */
-    200: Array<Knowledge>;
+    200: Array<KnowledgeRecord>;
 };
 
 export type GetAllKnowledgeResponse = GetAllKnowledgeResponses[keyof GetAllKnowledgeResponses];
@@ -600,13 +600,16 @@ export type GetKnowledgeResponses = {
     /**
      * OK
      */
-    200: Knowledge;
+    200: KnowledgeRecord;
 };
 
 export type GetKnowledgeResponse = GetKnowledgeResponses[keyof GetKnowledgeResponses];
 
 export type GetKnowledgeFileData = {
     body?: never;
+    headers?: {
+        'If-None-Match'?: string;
+    };
     path: {
         /**
          * UID of the knowledge to get the source file of

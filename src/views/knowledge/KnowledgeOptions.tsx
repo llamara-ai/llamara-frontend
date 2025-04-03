@@ -1,4 +1,4 @@
-import { Knowledge } from "@/api";
+import { KnowledgeRecord } from "@/api";
 import useDeleteKnowledgeApi from "@/hooks/api/useDeleteKnowledgeApi";
 import {
   DeleteIcon,
@@ -30,7 +30,7 @@ import { USER_ANY } from "@/views/knowledge/KnowledgePermissions.tsx";
 interface KnowledgeOptionsProps {
   onClickTagEdit: (knowledgeId: string | null) => void;
   onClickPermissionEdit: (knowledgeId: string | null) => void;
-  knowledge: Readonly<Knowledge>;
+  knowledge: Readonly<KnowledgeRecord>;
 }
 
 // Dropdown menu item of the data table

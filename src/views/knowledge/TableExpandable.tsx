@@ -1,10 +1,10 @@
-import { Knowledge } from "@/api";
+import { KnowledgeRecord } from "@/api";
 import { formatDate } from "date-fns";
 import { translateUser, translatePermissions } from "./KnowledgePermissions";
 import { t } from "i18next";
 
 interface TableAccordionProps {
-  knowledge: Knowledge;
+  knowledge: KnowledgeRecord;
 }
 
 export default function TableAccordion({

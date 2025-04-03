@@ -1,14 +1,14 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { getAllKnowledge, Knowledge } from "@/api";
+import { getAllKnowledge, KnowledgeRecord } from "@/api";
 import { useCache } from "@/services/CacheService";
 import { useToast } from "@/hooks/use-toast";
 import { default as useRefState } from "react-usestateref";
 
 interface UseGetAllKnowledgeApiResponse {
-  allKnowledge: Knowledge[];
-  updateLocalKnowledge: (newKnowledgeArray: Knowledge[] | null) => void;
-  deleteLocalKnowledge: (knowledge: Knowledge) => void;
-  addLocalKnowledge: (knowledgeArray: Knowledge[]) => void;
+  allKnowledge: KnowledgeRecord[];
+  updateLocalKnowledge: (newKnowledgeArray: KnowledgeRecord[] | null) => void;
+  deleteLocalKnowledge: (knowledge: KnowledgeRecord) => void;
+  addLocalKnowledge: (knowledgeArray: KnowledgeRecord[]) => void;
   error: string | null;
 }
 
@@ -23,11 +23,11 @@ export default function GetKnowledgeListProvider({
 }: Readonly<{ children: React.ReactNode }>) {
   const { toast } = useToast();
   const [allKnowledge, setAllKnowledge, allKnowledgeRef] = useRefState<
-    Knowledge[]
+    KnowledgeRecord[]
   >([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const { getCache, setCache } = useCache<Knowledge[]>();
+  const { getCache, setCache } = useCache<KnowledgeRecord[]>();
   const { getCache: getCacheLoading, setCache: setCacheLoading } =
     useCache<boolean>();
 
@@ -67,7 +67,7 @@ export default function GetKnowledgeListProvider({
   };
 
   // delete Knowledge in local state
-  const deleteLocalKnowledge = (knowledge: Knowledge) => {
+  const deleteLocalKnowledge = (knowledge: KnowledgeRecord) => {
     const updatedKnowledge = allKnowledgeRef.current.filter(
       (k) => k.id !== knowledge.id,
     );
@@ -76,8 +76,8 @@ export default function GetKnowledgeListProvider({
   };
 
   // add multiple knowledge to local state
-  const addLocalKnowledge = (knowledgeArray: Knowledge[]) => {
-    const knowledgeToAdd: Knowledge[] = [];
+  const addLocalKnowledge = (knowledgeArray: KnowledgeRecord[]) => {
+    const knowledgeToAdd: KnowledgeRecord[] = [];
 
     for (const knowledge of knowledgeArray) {
       // Check if knowledge already exists, if yes then update it
@@ -96,7 +96,9 @@ export default function GetKnowledgeListProvider({
   };
 
   // update Knowledge in local state
-  const updateLocalKnowledge = (newKnowledgeArray: Knowledge[] | null) => {
+  const updateLocalKnowledge = (
+    newKnowledgeArray: KnowledgeRecord[] | null,
+  ) => {
     if (!newKnowledgeArray) return;
 
     let filteredKnowledges = allKnowledgeRef.current;

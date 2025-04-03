@@ -1,10 +1,10 @@
-import { Knowledge, Permission } from "@/api";
+import { KnowledgeRecord, Permission } from "@/api";
 import { useUserContext } from "@/services/UserContextService";
 import { t } from "i18next";
 import { useTranslation } from "react-i18next";
 
 interface KnowledgePermissionsProps {
-  knowledge: Readonly<Knowledge | undefined>;
+  knowledge: Readonly<KnowledgeRecord | undefined>;
 }
 
 export const USER_ANY = "*";

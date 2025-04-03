@@ -3,7 +3,7 @@ import { useState } from "react";
 import UploadFileDialog from "./dialog/UploadFileDialog";
 import { useGetKnowledgeList } from "@/services/GetKnowledgeListService";
 import Columns from "./Columns";
-import { Knowledge as KnowledgeType } from "@/api";
+import { KnowledgeRecord as KnowledgeType } from "@/api";
 import PdfViewer from "@/components/pdf-viewer";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";

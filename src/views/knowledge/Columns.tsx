@@ -1,5 +1,5 @@
 import type { Column, ColumnDef } from "@tanstack/react-table";
-import type { Knowledge } from "@/api";
+import type { KnowledgeRecord } from "@/api";
 import {
   ArrowUp,
   ArrowDown,
@@ -14,10 +14,10 @@ import { useTranslation } from "react-i18next";
 import KnowledgePermissions from "./KnowledgePermissions";
 
 export default function Columns(
-  onClickFile: (knowledge: Knowledge) => void,
+  onClickFile: (knowledge: KnowledgeRecord) => void,
   onClickTagEdit: (knowledgeId: string | null) => void,
   onClickPermissionEdit: (knowledgeId: string | null) => void,
-): ColumnDef<Knowledge>[] {
+): ColumnDef<KnowledgeRecord>[] {
   const { t } = useTranslation();
 
   return [
@@ -153,7 +153,7 @@ export default function Columns(
 
 // Show sorting button based on the column sorting state
 // ArrowUpDown if the column is not sorted
-const SortingButton = (column: Column<Knowledge>) => {
+const SortingButton = (column: Column<KnowledgeRecord>) => {
   if (column.getIsSorted() === "asc") {
     return <ArrowUp className="ml-2 h-4 w-4" />;
   } else if (column.getIsSorted() === "desc") {

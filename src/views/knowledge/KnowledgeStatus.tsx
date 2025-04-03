@@ -1,9 +1,9 @@
-import { Knowledge } from "@/api";
+import { KnowledgeRecord } from "@/api";
 import { CheckCircle2, CircleAlert, CircleMinus, CircleX } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 interface KnowledgeStatusProps {
-  knowledge: Readonly<Knowledge | undefined>;
+  knowledge: Readonly<KnowledgeRecord | undefined>;
 }
 
 // Styles the ingestion status
