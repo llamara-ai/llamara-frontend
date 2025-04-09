@@ -25,7 +25,7 @@ export default function Chatbot() {
     string | undefined
   >(undefined);
   const [autoCollapsedSidebar, setAutoCollapsedSidebar] = useState(false);
-  const { setActiveSessionId } = useGetSessions();
+  const { activeSessionId, setActiveSessionId } = useGetSessions();
   useKeepAliveSession();
 
   const location = useLocation();
@@ -52,6 +52,12 @@ export default function Chatbot() {
     setPdfFileName(null);
     setActiveSessionId(sessionId);
   }, []);
+
+  // Reset PDF viewer when opened session changes
+  useEffect(() => {
+    setPdfKnowledgeId(null);
+    setPdfFileName(null);
+  }, [activeSessionId]);
 
   // collapse sidebar if PDF is opened and screen is resized to a smaller size
   useEffect(() => {
