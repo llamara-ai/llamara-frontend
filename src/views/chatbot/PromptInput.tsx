@@ -48,7 +48,7 @@ const PromptInput = React.forwardRef<HTMLTextAreaElement, PromptInputProps>(
             onKeyDown={onKeyDown}
             onChange={handleInputChange}
             placeholder={t("chatbot.promptInput.placeholder")}
-            className="flex-grow rounded-2xl border-0 shadow-none focus-visible:ring-0"
+            className="grow rounded-2xl border-0 shadow-none focus-visible:ring-0"
           />
           <Button
             disabled={!promptInput || isLoading || lockSendPrompt}
