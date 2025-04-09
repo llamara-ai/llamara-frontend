@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getKnowledgeFile } from "@/api";
-import { useToast } from "../use-toast";
+import { toast } from "sonner";
 
 type FileData = Blob | File | undefined;
 interface UseGetKnowledgeFileApiProps {
@@ -15,7 +15,6 @@ interface UseGetKnowledgeFileApiResponse {
 export default function useGetKnowledgeFileApi({
   uuid,
 }: UseGetKnowledgeFileApiProps): UseGetKnowledgeFileApiResponse {
-  const { toast } = useToast();
   const [error, setError] = useState<string | null>(null);
   const [fileData, setFileData] = useState<Blob | File | undefined>(undefined);
   const { requestKnowledgeFileApi, error: errorFunction } =
@@ -31,7 +30,7 @@ export default function useGetKnowledgeFileApi({
           setError(error.message);
         }
       });
-  }, [uuid, toast]);
+  }, [uuid]);
   return {
     fileData,
     error:
@@ -40,7 +39,6 @@ export default function useGetKnowledgeFileApi({
 }
 
 export function useGetKnowledgeFileApiFunction() {
-  const { toast } = useToast();
   const [error, setError] = useState<string | null>(null);
 
   const requestKnowledgeFileApi = async (uuid: string): Promise<FileData> => {
@@ -58,9 +56,7 @@ export function useGetKnowledgeFileApiFunction() {
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
-        toast({
-          variant: "destructive",
-          title: "Failed to fetch knowledge file",
+        toast.error("Failed to fetch knowledge file", {
           description: error.message,
         });
       }

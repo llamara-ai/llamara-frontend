@@ -48,7 +48,7 @@ const ExpandableChat: React.FC<ExpandableChatProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const chatRef = useRef<HTMLDivElement>(null);
 
-  const toggleChat = () => setIsOpen(!isOpen);
+  const toggleChat = () => { setIsOpen(!isOpen); };
 
   return (
     <div
@@ -138,7 +138,7 @@ const ExpandableChatToggle: React.FC<ExpandableChatToggleProps> = ({
     {isOpen ? (
       <X className="h-6 w-6" />
     ) : (
-      icon || <MessageCircle className="h-6 w-6" />
+      icon ?? <MessageCircle className="h-6 w-6" />
     )}
   </Button>
 );

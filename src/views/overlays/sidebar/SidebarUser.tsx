@@ -31,11 +31,11 @@ import { getInitials } from "@/lib/getInitials";
 import useDeleteAllUserData from "@/hooks/api/useDeleteAllUserData";
 import { ConfirmDeleteModal } from "@/views/overlays/sidebar/ConfirmDeleteModal";
 import { useContext, useState } from "react";
-import { useToast } from "@/hooks/use-toast";
 import { useUserContext } from "@/services/UserContextService";
 import { AuthContext } from "react-oauth2-code-pkce";
 import { useNavigate } from "react-router";
 import { LanguageLabels } from "@/locales/Languages.ts";
+import { toast } from "sonner";
 
 const SidebarUser = () => {
   const { t, i18n } = useTranslation();
@@ -44,7 +44,6 @@ const SidebarUser = () => {
   const { deleteAllUserData, error } = useDeleteAllUserData();
   const [isDeleteUserDialogOpen, setIsDeleteUserDialogOpen] =
     useState<boolean>(false);
-  const { toast } = useToast();
   const { user, role } = useUserContext();
   const navigate = useNavigate();
   const { token, logOut } = useContext(AuthContext);
@@ -68,9 +67,7 @@ const SidebarUser = () => {
   };
 
   const deleteUserAbort = () => {
-    toast({
-      variant: "default",
-      title: t("sidebar.deleteUserData.abortTitle"),
+    toast.error(t("sidebar.deleteUserData.abortTitle"), {
       description: t("sidebar.deleteUserData.abortDescription"),
     });
   };

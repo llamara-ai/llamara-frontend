@@ -1,8 +1,14 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { getAllKnowledge, KnowledgeRecord } from "@/api";
 import { useCache } from "@/services/CacheService";
-import { useToast } from "@/hooks/use-toast";
 import { default as useRefState } from "react-usestateref";
+import { toast } from "sonner";
 
 interface UseGetAllKnowledgeApiResponse {
   allKnowledge: KnowledgeRecord[];
@@ -21,7 +27,6 @@ const KnowledgeListContext =
 export default function GetKnowledgeListProvider({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const { toast } = useToast();
   const [allKnowledge, setAllKnowledge, allKnowledgeRef] = useRefState<
     KnowledgeRecord[]
   >([]);
@@ -53,9 +58,7 @@ export default function GetKnowledgeListProvider({
         }
       } catch (error) {
         if (error instanceof Error) {
-          toast({
-            variant: "destructive",
-            title: "Failed to fetch all knowledge",
+          toast.error("Failed to fetch all knowledge", {
             description: error.message,
           });
           setError(error.message);
@@ -101,15 +104,15 @@ export default function GetKnowledgeListProvider({
   ) => {
     if (!newKnowledgeArray) return;
 
-    let filteredKnowledges = allKnowledgeRef.current;
+    let filteredKnowledge = allKnowledgeRef.current;
     for (const newKnowledge of newKnowledgeArray) {
-      filteredKnowledges = filteredKnowledges.filter(
+      filteredKnowledge = filteredKnowledge.filter(
         (k) => k.id !== newKnowledge.id,
       );
     }
-    const updatedKnowledges = filteredKnowledges.concat(newKnowledgeArray);
-    setAllKnowledge(updatedKnowledges);
-    setCache("allKnowledge", updatedKnowledges);
+    const updatedKnowledge = filteredKnowledge.concat(newKnowledgeArray);
+    setAllKnowledge(updatedKnowledge);
+    setCache("allKnowledge", updatedKnowledge);
   };
 
   const contextValue = useMemo(

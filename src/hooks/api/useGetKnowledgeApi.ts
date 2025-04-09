@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { KnowledgeRecord, getKnowledge } from "@/api";
-import { useToast } from "../use-toast";
 import { useCache } from "@/services/CacheService";
+import { toast } from "sonner";
 
 interface UseGetKnowledgeApiProps {
   uuid: string | null;
@@ -15,7 +15,6 @@ export interface UseGetKnowledgeApiResponse {
 export default function useGetKnowledgeApi({
   uuid,
 }: UseGetKnowledgeApiProps): UseGetKnowledgeApiResponse {
-  const { toast } = useToast();
   const [knowledge, setKnowledge] = useState<KnowledgeRecord>();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -69,9 +68,7 @@ export default function useGetKnowledgeApi({
           setKnowledge(response.data);
         })
         .catch((error: Error) => {
-          toast({
-            variant: "destructive",
-            title: "Failed to fetch knowledge",
+          toast.error("Failed to fetch knowledge", {
             description: error.message,
           });
           setError(error.message);

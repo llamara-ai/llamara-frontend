@@ -2,9 +2,9 @@
 import React from "react";
 import { CodeBlock, dracula, github } from "react-code-blocks";
 import { Button } from "./ui/button";
-import { useToast } from "@/hooks/use-toast";
 import { Check, ClipboardCopy } from "lucide-react";
 import { useTheme } from "./theme-provider";
+import { toast } from "sonner";
 
 interface ButtonCodeblockProps {
   code: string;
@@ -15,16 +15,13 @@ export default function CodeDisplayBlock({
   code,
 }: Readonly<ButtonCodeblockProps>) {
   const [isCopied, setIsCopied] = React.useState(false);
-  const { toast } = useToast();
 
   const { theme } = useTheme();
 
   const copyToClipboard = () => {
     void navigator.clipboard.writeText(code);
     setIsCopied(true);
-    toast({
-      title: "Code copied to clipboard!",
-    });
+    toast.success("Code copied to clipboard!");
     setTimeout(() => {
       setIsCopied(false);
     }, 1500);

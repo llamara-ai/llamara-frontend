@@ -1,7 +1,7 @@
 import Header from "./Header";
 import Sidebar from "./sidebar/Sidebar";
 import Footer from "./Footer";
-import { CSSProperties, useRef } from "react";
+import React, { CSSProperties, useRef } from "react";
 import useElementSize from "@/hooks/useElementSize.ts";
 import { useGetSessions } from "@/services/GetSessionsService";
 

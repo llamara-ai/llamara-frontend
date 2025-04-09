@@ -10,7 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import useSetSessionLabelApi from "@/hooks/api/useSetSessionLabelApi";
 import {
@@ -124,7 +124,7 @@ export function SidebarSession({
         {fadeOutKeyframes}
       </style>
       <TooltipProvider delayDuration={500}>
-        {/* 1 second delay until tooltip is shown */}
+        {/* 1-second delay until tooltip is shown */}
         <SidebarMenuSubItem
           style={getStyle(isDeleting, animateInSession?.id === subItem.uid)}
         >

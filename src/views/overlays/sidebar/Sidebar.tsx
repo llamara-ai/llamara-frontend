@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import React, { ReactNode } from "react";
 import { useUserContext } from "@/services/UserContextService.tsx";
 import SidebarHeader from "@/views/overlays/sidebar/SidebarHeader";
 import SidebarContent from "@/views/overlays/sidebar/SidebarContent";

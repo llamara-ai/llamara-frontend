@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import Routes from "./Routes";
 import { init as initLanguage } from "@/locales/Languages";
-import { Toaster } from "./components/ui/toaster";
+import { Toaster } from "./components/ui/sonner";
 import { ThemeProvider, useTheme } from "./components/theme-provider";
 import CacheProvider from "./services/CacheService";
 import LoadingView from "./views/loading/Loading";

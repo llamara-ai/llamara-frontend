@@ -5,8 +5,8 @@ import {
   type KnowledgeRecord,
   type Permission,
 } from "@/api";
-import { useToast } from "@/hooks/use-toast";
 import { useGetKnowledgeList } from "@/services/GetKnowledgeListService";
+import { toast } from "sonner";
 
 interface UseKnowledgePermissionApiProps {
   knowledge: KnowledgeRecord | null;
@@ -22,7 +22,6 @@ interface UseKnowledgePermissionApiResponse {
 export default function useKnowledgePermissionApi({
   knowledge,
 }: UseKnowledgePermissionApiProps): UseKnowledgePermissionApiResponse {
-  const { toast } = useToast();
   const [error, setError] = useState<string | null>(null);
   const { updateLocalKnowledge } = useGetKnowledgeList();
 
@@ -113,9 +112,7 @@ export default function useKnowledgePermissionApi({
   const handleError = (error: unknown, message: string) => {
     const errorMessage = error instanceof Error ? error.message : String(error);
     setError(errorMessage);
-    toast({
-      variant: "destructive",
-      title: message,
+    toast.error(message, {
       description: errorMessage,
     });
   };

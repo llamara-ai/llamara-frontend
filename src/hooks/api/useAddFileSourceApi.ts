@@ -1,6 +1,6 @@
 import { addFileSource, Uuid } from "@/api";
 import { useState } from "react";
-import { useToast } from "../use-toast";
+import { toast } from "sonner";
 
 interface UseAddFileSourceApiResponse {
   fileUUIDs: Uuid[];
@@ -11,7 +11,6 @@ interface UseAddFileSourceApiResponse {
 export default function useAddFileSourceApi(): UseAddFileSourceApiResponse {
   const [fileUUIDs, setFileUUIDs] = useState<Uuid[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const { toast } = useToast();
 
   const handleAddFileSource = async (files: (Blob | File)[]) => {
     const options = {
@@ -30,9 +29,7 @@ export default function useAddFileSourceApi(): UseAddFileSourceApiResponse {
       }
     } catch (error) {
       if (error instanceof Error) {
-        toast({
-          variant: "destructive",
-          title: "Failed to add files to the knowledge!",
+        toast.error("Failed to add files to the knowledge!", {
           description: error.message,
         });
         setError(error.message);

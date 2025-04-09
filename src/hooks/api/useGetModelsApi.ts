@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ChatModelContainer, ChatModelProvider, getModels } from "@/api";
-import { useToast } from "../use-toast";
 import { useCache } from "@/services/CacheService";
+import { toast } from "sonner";
 
 interface UseAvailableModelsResponse {
   models: ChatModelContainer[];
@@ -12,7 +12,6 @@ interface UseAvailableModelsResponse {
 }
 
 export default function useAvailableModels(): UseAvailableModelsResponse {
-  const { toast } = useToast();
   const [models, setModels] = useState<ChatModelContainer[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -36,9 +35,7 @@ export default function useAvailableModels(): UseAvailableModelsResponse {
           }
         })
         .catch((error: Error) => {
-          toast({
-            variant: "destructive",
-            title: "Failed to fetch available models",
+          toast.error("Failed to fetch available models", {
             description: error.message,
           });
           setError(error.message);

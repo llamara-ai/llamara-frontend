@@ -6,8 +6,8 @@ import useGetHistoryApi from "./api/useGetHistoryApi";
 import { useLoading } from "@/services/LoadingService";
 import { readSelectedModel } from "./useLocalStorage";
 import { useGetSessions } from "@/services/GetSessionsService";
-import { toast } from "./use-toast";
 import useStateRef from "react-usestateref";
+import { toast } from "sonner";
 
 interface UseChatMessagesResponse {
   chatMessages: ChatMessageRecord[];
@@ -164,9 +164,7 @@ export default function useChatMessages(): UseChatMessagesResponse {
   };
 
   const errorChatMessage = (errorTitle: string, errorMessage: string) => {
-    toast({
-      variant: "destructive",
-      title: errorTitle,
+    toast.error(errorTitle, {
       description: errorMessage,
     });
     console.error(errorTitle + ": " + errorMessage);

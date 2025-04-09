@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { addKnowledgeTag, KnowledgeRecord, removeKnowledgeTag } from "@/api";
-import { useToast } from "../use-toast";
 import { useGetKnowledgeList } from "@/services/GetKnowledgeListService";
+import { toast } from "sonner";
 
 interface UseKnowledgeTagApiProps {
   knowledge: KnowledgeRecord | null;
@@ -15,7 +15,6 @@ interface UseKnowledgeTagApiResponse {
 export default function useKnowledgeTagApi({
   knowledge,
 }: UseKnowledgeTagApiProps): UseKnowledgeTagApiResponse {
-  const { toast } = useToast();
   const [error, setError] = useState<string | null>(null);
   const { updateLocalKnowledge } = useGetKnowledgeList();
 
@@ -48,9 +47,7 @@ export default function useKnowledgeTagApi({
       } catch (error) {
         if (error instanceof Error) {
           setError(error.message);
-          toast({
-            variant: "destructive",
-            title: "Failed to add Tag",
+          toast.error("Failed to add Tag", {
             description: error.message,
           });
           cleanedTags = cleanedTags.filter((t) => t !== tag);
@@ -85,9 +82,7 @@ export default function useKnowledgeTagApi({
       } catch (error) {
         if (error instanceof Error) {
           setError(error.message);
-          toast({
-            variant: "destructive",
-            title: "Failed to remove Tag",
+          toast.error("Failed to remove Tag", {
             description: error.message,
           });
           newTags.push(tag);

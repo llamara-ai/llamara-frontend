@@ -1,12 +1,12 @@
+/* eslint-disable */
 import React from "react";
-import { render, screen, act, waitFor } from "@testing-library/react";
+import { render, act } from "@testing-library/react";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import GetSessionsProvider, {
   useGetSessions,
 } from "@/services/GetSessionsService";
 import { getSessions } from "@/api";
 import { useCache } from "@/services/CacheService";
-import { useToast } from "@/hooks/use-toast";
 import { BrowserRouter } from "react-router";
 
 // Mock the dependencies
@@ -18,9 +18,25 @@ vi.mock("@/services/CacheService", () => ({
   useCache: vi.fn(),
 }));
 
-vi.mock("@/hooks/use-toast", () => ({
-  useToast: vi.fn(),
-}));
+vi.mock("sonner", () => {
+  const mockToast = {
+    message: vi.fn(),
+    success: vi.fn(),
+    error: vi.fn(),
+    warning: vi.fn(),
+    info: vi.fn(),
+    custom: vi.fn(),
+    promise: vi.fn(),
+    dismiss: vi.fn(),
+    loading: vi.fn(),
+  };
+
+  return {
+    toast: mockToast,
+    Toaster: vi.fn(() => null),
+  };
+});
+import { toast } from "sonner";
 
 // Fix for react-usestateref mock - provide a default export
 vi.mock("react-usestateref", () => {
@@ -87,7 +103,6 @@ function TestComponent() {
 }
 
 describe("GetSessionsProvider", () => {
-  const mockToast = { toast: vi.fn() };
   const mockGetCache = vi.fn();
   const mockSetCache = vi.fn();
 
@@ -100,7 +115,6 @@ describe("GetSessionsProvider", () => {
     vi.resetAllMocks();
 
     // Setup mocks
-    (useToast as any).mockReturnValue(mockToast);
     (useCache as any).mockReturnValue({
       getCache: mockGetCache,
       setCache: mockSetCache,
@@ -113,7 +127,7 @@ describe("GetSessionsProvider", () => {
   it("should load sessions from API when cache is empty", async () => {
     mockGetCache.mockReturnValue(null);
 
-    render(
+    const { getByTestId } = render(
       <BrowserRouter>
         <GetSessionsProvider>
           <TestComponent />
@@ -122,21 +136,23 @@ describe("GetSessionsProvider", () => {
     );
 
     // Initially no sessions should be displayed
-    expect(screen.getByTestId("sessions-count").textContent).toBe("0");
+    expect(getByTestId("sessions-count").textContent).toBe("0");
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
 
     // Wait for the API call to resolve
-    await waitFor(() => {
-      expect(getSessions).toHaveBeenCalledTimes(1);
-      expect(screen.getByTestId("sessions-count").textContent).toBe("2");
-      expect(screen.getByTestId("session-session-1")).toBeDefined();
-      expect(screen.getByTestId("session-session-2")).toBeDefined();
-    });
+    expect(getSessions).toHaveBeenCalledTimes(1);
+    expect(getByTestId("sessions-count").textContent).toBe("2");
+    expect(getByTestId("session-session-1")).toBeDefined();
+    expect(getByTestId("session-session-2")).toBeDefined();
   });
 
   it("should load sessions from cache when available", () => {
     mockGetCache.mockReturnValue(mockSessions);
 
-    render(
+    const { getByTestId } = render(
       <BrowserRouter>
         <GetSessionsProvider>
           <TestComponent />
@@ -147,13 +163,13 @@ describe("GetSessionsProvider", () => {
     // Sessions should be loaded from cache
     expect(mockGetCache).toHaveBeenCalledWith("sessions");
     expect(getSessions).not.toHaveBeenCalled();
-    expect(screen.getByTestId("sessions-count").textContent).toBe("2");
+    expect(getByTestId("sessions-count").textContent).toBe("2");
   });
 
   it("should append a session locally", async () => {
     mockGetCache.mockReturnValue(mockSessions);
 
-    render(
+    const { getByTestId } = render(
       <BrowserRouter>
         <GetSessionsProvider>
           <TestComponent />
@@ -162,27 +178,27 @@ describe("GetSessionsProvider", () => {
     );
 
     // Initially 2 sessions
-    expect(screen.getByTestId("sessions-count").textContent).toBe("2");
+    expect(getByTestId("sessions-count").textContent).toBe("2");
 
     // Append a new session
     act(() => {
-      screen.getByTestId("append-button").click();
+      getByTestId("append-button").click();
+    });
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
     });
 
     // Should now have 3 sessions
-    await waitFor(() => {
-      expect(screen.getByTestId("sessions-count").textContent).toBe("3");
-      expect(screen.getByTestId("session-new-session")).toBeDefined();
-      expect(screen.getByTestId("session-new-session").textContent).toBe(
-        "New Session",
-      );
-    });
+    expect(getByTestId("sessions-count").textContent).toBe("3");
+    expect(getByTestId("session-new-session")).toBeDefined();
+    expect(getByTestId("session-new-session").textContent).toBe("New Session");
   });
 
   it("should update a session label locally", async () => {
     mockGetCache.mockReturnValue(mockSessions);
 
-    render(
+    const { getByTestId } = render(
       <BrowserRouter>
         <GetSessionsProvider>
           <TestComponent />
@@ -191,18 +207,16 @@ describe("GetSessionsProvider", () => {
     );
 
     // Initially session-1 has label "Session 1"
-    expect(screen.getByTestId("session-session-1").textContent).toBe(
-      "Session 1",
-    );
+    expect(getByTestId("session-session-1").textContent).toBe("Session 1");
 
     // Update the label
     act(() => {
-      screen.getByTestId("update-button").click();
+      getByTestId("update-button").click();
     });
 
     // Label should be updated
-    await waitFor(() => {
-      expect(screen.getByTestId("session-session-1").textContent).toBe(
+    await act(async () => {
+      expect(getByTestId("session-session-1").textContent).toBe(
         "Updated Label",
       );
     });
@@ -211,7 +225,7 @@ describe("GetSessionsProvider", () => {
   it("should delete a session locally", async () => {
     mockGetCache.mockReturnValue(mockSessions);
 
-    render(
+    const { queryByTestId, getByTestId } = render(
       <BrowserRouter>
         <GetSessionsProvider>
           <TestComponent />
@@ -220,19 +234,19 @@ describe("GetSessionsProvider", () => {
     );
 
     // Initially 2 sessions
-    expect(screen.getByTestId("sessions-count").textContent).toBe("2");
-    expect(screen.getByTestId("session-session-1")).toBeDefined();
+    expect(getByTestId("sessions-count").textContent).toBe("2");
+    expect(getByTestId("session-session-1")).toBeDefined();
 
     // Delete a session
     act(() => {
-      screen.getByTestId("delete-button").click();
+      getByTestId("delete-button").click();
     });
 
     // Should now have 1 session and session-1 should be removed
-    await waitFor(() => {
-      expect(screen.getByTestId("sessions-count").textContent).toBe("1");
-      expect(screen.queryByTestId("session-session-1")).toBeNull();
-      expect(screen.getByTestId("session-session-2")).toBeDefined();
+    await act(async () => {
+      expect(getByTestId("sessions-count").textContent).toBe("1");
+      expect(queryByTestId("session-session-1")).toBeNull();
+      expect(getByTestId("session-session-2")).toBeDefined();
     });
   });
 
@@ -249,13 +263,13 @@ describe("GetSessionsProvider", () => {
       </BrowserRouter>,
     );
 
-    await waitFor(() => {
-      expect(getSessions).toHaveBeenCalledTimes(1);
-      expect(mockToast.toast).toHaveBeenCalledWith({
-        variant: "destructive",
-        title: "Failed to fetch sessions",
-        description: errorMessage,
-      });
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    expect(getSessions).toHaveBeenCalledTimes(1);
+    expect(toast.error).toHaveBeenCalledWith("Failed to fetch sessions", {
+      description: errorMessage,
     });
   });
 });

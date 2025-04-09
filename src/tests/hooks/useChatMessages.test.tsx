@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React from "react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
@@ -6,7 +7,6 @@ import useCreateSessionApi from "@/hooks/api/useCreateSessionApi";
 import useGetHistoryApi from "@/hooks/api/useGetHistoryApi";
 import { useLoading } from "@/services/LoadingService";
 import { useGetSessions } from "@/services/GetSessionsService";
-import * as toastModule from "@/hooks/use-toast";
 import { readSelectedModel } from "@/hooks/useLocalStorage";
 import * as apiModule from "@/api";
 import { useTranslation } from "react-i18next";
@@ -18,6 +18,26 @@ vi.mock("@/services/LoadingService");
 vi.mock("@/services/GetSessionsService");
 vi.mock("@/hooks/useLocalStorage");
 vi.mock("react-i18next");
+
+vi.mock("sonner", () => {
+  const mockToast = {
+    message: vi.fn(),
+    success: vi.fn(),
+    error: vi.fn(),
+    warning: vi.fn(),
+    info: vi.fn(),
+    custom: vi.fn(),
+    promise: vi.fn(),
+    dismiss: vi.fn(),
+    loading: vi.fn(),
+  };
+
+  return {
+    toast: mockToast,
+    Toaster: vi.fn(() => null),
+  };
+});
+import { toast } from "sonner";
 
 // Mock react-usestateref
 vi.mock("react-usestateref", () => ({
@@ -41,7 +61,6 @@ describe("useChatMessages", () => {
   const mockTranslate = vi.fn((key) => key);
   const mockAppendSessionLocal = vi.fn();
   const mockSetActiveSessionId = vi.fn();
-  const mockToast = vi.fn();
   const mockFetchHistory = vi.fn();
   const mockHandleCreateSession = vi.fn();
   const mockPrompt = vi.fn();
@@ -68,7 +87,6 @@ describe("useChatMessages", () => {
     });
 
     // Mock toast properly
-    vi.spyOn(toastModule, "toast").mockImplementation(mockToast);
     (useGetHistoryApi as any).mockReturnValue({
       fetchHistory: mockFetchHistory,
       loading: false,
@@ -145,7 +163,7 @@ describe("useChatMessages", () => {
     });
 
     await act(async () => {
-      result.current.handlePromptAndMessages("Hello AI");
+      await result.current.handlePromptAndMessages("Hello AI");
       await waitForPromise;
     });
 
@@ -206,7 +224,7 @@ describe("useChatMessages", () => {
     });
 
     await act(async () => {
-      result.current.handlePromptAndMessages("Hello AI");
+      await result.current.handlePromptAndMessages("Hello AI");
       await waitForPromise;
     });
 
@@ -249,9 +267,7 @@ describe("useChatMessages", () => {
     });
 
     // Verify error handling
-    expect(mockToast).toHaveBeenCalledWith({
-      variant: "destructive",
-      title: "No chat model selected",
+    expect(toast.error).toHaveBeenCalledWith("No chat model selected", {
       description: "Select a chat model at the sidebar to start chatting",
     });
   });
@@ -273,9 +289,7 @@ describe("useChatMessages", () => {
     });
 
     // Verify error handling
-    expect(mockToast).toHaveBeenCalledWith({
-      variant: "destructive",
-      title: "Provided session id is invalid",
+    expect(toast.error).toHaveBeenCalledWith("Provided session id is invalid", {
       description: "Something went wrong. Please try again",
     });
   });
@@ -297,11 +311,12 @@ describe("useChatMessages", () => {
     });
 
     // Verify error handling
-    expect(mockToast).toHaveBeenCalledWith({
-      variant: "destructive",
-      title: "Failed to get response to prompt",
-      description: "Network error",
-    });
+    expect(toast.error).toHaveBeenCalledWith(
+      "Failed to get response to prompt",
+      {
+        description: "Network error",
+      },
+    );
   });
 
   it("should handle non-OK response from API", async () => {
@@ -324,11 +339,12 @@ describe("useChatMessages", () => {
     });
 
     // Verify error handling
-    expect(mockToast).toHaveBeenCalledWith({
-      variant: "destructive",
-      title: "Failed to get response to prompt",
-      description: "Request failed with status: 500",
-    });
+    expect(toast.error).toHaveBeenCalledWith(
+      "Failed to get response to prompt",
+      {
+        description: "Request failed with status: 500",
+      },
+    );
   });
 
   it("should handle null response data", async () => {
@@ -351,11 +367,12 @@ describe("useChatMessages", () => {
     });
 
     // Verify error handling
-    expect(mockToast).toHaveBeenCalledWith({
-      variant: "destructive",
-      title: "Failed to get response to prompt",
-      description: "No response from server",
-    });
+    expect(toast.error).toHaveBeenCalledWith(
+      "Failed to get response to prompt",
+      {
+        description: "No response from server",
+      },
+    );
   });
 
   it("should update loading states correctly", async () => {

@@ -9,13 +9,12 @@ import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { t } from "i18next";
 import useDownloadFile from "@/hooks/useDownloadFile";
-import { useToast } from "@/hooks/use-toast";
 import TagEditDialog from "@/views/knowledge/dialog/TagEditDialog";
 import PermissionDialog from "./dialog/PermissionDialog";
+import { toast } from "sonner";
 
 export default function Knowledge() {
   const { allKnowledge } = useGetKnowledgeList();
-  const { toast } = useToast();
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [showPdfWithUuid, setShowPdfWithUuid] = useState<string | null>(null);
   const [pdfLoading, setPdfLoading] = useState<string | null>(null);
@@ -34,9 +33,7 @@ export default function Knowledge() {
       setShowPdfWithUuid(knowledge.id);
       setPdfLoading(knowledge.label);
     } else {
-      toast({
-        variant: "default",
-        title: "Download started",
+      toast.error("Download started", {
         description: "The file download start automatically",
       });
       void downloadFile(knowledge.id, knowledge.label);

@@ -1,16 +1,16 @@
 import {
-  FC,
   createContext,
+  FC,
   ReactNode,
   useContext,
-  useState,
-  useMemo,
   useEffect,
+  useMemo,
+  useState,
 } from "react";
 import { configuration, SecurityInfoDto } from "@/api";
 import { TAuthConfig } from "react-oauth2-code-pkce";
-import { toast } from "@/hooks/use-toast.ts";
 import { pdfjs } from "react-pdf";
+import { toast } from "sonner";
 
 export interface AppContext {
   ready: boolean;
@@ -86,14 +86,11 @@ export const AppContextProvider: FC<{ children: ReactNode }> = ({
       // Handle workerResponse: Process PDF worker file
       const workerCode = await workerResponse.text();
       const blob = new Blob([workerCode], { type: "application/javascript" });
-      const workerUrl = URL.createObjectURL(blob);
-      pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
+      pdfjs.GlobalWorkerOptions.workerSrc = URL.createObjectURL(blob);
       setPdfWorkerReady(true);
     } catch (error) {
       if (error instanceof Error) {
-        toast({
-          variant: "destructive",
-          title: "Failed to connect to server",
+        toast.error("Failed to connect to server", {
           description: error.message,
         });
       }

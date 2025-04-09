@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ChatMessageRecord, getHistory } from "@/api";
-import { useToast } from "../use-toast";
 import { useCache } from "@/services/CacheService";
+import { toast } from "sonner";
 
 interface FetchHistoryProps {
   sessionId: string | null;
@@ -16,7 +16,6 @@ interface UseGetHistoryApiResponse {
 }
 
 export default function useGetHistoryApi(): UseGetHistoryApiResponse {
-  const { toast } = useToast();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const { getCache, setCache } = useCache<ChatMessageRecord[]>();
@@ -48,9 +47,7 @@ export default function useGetHistoryApi(): UseGetHistoryApiResponse {
           setLastSessionId(sessionId);
           return response.data;
         } else {
-          toast({
-            variant: "destructive",
-            title: "Failed to fetch history",
+          toast.error("Failed to fetch history", {
             description:
               "The given session id is invalid. Try again, or create new session.",
           });
@@ -60,9 +57,7 @@ export default function useGetHistoryApi(): UseGetHistoryApiResponse {
         }
       } catch (error: unknown) {
         if (error instanceof Error) {
-          toast({
-            variant: "destructive",
-            title: "Failed to fetch history",
+          toast.error("Failed to fetch history", {
             description: error.message,
           });
           setLoading(false);
