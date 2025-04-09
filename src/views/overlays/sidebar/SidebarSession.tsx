@@ -129,7 +129,7 @@ export function SidebarSession({
           style={getStyle(isDeleting, animateInSession?.id === subItem.uid)}
         >
           {subItem.isNotAvailableMessage ? (
-            <SidebarMenuSubButton asChild>
+            <SidebarMenuSubButton asChild className="cursor-default">
               <button className="flex items-center justify-between text-center w-full">
                 <span>{subItem.title}</span>
               </button>
@@ -164,7 +164,7 @@ export function SidebarSession({
                 </div>
               ) : (
                 <div
-                  className={`flex items-center justify-between text-center w-full ${highlightSession ? "bg-secondary" : "bg-transparent"}`}
+                  className={`flex items-center justify-between text-center w-full cursor-pointer ${highlightSession ? "bg-secondary" : "bg-transparent"}`}
                   onMouseEnter={() => {
                     setHover(true);
                   }}
@@ -176,7 +176,7 @@ export function SidebarSession({
                   }}
                 >
                   <button
-                    className="grow text-left overflow-hidden text-ellipsis whitespace-nowrap"
+                    className="grow text-left overflow-hidden text-ellipsis whitespace-nowrap cursor-pointer"
                     onClick={() => {
                       setOnClick(subItem.uid, subItem.title);
                     }}
@@ -201,7 +201,7 @@ export function SidebarSession({
                     >
                       <DropdownMenuTrigger asChild>
                         <button
-                          className={`rounded-full h-full w-full transition-opacity duration-300 ${hover || open ? "opacity-100" : "opacity-0"}`}
+                          className={`rounded-full h-full w-full transition-opacity duration-300 cursor-pointer ${hover || open ? "opacity-100" : "opacity-0"}`}
                         >
                           <div className="flex flex-row items-center justify-center gap-x-1">
                             <div className="h-1 w-1 rounded-full bg-muted-foreground" />

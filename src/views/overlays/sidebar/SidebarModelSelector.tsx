@@ -21,7 +21,6 @@ import {
 } from "@/components/ui/tooltip";
 import { ChatModelContainer } from "@/api";
 import { t } from "i18next";
-import { useLogo } from "@/hooks/useLogo";
 import { getLogoFromModelProvider } from "@/lib/getLogoFromModelProvider";
 import { useEffect } from "react";
 
@@ -37,7 +36,6 @@ export function SidebarModelSelector({
   setActiveModel,
 }: Readonly<SidebarModelSelectorProps>) {
   const { isMobile, open } = useSidebar();
-  const logoSrc = useLogo();
 
   // If there is only one model, select it by default
   useEffect(() => {
@@ -52,26 +50,12 @@ export function SidebarModelSelector({
 
   return (
     <SidebarMenu>
-      <a href="/" className={`relative w-full`}>
-        <img
-          src={logoSrc}
-          alt="Logo"
-          className={`absolute top-0 left-0 transition-opacity duration-300 ${open ? "opacity-100" : "opacity-0"}`}
-        />
-        <img
-          src="/favicon.svg"
-          alt="Logo Favicon"
-          className={`absolute top-0 left-0 transition-opacity w-[32px] duration-300 ${!open ? "opacity-100" : "opacity-0"}`}
-        />
-      </a>
-      <SidebarMenuItem
-        className={`transition-all duration-500 ${open ? "mt-20" : "mt-10"}`}
-      >
+      <SidebarMenuItem className={`transition-all duration-500`}>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground p-0"
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground p-2"
             >
               {selectedModel && (
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg dark:text-white">
@@ -89,7 +73,9 @@ export function SidebarModelSelector({
                   ) : (
                     <>
                       {open ? (
-                        t("sidebar.session.modelSelectionInstruction")
+                        <div className="ml-2">
+                          {t("sidebar.session.modelSelectionInstruction")}
+                        </div>
                       ) : (
                         <div className="text-center">?</div>
                       )}

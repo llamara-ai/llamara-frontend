@@ -43,7 +43,7 @@ export default function Header({ onClickNewSession }: Readonly<Header>) {
                     <TooltipTrigger asChild>
                       <button
                         onClick={onClickNewSession}
-                        className="text-sm font-medium text-primary hover:text-primary dark:text-primary dark:hover:text-primary"
+                        className="text-sm font-medium text-primary hover:text-primary dark:text-primary dark:hover:text-primary cursor-pointer"
                       >
                         <Plus className="content-center w-5 h-5" />
                       </button>
