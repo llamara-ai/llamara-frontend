@@ -212,6 +212,13 @@ function KnowledgeSourceRenderer({
     });
   };
 
+
+  // noinspection SuspiciousTypeOfGuard
+  if (typeof children === "string") {
+    return <>{renderContent(children)}</>;
+  }
+
+
   if (Array.isArray(children)) {
     return (
       <>
