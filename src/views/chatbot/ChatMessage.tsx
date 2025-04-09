@@ -176,7 +176,7 @@ export default function ChatMessage({
 }
 
 interface KnowledgeSourceRendererProps {
-  children: React.ReactNode;
+  children: React.ReactNode | string;
   sources: RagSourceRecord[] | undefined;
   openPdf: openPdf;
 }
@@ -211,6 +211,10 @@ function KnowledgeSourceRenderer({
       return part;
     });
   };
+
+  if (typeof children === "string") {
+    return <>{renderContent(children)}</>;
+  }
 
   if (Array.isArray(children)) {
     return (
