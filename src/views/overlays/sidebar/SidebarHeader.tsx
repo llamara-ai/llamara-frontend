@@ -6,8 +6,9 @@ import {
   readSelectedModel,
   useWriteSelectedModel,
 } from "@/hooks/useLocalStorage";
-import { SidebarModelSelector as ChatbotSidebarHeader } from "./SidebarModelSelector";
+import { SidebarModelSelector } from "./SidebarModelSelector";
 import { toast } from "sonner";
+import { SidebarLogo } from "@/views/overlays/sidebar/SidebarLogo.tsx";
 
 const SidebarHeaderFunc = () => {
   const { models } = useGetModelsApi();
@@ -36,13 +37,14 @@ const SidebarHeaderFunc = () => {
 
   return (
     <SidebarHeader
-      className="p-2"
+      className="p-2 flex flex-col align-top"
       style={{
         marginTop: "env(safe-area-inset-top, 0)",
         marginLeft: "env(safe-area-inset-left, 0)",
       }}
     >
-      <ChatbotSidebarHeader
+      <SidebarLogo className="mb-1" />
+      <SidebarModelSelector
         models={models}
         selectedModel={selectedModel}
         setActiveModel={setSelectedModel}
