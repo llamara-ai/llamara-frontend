@@ -10,7 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import useSetSessionLabelApi from "@/hooks/api/useSetSessionLabelApi";
 import {
@@ -124,7 +124,7 @@ export function SidebarSession({
         {fadeOutKeyframes}
       </style>
       <TooltipProvider delayDuration={500}>
-        {/* 1 second delay until tooltip is shown */}
+        {/* 1-second delay until tooltip is shown */}
         <SidebarMenuSubItem
           style={getStyle(isDeleting, animateInSession?.id === subItem.uid)}
         >
@@ -150,7 +150,7 @@ export function SidebarSession({
                     onChange={(e) => {
                       setEditedLabel(e.target.value);
                     }}
-                    className="flex-grow border bg-secondary rounded w-5/6"
+                    className="grow border bg-secondary rounded w-5/6"
                     autoFocus
                   />
                   <button
@@ -176,7 +176,7 @@ export function SidebarSession({
                   }}
                 >
                   <button
-                    className="flex-grow text-left overflow-hidden text-ellipsis whitespace-nowrap"
+                    className="grow text-left overflow-hidden text-ellipsis whitespace-nowrap"
                     onClick={() => {
                       setOnClick(subItem.uid, subItem.title);
                     }}
@@ -193,7 +193,7 @@ export function SidebarSession({
                     </Tooltip>
                   </button>
 
-                  <div className="h-full px-2 flex-shrink-0">
+                  <div className="h-full px-2 shrink-0">
                     <DropdownMenu
                       onOpenChange={(open) => {
                         setOpen(open);

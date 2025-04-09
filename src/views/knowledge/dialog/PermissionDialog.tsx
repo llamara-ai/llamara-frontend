@@ -122,7 +122,7 @@ export default function PermissionsDialog({
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-[1fr,auto,auto] gap-2 items-center mb-2 justify-centers">
+          <div className="grid grid-cols-[1fr_auto_auto] gap-2 items-center mb-2 justify-centers">
             <Input
               placeholder={t(
                 "knowledgePage.permissionsDialog.usernamePlaceholder",
@@ -169,7 +169,7 @@ export default function PermissionsDialog({
             .map(([username, permission]) => (
               <div // permission entry for specific user
                 key={username}
-                className="grid grid-cols-[1fr,auto,auto] gap-2 items-center"
+                className="grid grid-cols-[1fr_auto_auto] gap-2 items-center"
               >
                 <span className="ml-2 w-3/4">{username}</span>
                 <Select
@@ -212,7 +212,7 @@ export default function PermissionsDialog({
             ))}
           <div // permission entry for any user
             key="any"
-            className="grid grid-cols-[1fr,auto,auto] gap-2 items-center"
+            className="grid grid-cols-[1fr_auto_auto] gap-2 items-center"
           >
             <span className="ml-2 w-3/4">{t("user.any")}</span>
             <Select

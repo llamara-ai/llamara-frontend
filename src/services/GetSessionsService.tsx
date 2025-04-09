@@ -1,4 +1,4 @@
-import {
+import React, {
   createContext,
   useContext,
   useEffect,
@@ -8,11 +8,11 @@ import {
 } from "react";
 import { getSessions, Session } from "@/api";
 import { useCache } from "@/services/CacheService";
-import { useToast } from "@/hooks/use-toast";
 import { default as useRefState } from "react-usestateref";
 import useCurrentPage from "@/hooks/useCurrentPage";
 import { useNavigate } from "react-router";
 import { navigateToSession } from "@/lib/navigateToSession";
+import { toast } from "sonner";
 
 export interface UseGetSessionsApiResponse {
   sessions: Session[];
@@ -37,7 +37,6 @@ const SessionsContext = createContext<UseGetSessionsApiResponse | null>(null);
 export default function GetSessionsProvider({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const { toast } = useToast();
   const [sessions, setSessions, sessionsRef] = useRefState<Session[]>([]);
   const [error, setError] = useState<string | null>(null);
   const { getCache, setCache } = useCache<Session[]>();
@@ -71,9 +70,7 @@ export default function GetSessionsProvider({
           }
         })
         .catch((error: Error) => {
-          toast({
-            variant: "destructive",
-            title: "Failed to fetch sessions",
+          toast.error("Failed to fetch sessions", {
             description: error.message,
           });
           setError(error.message);

@@ -73,7 +73,7 @@ export default function KnowledgeOptions({
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+      <DropdownMenuTrigger asChild data-slot="trigger">
         <Button variant="ghost" className="h-8 w-8 p-0">
           <MoreVertical className="h-4 w-4" />
         </Button>

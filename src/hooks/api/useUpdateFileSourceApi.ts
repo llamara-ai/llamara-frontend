@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { updateFileSource } from "@/api";
-import { useToast } from "../use-toast";
+import { toast } from "sonner";
 
 interface UseUpdateFileSourceApiResponse {
   handleUpdateFileSource: (uuid: string, file: Blob | File) => Promise<void>;
@@ -8,7 +8,6 @@ interface UseUpdateFileSourceApiResponse {
 }
 
 export default function useUpdateFileSourceApiApi(): UseUpdateFileSourceApiResponse {
-  const { toast } = useToast();
   const [error, setError] = useState<string | null>(null);
 
   // eslint-disable-next-line @typescript-eslint/require-await
@@ -28,9 +27,7 @@ export default function useUpdateFileSourceApiApi(): UseUpdateFileSourceApiRespo
         console.log("Updated knowledge:", response);
       })
       .catch((error: Error) => {
-        toast({
-          variant: "destructive",
-          title: "Failed to update knowledge",
+        toast.error("Failed to update knowledge", {
           description: error.message,
         });
         setError(error.message);

@@ -1,6 +1,6 @@
 import { retryFailedIngestion } from "@/api";
-import { useToast } from "../use-toast";
 import { useState } from "react";
+import { toast } from "sonner";
 
 interface UseRetryIngestionApiResponse {
   retryIngestion: (knowledgeId: string) => Promise<null>;
@@ -9,7 +9,6 @@ interface UseRetryIngestionApiResponse {
 
 export default function useRetryIngestionApi(): UseRetryIngestionApiResponse {
   const [error, setError] = useState<string | null>(null);
-  const { toast } = useToast();
 
   const retryIngestion = async (knowledgeId: string) => {
     const options = {
@@ -21,9 +20,7 @@ export default function useRetryIngestionApi(): UseRetryIngestionApiResponse {
       await retryFailedIngestion(options);
     } catch (error) {
       if (error instanceof Error) {
-        toast({
-          variant: "destructive",
-          title: "Failed retry ingestion!",
+        toast.error("Failed retry ingestion!", {
           description: error.message,
         });
         setError(error.message);

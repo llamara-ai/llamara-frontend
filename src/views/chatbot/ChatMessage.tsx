@@ -10,7 +10,6 @@ import { getInitials } from "@/lib/getInitials";
 import { getLogoFromModelProvider } from "@/lib/getLogoFromModelProvider";
 import { useUserContext } from "@/services/UserContextService";
 import { useTranslation } from "react-i18next";
-import { useToast } from "@/hooks/use-toast";
 import type {
   ChatMessageRecord,
   ChatModelContainer,
@@ -26,6 +25,7 @@ import {
 import useAvailableModels from "@/hooks/api/useGetModelsApi";
 import { KnowledgeSource } from "./KnowledgeSource";
 import { openPdf } from "@/views/chatbot/Chat.tsx";
+import { toast } from "sonner";
 
 interface ChatMessageProps {
   message: ChatMessageRecord;
@@ -46,7 +46,6 @@ export default function ChatMessage({
 }: Readonly<ChatMessageProps>) {
   const { user } = useUserContext();
   const { t } = useTranslation();
-  const { toast } = useToast();
 
   const [isCopied, setIsCopied] = useState(false);
 
@@ -66,7 +65,7 @@ export default function ChatMessage({
     if (message.type === "AI" && message.text) {
       void navigator.clipboard.writeText(message.text);
       setIsCopied(true);
-      toast({ title: t("chatbot.chat.copyMessage") });
+      toast(t("chatbot.chat.copyMessage"));
       setTimeout(() => {
         setIsCopied(false);
       }, 1500);
@@ -212,10 +211,6 @@ function KnowledgeSourceRenderer({
       return part;
     });
   };
-
-  if (typeof children === "string") {
-    return <>{renderContent(children)}</>;
-  }
 
   if (Array.isArray(children)) {
     return (

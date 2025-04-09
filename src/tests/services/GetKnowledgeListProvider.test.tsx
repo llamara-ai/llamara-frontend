@@ -1,11 +1,11 @@
+/* eslint-disable */
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, waitFor, act } from "@testing-library/react";
+import { render, act } from "@testing-library/react";
 import GetKnowledgeListProvider, {
   useGetKnowledgeList,
 } from "@/services/GetKnowledgeListService";
 import { getAllKnowledge, KnowledgeRecord } from "@/api";
 import { useCache } from "@/services/CacheService";
-import { useToast } from "@/hooks/use-toast";
 import { useEffect, useRef, useState } from "react";
 
 // Mock dependencies
@@ -13,12 +13,28 @@ vi.mock("@/api", () => ({
   getAllKnowledge: vi.fn(),
 }));
 
+vi.mock("sonner", () => {
+  const mockToast = {
+    message: vi.fn(),
+    success: vi.fn(),
+    error: vi.fn(),
+    warning: vi.fn(),
+    info: vi.fn(),
+    custom: vi.fn(),
+    promise: vi.fn(),
+    dismiss: vi.fn(),
+    loading: vi.fn(),
+  };
+
+  return {
+    toast: mockToast,
+    Toaster: vi.fn(() => null),
+  };
+});
+import { toast } from "sonner";
+
 vi.mock("@/services/CacheService", () => ({
   useCache: vi.fn(),
-}));
-
-vi.mock("@/hooks/use-toast", () => ({
-  useToast: vi.fn(),
 }));
 
 // Mock useRefState directly with React's useState and useRef
@@ -48,7 +64,6 @@ function TestComponent({
 }
 
 describe("GetKnowledgeListProvider", () => {
-  const mockToast = { toast: vi.fn() };
   const mockGetCache = vi.fn();
   const mockSetCache = vi.fn();
   const mockGetCacheLoading = vi.fn();
@@ -111,8 +126,9 @@ describe("GetKnowledgeListProvider", () => {
   ];
 
   beforeEach(() => {
+    vi.clearAllMocks();
+
     // Setup mocks using type assertions
-    (useToast as any).mockReturnValue(mockToast);
     (useCache as any).mockReturnValue({
       getCache: mockGetCache,
       setCache: mockSetCache,
@@ -126,8 +142,12 @@ describe("GetKnowledgeListProvider", () => {
         getCache: mockGetCacheLoading,
         setCache: mockSetCacheLoading,
       });
-    (getAllKnowledge as any).mockResolvedValue({
-      data: mockKnowledge,
+
+    // Mock API response
+    (getAllKnowledge as any).mockImplementation(() => {
+      return Promise.resolve({
+        data: mockKnowledge,
+      });
     });
   });
 
@@ -139,26 +159,35 @@ describe("GetKnowledgeListProvider", () => {
     mockGetCache.mockReturnValue(null);
     mockGetCacheLoading.mockReturnValue(false);
 
-    let contextValue: any;
-    render(
+    let contextValue: any = { allKnowledge: [] };
+
+    const updateContextValue = (context: any) => {
+      contextValue = context;
+    };
+
+    const { rerender } = render(
       <GetKnowledgeListProvider>
-        <TestComponent
-          testFn={(context) => {
-            contextValue = context;
-          }}
-        />
+        <TestComponent testFn={updateContextValue} />
       </GetKnowledgeListProvider>,
     );
 
     // Initial state should be empty array
     expect(contextValue.allKnowledge).toEqual([]);
 
-    // Wait for the API call to complete
-    await waitFor(() => {
-      expect(getAllKnowledge).toHaveBeenCalledTimes(1);
-      expect(mockSetCache).toHaveBeenCalledWith("allKnowledge", mockKnowledge);
-      expect(contextValue.allKnowledge).toEqual(mockKnowledge);
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      rerender(
+        <GetKnowledgeListProvider>
+          <TestComponent testFn={updateContextValue} />
+        </GetKnowledgeListProvider>,
+      );
     });
+
+    expect(getAllKnowledge).toHaveBeenCalledTimes(1);
+
+    expect(mockSetCache).toHaveBeenCalledWith("allKnowledge", mockKnowledge);
+
+    expect(contextValue.allKnowledge).toEqual(mockKnowledge);
   });
 
   it("should use cached knowledge if available", async () => {
@@ -179,7 +208,7 @@ describe("GetKnowledgeListProvider", () => {
     expect(contextValue.allKnowledge).toEqual(mockKnowledge);
 
     // API should not be called
-    await waitFor(() => {
+    await act(async () => {
       expect(getAllKnowledge).not.toHaveBeenCalled();
     });
   });
@@ -190,25 +219,27 @@ describe("GetKnowledgeListProvider", () => {
     const errorMessage = "API Error";
     (getAllKnowledge as any).mockRejectedValue(new Error(errorMessage));
 
-    let contextValue: any;
+    let contextValue: any = { error: null };
+
+    const updateContextValue = (context: any) => {
+      contextValue = context;
+    };
+
     render(
       <GetKnowledgeListProvider>
-        <TestComponent
-          testFn={(context) => {
-            contextValue = context;
-          }}
-        />
+        <TestComponent testFn={updateContextValue} />
       </GetKnowledgeListProvider>,
     );
 
-    await waitFor(() => {
-      expect(mockToast.toast).toHaveBeenCalledWith({
-        variant: "destructive",
-        title: "Failed to fetch all knowledge",
-        description: errorMessage,
-      });
-      expect(contextValue.error).toEqual(errorMessage);
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
     });
+
+    expect(toast.error).toHaveBeenCalledWith("Failed to fetch all knowledge", {
+      description: errorMessage,
+    });
+
+    expect(contextValue.error).toEqual(errorMessage);
   });
 
   it("should correctly delete knowledge from local state", async () => {

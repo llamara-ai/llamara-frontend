@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createSession, Session } from "@/api";
-import { useToast } from "../use-toast";
+import { toast } from "sonner";
 
 interface UseCreateSessionApiResponse {
   session: Session;
@@ -10,7 +10,6 @@ interface UseCreateSessionApiResponse {
 
 export default function useCreateSessionApi(): UseCreateSessionApiResponse {
   const [session, setSession] = useState<Session>({});
-  const { toast } = useToast();
   const [error, setError] = useState<string | null>(null);
 
   const handleCreateSession = async (): Promise<Session | null> => {
@@ -24,17 +23,13 @@ export default function useCreateSessionApi(): UseCreateSessionApiResponse {
         return session;
       } else {
         setError("Failed to create session. The response was undefined.");
-        toast({
-          variant: "destructive",
-          title: "Failed to create session",
+        toast.error("Failed to create session", {
           description: "The response was undefined",
         });
       }
       // @ts-expect-error except an error from createSession
     } catch (error: Error) {
-      toast({
-        variant: "destructive",
-        title: "Failed to create session",
+      toast.error("Failed to create session", {
         description: error.message, // eslint-disable-line
       });
       setError(error.message); // eslint-disable-line

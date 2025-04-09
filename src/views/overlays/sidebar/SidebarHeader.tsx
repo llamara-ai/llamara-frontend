@@ -7,10 +7,9 @@ import {
   useWriteSelectedModel,
 } from "@/hooks/useLocalStorage";
 import { SidebarModelSelector as ChatbotSidebarHeader } from "./SidebarModelSelector";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 const SidebarHeaderFunc = () => {
-  const { toast } = useToast();
   const { models } = useGetModelsApi();
 
   const [selectedModel, setSelectedModel] = useState<ChatModelContainer | null>(
@@ -27,9 +26,7 @@ const SidebarHeaderFunc = () => {
       !models.some((model) => model.uid === selectedModel.uid) &&
       models.length > 0
     ) {
-      toast({
-        variant: "destructive",
-        title: "The selected model is not available",
+      toast.error("The selected model is not available", {
         description:
           "Previous model is no longer available. Please select a new model.",
       });

@@ -493,7 +493,7 @@ const PdfViewer = ({
       />
       <div
         ref={containerRef}
-        className="flex-grow overflow-auto bg-primary-foreground"
+        className="grow overflow-auto bg-primary-foreground"
       >
         {url ? (
           <Document

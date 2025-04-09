@@ -22,7 +22,7 @@ export default function Columns(
 
   return [
     {
-      id: "collapseable",
+      id: "collapsable",
       cell: ({ row }) => {
         return row.getCanExpand() ? (
           <Button

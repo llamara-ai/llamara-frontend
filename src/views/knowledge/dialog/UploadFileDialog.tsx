@@ -17,7 +17,7 @@ import { useTranslation } from "react-i18next";
 import { useDropzone } from "react-dropzone";
 import { UploadIcon } from "lucide-react";
 import useFileStatus from "@/hooks/useFileStatus";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 interface UploadFileDialogProps {
   knowledge?: Readonly<KnowledgeRecord> | null;
@@ -43,7 +43,6 @@ export default function UploadFileDialog({
   const { registerFiles } = useFileStatus();
 
   const { t } = useTranslation();
-  const { toast } = useToast();
 
   const [updateMode] = useState<boolean>(knowledge !== null);
 
@@ -95,9 +94,7 @@ export default function UploadFileDialog({
     // If white spaces were removed, show a toast
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (removedWhiteSpaces) {
-      toast({
-        title: t("knowledgePage.uploadFileDialog.whiteSpaces"),
-      });
+      toast(t("knowledgePage.uploadFileDialog.whiteSpaces"));
     }
 
     // If knowledge provided call update file source
@@ -142,7 +139,7 @@ export default function UploadFileDialog({
         if (!open) onClose();
       }}
     >
-      <DialogOverlay className="fixed inset-0 z-50 bg-black bg-opacity-30 backdrop-blur-sm" />
+      <DialogOverlay className="fixed inset-0 z-50 bg-black bg-opacity-30 backdrop-blur-xs" />
       <DialogContent className="fixed left-1/2 top-1/2 z-50 grid w-full max-w-lg transform -translate-x-1/2 -translate-y-1/2 gap-4 border p-6 shadow-lg duration-200 sm:rounded-lg">
         <DialogTitle>
           {updateMode

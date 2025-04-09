@@ -89,7 +89,7 @@ export default function Chatbot() {
   return (
     <div className="flex h-full pt-[var(--header-height)] xl:pt-1 justify-center">
       <div
-        className={`flex-shrink transition-all duration-300 ${pdfKnowledgeId != null ? "mr-4" : "w-full lg:w-5/6"} h-full overflow-auto`}
+        className={`shrink transition-all duration-300 ${pdfKnowledgeId != null ? "mr-4" : "w-full lg:w-5/6"} h-full overflow-auto`}
       >
         <Chat
           messages={chatMessages}

@@ -13,7 +13,7 @@ interface PromptInputProps {
 }
 
 const PromptInput = React.forwardRef<HTMLTextAreaElement, PromptInputProps>(
-  ({ handleSubmit, isGenerating, isLoading, lockSendPrompt }, ref) => {
+  ({ handleSubmit, isGenerating, isLoading, lockSendPrompt }) => {
     const { t } = useTranslation();
     const [promptInput, setPromptInput] = useState<string>("");
 
@@ -43,12 +43,11 @@ const PromptInput = React.forwardRef<HTMLTextAreaElement, PromptInputProps>(
           className="relative flex items-center rounded-2xl border bg-secondary focus-within:ring-1 focus-within:ring-secondary-foreground"
         >
           <ChatInput
-            ref={ref}
             value={promptInput}
             onKeyDown={onKeyDown}
             onChange={handleInputChange}
             placeholder={t("chatbot.promptInput.placeholder")}
-            className="flex-grow rounded-2xl border-0 shadow-none focus-visible:ring-0"
+            className="grow rounded-2xl border-0 shadow-none focus-visible:ring-0"
           />
           <Button
             disabled={!promptInput || isLoading || lockSendPrompt}

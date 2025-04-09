@@ -125,7 +125,7 @@ export function KnowledgeSource({
         {open && (
           <>
             <div
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+              className="fixed inset-0 bg-black/50 backdrop-blur-xs z-50"
               onClick={() => {
                 setOpen(false);
               }}

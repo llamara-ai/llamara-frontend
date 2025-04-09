@@ -52,7 +52,7 @@ export function SidebarModelSelector({
 
   return (
     <SidebarMenu>
-      <a href="/" className="w-230 relative">
+      <a href="/" className={`relative w-full`}>
         <img
           src={logoSrc}
           alt="Logo"
@@ -61,8 +61,7 @@ export function SidebarModelSelector({
         <img
           src="/favicon.svg"
           alt="Logo Favicon"
-          className={`absolute top-0 left-0 transition-opacity duration-300 ${!open ? "opacity-100" : "opacity-0"}`}
-          style={{ maxHeight: 32 }}
+          className={`absolute top-0 left-0 transition-opacity w-[32px] duration-300 ${!open ? "opacity-100" : "opacity-0"}`}
         />
       </a>
       <SidebarMenuItem
@@ -72,7 +71,7 @@ export function SidebarModelSelector({
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground p-0"
             >
               {selectedModel && (
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg dark:text-white">
@@ -103,7 +102,7 @@ export function SidebarModelSelector({
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
             align="start"
             side={isMobile ? "bottom" : "right"}
             sideOffset={4}

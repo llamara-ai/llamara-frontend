@@ -8,9 +8,9 @@ import {
   useEffect,
 } from "react";
 import { login, UserInfoDto } from "@/api";
-import { toast } from "@/hooks/use-toast.ts";
 import { AuthContext } from "react-oauth2-code-pkce";
 import { createClient } from "@hey-api/client-fetch";
+import { toast } from "sonner";
 
 export interface UserContext {
   ready: boolean;
@@ -102,9 +102,7 @@ export const useSetupUserContext = () => {
 
       .catch((error: Error) => {
         setLoading(false);
-        toast({
-          variant: "destructive",
-          title: "Failed to connect to server",
+        toast.error("Failed to connect to server", {
           description: error.message,
         });
       });

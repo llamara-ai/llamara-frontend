@@ -1,4 +1,4 @@
-import { forwardRef } from 'react'
+import React from "react";
 
 export interface LinkProps
   extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
@@ -6,15 +6,22 @@ export interface LinkProps
   children: React.ReactNode
 }
 
-const Link = forwardRef<HTMLAnchorElement, LinkProps>(
-  ({ href, children, ...props }, ref) => {
-    return (
-      <a href={href} ref={ref} {...props}>
-        {children}
-      </a>
-    )
+const Link = (
+  {
+    ref,
+    href,
+    children,
+    ...props
+  }: LinkProps & {
+    ref: React.RefObject<HTMLAnchorElement>;
   }
-)
+) => {
+  return (
+    <a href={href} ref={ref} {...props}>
+      {children}
+    </a>
+  )
+}
 Link.displayName = "Link"
 
 export { Link }

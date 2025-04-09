@@ -5,7 +5,7 @@ import {
   SidebarProvider,
   SidebarRail,
 } from "@/components/ui/sidebar.tsx";
-import { ReactNode } from "react";
+import React, { ReactNode } from "react";
 
 interface OverlayProps {
   sideBarContent: ReactNode;
