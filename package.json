@@ -60,7 +60,7 @@
     "react-markdown": "^9.0.3",
     "react-oauth2-code-pkce": "^1.23.0",
     "react-pdf": "^9.2.1",
-    "react-router": "^7.3.0",
+    "react-router": "^7.5.2",
     "react-usestateref": "^1.0.9",
     "remark-gfm": "^4.0.1",
     "sonner": "^1.7.4",
