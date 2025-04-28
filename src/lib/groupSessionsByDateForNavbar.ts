@@ -1,8 +1,5 @@
 import { Session } from "@/api";
-import {
-  SidebarSessionsGroup,
-  SessionSidebarItem,
-} from "@/views/overlays/sidebar/SidebarSessionList";
+import { SidebarSessionsGroup } from "@/views/overlays/sidebar/SidebarSessionList";
 import { subDays, isAfter, parseISO, format } from "date-fns";
 
 interface Item {
@@ -53,6 +50,10 @@ export function groupSessionsByDateForNavbar({
       } else {
         const year = createdAt.getFullYear().toString();
         const name = recentYearLabel + " " + year;
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        if (!groups[name]) {
+          groups[name] = [];
+        }
         groups[name].push(sessionItem);
       }
     }
@@ -110,16 +111,4 @@ export function groupSessionsByDateForNavbar({
 export function formatDate(dateString: string): string {
   const date = new Date(dateString);
   return format(date, "dd.MM.yyyy HH:mm");
-}
-
-export function convertSessionToSessionSidebarItem(
-  session: Session,
-): SessionSidebarItem | null {
-  if (!session.createdAt) return null;
-  return {
-    title: session.label ?? formatDate(session.createdAt),
-    uid: session.id ?? "",
-    formattedTimestamp: formatDate(session.createdAt),
-    isNotAvailableMessage: false,
-  };
 }
