@@ -55,7 +55,7 @@
     "react": "^19.0.0",
     "react-code-blocks": "^0.1.6",
     "react-dom": "^19.1.0",
-    "react-dropzone": "^14.3.5",
+    "react-dropzone": "^14.3.8",
     "react-i18next": "^15.4.0",
     "react-markdown": "^10.1.0",
     "react-oauth2-code-pkce": "^1.23.0",
