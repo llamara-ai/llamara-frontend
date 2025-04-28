@@ -507,7 +507,9 @@ const PdfViewer = ({
             {Array.from(new Array(numPages), (_, index) => (
               <div
                 key={`page_${(index + 1).toString()}`}
-                ref={(el) => (pageRefs.current[index] = el)}
+                ref={(el) => {
+                  pageRefs.current[index] = el;
+                }}
                 className="mb-4"
               >
                 <Page

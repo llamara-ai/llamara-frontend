@@ -17,7 +17,7 @@ import { toast } from "sonner";
 export interface UseGetSessionsApiResponse {
   sessions: Session[];
   activeSessionId: string | null;
-  activeSessionIdRef: React.MutableRefObject<string | null>;
+  activeSessionIdRef: React.RefObject<string | null>;
   activeSessionIsNew: boolean;
   setActiveSessionId: (
     sessionId: string | null,
