@@ -1,6 +1,6 @@
 import { useState, useEffect, RefObject } from "react";
 
-export default function useElementSize(ref: RefObject<HTMLElement>) {
+export default function useElementSize(ref: RefObject<HTMLElement | null>) {
   const [size, setSize] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
