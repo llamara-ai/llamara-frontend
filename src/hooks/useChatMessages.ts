@@ -72,6 +72,13 @@ export default function useChatMessages(): UseChatMessagesResponse {
   const handlePromptAndMessages = async (inputPrompt: string) => {
     setLoadingResponse(true);
 
+    const messageRecord: ChatMessageRecord = {
+      text: inputPrompt,
+      type: "USER",
+      timestamp: new Date().toISOString(),
+    };
+    setCurrentChatMessages([...currentChatMessagesRef.current, messageRecord]);
+
     const chatModelUID = readSelectedModel()?.uid;
     if (!chatModelUID) {
       errorChatMessage(
@@ -80,14 +87,6 @@ export default function useChatMessages(): UseChatMessagesResponse {
       );
       return;
     }
-
-    const messageRecord: ChatMessageRecord = {
-      text: inputPrompt,
-      type: "USER",
-      timestamp: new Date().toISOString(),
-    };
-
-    setCurrentChatMessages([...currentChatMessagesRef.current, messageRecord]);
 
     if (activeSessionIdRef.current === null) {
       const newSession = await handleCreateSession();
