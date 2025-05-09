@@ -10,6 +10,10 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 20
+    # For all deps ignore all major updates
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
