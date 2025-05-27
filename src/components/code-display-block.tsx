@@ -1,10 +1,14 @@
 "use client";
 import React from "react";
-import { CodeBlock, dracula, github } from "react-code-blocks";
 import { Button } from "./ui/button";
 import { Check, ClipboardCopy } from "lucide-react";
-import { useTheme } from "./theme-provider";
 import { toast } from "sonner";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import {
+  oneDark,
+  oneLight,
+} from "react-syntax-highlighter/dist/esm/styles/prism";
+import { useTheme } from "@/components/theme-provider.tsx";
 
 interface ButtonCodeblockProps {
   code: string;
@@ -13,6 +17,7 @@ interface ButtonCodeblockProps {
 
 export default function CodeDisplayBlock({
   code,
+  lang,
 }: Readonly<ButtonCodeblockProps>) {
   const [isCopied, setIsCopied] = React.useState(false);
 
@@ -41,12 +46,15 @@ export default function CodeDisplayBlock({
           <ClipboardCopy className="w-4 h-4 scale-100 transition-all" />
         )}
       </Button>
-      <CodeBlock
-        text={code}
-        language="tsx"
-        showLineNumbers={false}
-        theme={theme === "dark" ? dracula : github}
-      />
+      <SyntaxHighlighter
+        language={lang}
+        style={theme === "dark" ? oneDark : oneLight}
+        showLineNumbers={true}
+        wrapLines={true}
+        wrapLongLines={true}
+      >
+        {code}
+      </SyntaxHighlighter>
     </div>
   );
 }
