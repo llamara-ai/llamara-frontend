@@ -1,6 +1,6 @@
 import { Session } from "@/api";
 import { SidebarSessionsGroup } from "@/views/overlays/sidebar/SidebarSessionList";
-import { subDays, isAfter, parseISO, format } from "date-fns";
+import { subDays, isAfter, format } from "date-fns";
 
 interface Item {
   title: string;
@@ -35,11 +35,11 @@ export function groupSessionsByDateForNavbar({
 
   sessions.forEach((session) => {
     if (session.createdAt) {
-      const createdAt = parseISO(session.createdAt);
+      const createdAt = session.createdAt;
       const sessionItem: Item = {
         title: session.label ?? formatDate(session.createdAt),
         uid: session.id ?? "",
-        timestamp: session.createdAt,
+        timestamp: session.createdAt.toISOString(),
         formattedTimestamp: formatDate(session.createdAt),
         isNotAvailableMessage: false,
       };
@@ -108,7 +108,6 @@ export function groupSessionsByDateForNavbar({
   return groupedSessions;
 }
 
-export function formatDate(dateString: string): string {
-  const date = new Date(dateString);
+export function formatDate(date: Date): string {
   return format(date, "dd.MM.yyyy HH:mm");
 }
