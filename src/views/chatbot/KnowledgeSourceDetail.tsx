@@ -5,7 +5,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { formatDate } from "@/lib/formatDate";
 import {
   translatePermissions,
   translateUser,
@@ -60,11 +59,11 @@ export function KnowledgeSourceDetail({
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <h2 className="font-semibold">{t("knowledge.createdAt")}</h2>
-                <p>{formatDate(knowledge.createdAt)}</p>
+                <p>{knowledge.createdAt?.toLocaleString()}</p>
               </div>
               <div>
                 <h3 className="font-semibold">{t("knowledge.lastUpdate")}</h3>
-                <p>{formatDate(knowledge.lastUpdatedAt)}</p>
+                <p>{knowledge.lastUpdatedAt?.toLocaleString()}</p>
               </div>
             </div>
             <div>
