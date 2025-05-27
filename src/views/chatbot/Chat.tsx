@@ -101,7 +101,7 @@ export default function Chat({
           {/* Messages */}
           {messages.map((message: ChatMessageRecord, index) => (
             <ChatMessage
-              key={message.timestamp ?? index}
+              key={message.timestamp?.toString() ?? index}
               message={message}
               isGenerating={isGenerating}
               handleRetryClick={() => {

@@ -3,6 +3,7 @@
 import { type Options as ClientOptions, type TDataShape, type Client, formDataBodySerializer } from '@hey-api/client-fetch';
 import type { ConfigurationData, ConfigurationResponse, GetModelsData, GetModelsResponse, PromptData, PromptResponse, GetSessionsData, GetSessionsResponse, CreateSessionData, CreateSessionResponse, DeleteSessionData, GetHistoryData, GetHistoryResponse, KeepAliveAnonymousSessionData, SetSessionLabelData, GetAllKnowledgeData, GetAllKnowledgeResponse, AddFileSourceData, AddFileSourceResponse, RetryFailedIngestionData, UpdateFileSourceData, DeleteKnowledgeData, GetKnowledgeData, GetKnowledgeResponse, GetKnowledgeFileData, GetKnowledgeFileResponse, SetKnowledgeLabelData, RemoveKnowledgePermissionData, SetKnowledgePermissionData, RemoveKnowledgeTagData, AddKnowledgeTagData, DeleteUserDataData, LoginData, LoginResponse } from './types.gen';
 import { client as _heyApiClient } from './client.gen';
+import { getSessionsResponseTransformer, createSessionResponseTransformer, getHistoryResponseTransformer, getAllKnowledgeResponseTransformer, getKnowledgeResponseTransformer } from './transformers.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = ClientOptions<TData, ThrowOnError> & {
     /**
@@ -11,6 +12,11 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
      * custom client.
      */
     client?: Client;
+    /**
+     * You can pass arbitrary values through the `meta` object. This can be
+     * used to access values that aren't defined as part of the SDK function.
+     */
+    meta?: Record<string, unknown>;
 };
 
 /**
@@ -71,6 +77,7 @@ export const getSessions = <ThrowOnError extends boolean = false>(options?: Opti
                 type: 'http'
             }
         ],
+        responseTransformer: getSessionsResponseTransformer,
         url: '/rest/chat/sessions',
         ...options
     });
@@ -87,6 +94,7 @@ export const createSession = <ThrowOnError extends boolean = false>(options?: Op
                 type: 'http'
             }
         ],
+        responseTransformer: createSessionResponseTransformer,
         url: '/rest/chat/sessions/create',
         ...options
     });
@@ -119,6 +127,7 @@ export const getHistory = <ThrowOnError extends boolean = false>(options: Option
                 type: 'http'
             }
         ],
+        responseTransformer: getHistoryResponseTransformer,
         url: '/rest/chat/sessions/{sessionId}/history',
         ...options
     });
@@ -167,6 +176,7 @@ export const getAllKnowledge = <ThrowOnError extends boolean = false>(options?: 
                 type: 'http'
             }
         ],
+        responseTransformer: getAllKnowledgeResponseTransformer,
         url: '/rest/knowledge',
         ...options
     });
@@ -259,6 +269,7 @@ export const getKnowledge = <ThrowOnError extends boolean = false>(options: Opti
                 type: 'http'
             }
         ],
+        responseTransformer: getKnowledgeResponseTransformer,
         url: '/rest/knowledge/{id}',
         ...options
     });

@@ -15,3 +15,9 @@ export const useSetApiClientConfig = () => {
     }
   }, [token]);
 };
+
+export const initApiClientConfig = () => {
+  client.setConfig({
+    baseUrl: `/`,
+  });
+};

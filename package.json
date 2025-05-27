@@ -19,7 +19,7 @@
     "test": "vitest run",
     "test:watch": "vitest watch",
     "test:coverage": "vitest run --coverage",
-    "generate:api": "tsx --import tsx ./scripts/apigen.ts",
+    "generate:api": "openapi-ts",
     "generate:pwa-assets": "pwa-assets-generator --preset minimal-2023 public/favicon.svg"
   },
   "dependencies": {
@@ -86,7 +86,6 @@
     "postcss": "^8.5.1",
     "prettier": "3.5.3",
     "tailwindcss": "^4.1.5",
-    "tsx": "^4.19.4",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.32.0",
     "vite": "^6.3.5",

@@ -75,7 +75,7 @@ export default function useChatMessages(): UseChatMessagesResponse {
     const messageRecord: ChatMessageRecord = {
       text: inputPrompt,
       type: "USER",
-      timestamp: new Date().toISOString(),
+      timestamp: new Date(),
     };
     setCurrentChatMessages([...currentChatMessagesRef.current, messageRecord]);
 
@@ -152,7 +152,7 @@ export default function useChatMessages(): UseChatMessagesResponse {
         type: "AI",
         modelUID: chatModelUID,
         sources: responseData.sources,
-        timestamp: new Date().toISOString(),
+        timestamp: new Date(),
       };
       setCurrentChatMessages([
         ...currentChatMessagesRef.current,
@@ -172,7 +172,7 @@ export default function useChatMessages(): UseChatMessagesResponse {
     const messageRecord: ChatMessageRecord = {
       text: t("chatbot.errorGeneratePrompt"),
       type: "SYSTEM",
-      timestamp: new Date().toISOString(),
+      timestamp: new Date(),
     };
     setCurrentChatMessages([...currentChatMessagesRef.current, messageRecord]);
     setLoadingResponse(false);
