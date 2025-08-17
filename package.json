@@ -23,7 +23,7 @@
     "generate:pwa-assets": "pwa-assets-generator --preset minimal-2023 public/favicon.svg"
   },
   "dependencies": {
-    "@hey-api/client-fetch": "^0.11.0",
+    "@hey-api/client-fetch": "^0.13.1",
     "@hey-api/openapi-ts": "^0.69.0",
     "@radix-ui/react-alert-dialog": "^1.1.7",
     "@radix-ui/react-avatar": "^1.1.4",
