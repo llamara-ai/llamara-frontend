@@ -52,7 +52,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.1.0",
     "react-dropzone": "^14.3.8",
-    "react-i18next": "^15.5.1",
+    "react-i18next": "^15.7.3",
     "react-markdown": "^10.1.0",
     "react-oauth2-code-pkce": "^1.23.0",
     "react-pdf": "^9.2.1",
