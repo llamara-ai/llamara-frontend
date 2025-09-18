@@ -3,8 +3,8 @@ import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import useGetKnowledgeFileApi from "@/hooks/api/useGetKnowledgeFileApi";
 import LoadingAnimation from "./loading-animation";
 import { Document, Page } from "react-pdf";
-import "react-pdf/dist/esm/Page/AnnotationLayer.css";
-import "react-pdf/dist/esm/Page/TextLayer.css";
+import "react-pdf/dist/Page/AnnotationLayer.css";
+import "react-pdf/dist/Page/TextLayer.css";
 import PdfToolbar from "./pdf-toolbar";
 import {
   Dialog,
