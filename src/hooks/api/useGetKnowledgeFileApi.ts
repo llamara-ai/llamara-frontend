@@ -52,7 +52,7 @@ export function useGetKnowledgeFileApiFunction() {
       if (!response.data) {
         throw new Error("Response was undefined, so no data was provided");
       }
-      return response.data;
+      return response.data[200];
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);

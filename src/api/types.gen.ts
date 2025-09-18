@@ -8,8 +8,6 @@ export interface ChatMessageRecord {
     modelUID?: string;
 }
 
-export type ChatMessageType = 'SYSTEM' | 'USER' | 'AI' | 'TOOL_EXECUTION_RESULT' | 'CUSTOM';
-
 export const ChatMessageType = {
     SYSTEM: 'SYSTEM',
     USER: 'USER',
@@ -18,14 +16,14 @@ export const ChatMessageType = {
     CUSTOM: 'CUSTOM'
 } as const;
 
+export type ChatMessageType = typeof ChatMessageType[keyof typeof ChatMessageType];
+
 export interface ChatModelContainer {
     uid?: string;
     label?: string;
     description?: string;
     provider?: ChatModelProvider;
 }
-
-export type ChatModelProvider = 'AZURE' | 'GOOGLE_GEMINI' | 'MISTRAL' | 'OLLAMA' | 'OPENAI';
 
 export const ChatModelProvider = {
     AZURE: 'AZURE',
@@ -34,6 +32,8 @@ export const ChatModelProvider = {
     OLLAMA: 'OLLAMA',
     OPENAI: 'OPENAI'
 } as const;
+
+export type ChatModelProvider = typeof ChatModelProvider[keyof typeof ChatModelProvider];
 
 export interface ChatResponseRecord {
     response?: string;
@@ -47,13 +47,13 @@ export interface InfoDto {
     privacyPolicyLink?: string;
 }
 
-export type IngestionStatus = 'PENDING' | 'SUCCEEDED' | 'FAILED';
-
 export const IngestionStatus = {
     PENDING: 'PENDING',
     SUCCEEDED: 'SUCCEEDED',
     FAILED: 'FAILED'
 } as const;
+
+export type IngestionStatus = typeof IngestionStatus[keyof typeof IngestionStatus];
 
 export type Instant = Date;
 
@@ -72,12 +72,12 @@ export interface KnowledgeRecord {
     source?: string;
 }
 
-export type KnowledgeType = 'FILE' | 'WEBLINK';
-
 export const KnowledgeType = {
     FILE: 'FILE',
     WEBLINK: 'WEBLINK'
 } as const;
+
+export type KnowledgeType = typeof KnowledgeType[keyof typeof KnowledgeType];
 
 export interface OidcInfoDto {
     authServerUrl?: string;
@@ -88,14 +88,14 @@ export interface OidcInfoDto {
     audience?: string;
 }
 
-export type Permission = 'OWNER' | 'READWRITE' | 'READONLY' | 'NONE';
-
 export const Permission = {
     OWNER: 'OWNER',
     READWRITE: 'READWRITE',
     READONLY: 'READONLY',
     NONE: 'NONE'
 } as const;
+
+export type Permission = typeof Permission[keyof typeof Permission];
 
 export interface RagSourceRecord {
     knowledgeId?: Uuid;

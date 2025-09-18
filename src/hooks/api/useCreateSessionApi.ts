@@ -15,7 +15,7 @@ export default function useCreateSessionApi(): UseCreateSessionApiResponse {
   const handleCreateSession = async (): Promise<Session | null> => {
     try {
       const response = await createSession();
-      const session = response.data;
+      const session = response.data?.[201];
 
       if (session) {
         setError(null);
