@@ -146,7 +146,7 @@ describe("GetKnowledgeListProvider", () => {
     // Mock API response
     (getAllKnowledge as any).mockImplementation(() => {
       return Promise.resolve({
-        data: mockKnowledge,
+        data: { 200: mockKnowledge },
       });
     });
   });
