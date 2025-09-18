@@ -53,8 +53,8 @@ export default function GetKnowledgeListProvider({
         const response = await getAllKnowledge();
         setError(null);
         if (response.data) {
-          setCache("allKnowledge", response.data);
-          setAllKnowledge(response.data);
+          setCache("allKnowledge", response.data[200]);
+          setAllKnowledge(response.data[200]);
         }
       } catch (error) {
         if (error instanceof Error) {

@@ -130,7 +130,7 @@ export default function useChatMessages(): UseChatMessagesResponse {
         );
       }
 
-      responseData = response.data;
+      responseData = response.data[200];
     } catch (error: unknown) {
       if (error instanceof Error) {
         errorChatMessage("Failed to get response to prompt", error.message);

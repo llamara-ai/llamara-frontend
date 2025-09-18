@@ -45,11 +45,14 @@ export const AppContextProvider: FC<{ children: ReactNode }> = ({
       ]);
 
       // Handle configResponse, so setUp AppContext
-      if (!configResponse.data?.security || !configResponse.data.oidc) {
+      if (
+        !configResponse.data?.[200].security ||
+        !configResponse.data[200].oidc
+      ) {
         throw new Error("Failed to get configuration");
       }
-      setSecurityConfig(configResponse.data.security);
-      const oidcInfo = configResponse.data.oidc;
+      setSecurityConfig(configResponse.data[200].security);
+      const oidcInfo = configResponse.data[200].oidc;
       if (
         oidcInfo.authServerUrl === undefined ||
         oidcInfo.clientId === undefined ||
@@ -75,11 +78,11 @@ export const AppContextProvider: FC<{ children: ReactNode }> = ({
         authConfig.extraAuthParameters.audience = oidcInfo.audience;
       }
       setAuthConfig(authConfig);
-      if (configResponse.data.imprintLink) {
-        setImprintUrl(configResponse.data.imprintLink);
+      if (configResponse.data[200].imprintLink) {
+        setImprintUrl(configResponse.data[200].imprintLink);
       }
-      if (configResponse.data.privacyPolicyLink) {
-        setPrivacyPolicyUrl(configResponse.data.privacyPolicyLink);
+      if (configResponse.data[200].privacyPolicyLink) {
+        setPrivacyPolicyUrl(configResponse.data[200].privacyPolicyLink);
       }
       setReady(true);
 

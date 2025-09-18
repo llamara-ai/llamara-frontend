@@ -42,10 +42,10 @@ export default function useGetHistoryApi(): UseGetHistoryApiResponse {
         const response = await getHistory(options);
         if (response.data) {
           setError(null);
-          setCache("history" + sessionId, response.data);
+          setCache("history" + sessionId, response.data[200]);
           setLoading(false);
           setLastSessionId(sessionId);
-          return response.data;
+          return response.data[200];
         } else {
           toast.error("Failed to fetch history", {
             description:

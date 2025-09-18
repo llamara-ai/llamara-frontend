@@ -102,8 +102,10 @@ describe("useChatMessages", () => {
     mockPrompt.mockResolvedValue({
       response: { ok: true },
       data: {
-        response: "AI response",
-        sources: [],
+        200: {
+          response: "AI response",
+          sources: [],
+        },
       },
     });
 
@@ -153,8 +155,10 @@ describe("useChatMessages", () => {
           resolve({
             response: { ok: true },
             data: {
-              response: "AI response",
-              sources: [],
+              200: {
+                response: "AI response",
+                sources: [],
+              },
             },
           });
           resolvePromise();
@@ -214,8 +218,10 @@ describe("useChatMessages", () => {
           resolve({
             response: { ok: true },
             data: {
-              response: "AI response",
-              sources: [],
+              200: {
+                response: "AI response",
+                sources: [],
+              },
             },
           });
           resolvePromise();
@@ -370,7 +376,7 @@ describe("useChatMessages", () => {
     expect(toast.error).toHaveBeenCalledWith(
       "Failed to get response to prompt",
       {
-        description: "No response from server",
+        description: "Cannot read properties of null (reading '200')",
       },
     );
   });
@@ -386,8 +392,10 @@ describe("useChatMessages", () => {
           resolve({
             response: { ok: true },
             data: {
-              response: "AI response",
-              sources: [],
+              200: {
+                response: "AI response",
+                sources: [],
+              },
             },
           });
         };

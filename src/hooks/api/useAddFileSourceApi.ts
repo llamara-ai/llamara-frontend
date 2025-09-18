@@ -20,10 +20,10 @@ export default function useAddFileSourceApi(): UseAddFileSourceApiResponse {
     };
     try {
       const response = await addFileSource(options);
-      if (response.data) {
+      if (response.data?.[201]) {
         setError(null);
-        setFileUUIDs(response.data);
-        return response.data;
+        setFileUUIDs(response.data[201]);
+        return response.data[201];
       } else {
         throw new Error("Request was undefined");
       }

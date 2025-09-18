@@ -63,9 +63,9 @@ export default function useGetKnowledgeApi({
             setCacheNotFound(cacheNotFoundKey, true, null);
             throw new Error("Knowledge not found");
           } else {
-            setCache(cacheKey, response.data);
+            setCache(cacheKey, response.data[200]);
           }
-          setKnowledge(response.data);
+          setKnowledge(response.data[200]);
         })
         .catch((error: Error) => {
           toast.error("Failed to fetch knowledge", {
@@ -105,7 +105,7 @@ export async function getKnowledgeApiFunction(
     if (response.data === undefined) {
       throw new Error("Knowledge not found");
     }
-    return response.data;
+    return response.data[200];
   } catch (error) {
     if (error instanceof Error) {
       console.log(error.message);

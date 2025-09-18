@@ -9,8 +9,8 @@ import {
 } from "react";
 import { login, UserInfoDto } from "@/api";
 import { AuthContext } from "react-oauth2-code-pkce";
-import { createClient } from "@hey-api/client-fetch";
 import { toast } from "sonner";
+import { createClient } from "@/api/client";
 
 export interface UserContext {
   ready: boolean;
@@ -94,8 +94,8 @@ export const useSetupUserContext = () => {
         if (!response.data) {
           throw new Error("Failed to get user info");
         }
-        setUser(response.data);
-        setRole(getUserRole(response.data.roles));
+        setUser(response.data[200]);
+        setRole(getUserRole(response.data[200].roles));
         setReady(true);
         setLoading(false);
       })

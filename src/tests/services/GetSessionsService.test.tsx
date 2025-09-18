@@ -120,7 +120,7 @@ describe("GetSessionsProvider", () => {
       setCache: mockSetCache,
     });
     (getSessions as any).mockResolvedValue({
-      data: mockSessions,
+      data: { 200: mockSessions },
     });
   });
 
