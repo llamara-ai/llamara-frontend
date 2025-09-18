@@ -57,7 +57,7 @@ const globalFilterFn: FilterFn<KnowledgeRecord> = (
     ? Object.entries(permissions).some(([key, permission]) => {
         const keyMatch = key.toLowerCase().includes(searchValue);
         const valueMatch = Object.values(permission).some((value) =>
-          String(value).toLowerCase().includes(searchValue),
+          value.toLowerCase().includes(searchValue),
         );
         return keyMatch || valueMatch;
       })
