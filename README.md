@@ -9,6 +9,10 @@ Additionally, LAMARA ensures full transparency by providing sources with referen
 
 > **NOTE:** This repository contains the LLAMARA frontend only.
 
+> [!WARNING]
+> This project is not maintained anymore.
+> Refer to [LLAMARA Backend](https://github.com/llamara-ai/llamara-backend) for more information.
+
 LLAMARA Frontend is the official UI for the LLAMARA project.
 It is bundled with [LLAMARA Backend](https://github.com/llamara-ai/llamara-backend) in the [LLAMARA Distro](https://github.com/llamara-ai/llamara-distro) builds.
 
